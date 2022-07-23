@@ -16,3 +16,8 @@
    If you don't want to run this line everytime you can add   
    ``` source <path to the folder>/devel/setup.bash ```   
    to ```~/.bashrc``` 
+
+---  
+## Some Dependence of the Project
+* Lidar Driver and Node Example
+https://github.com/Slamtec/rplidar_ros  
