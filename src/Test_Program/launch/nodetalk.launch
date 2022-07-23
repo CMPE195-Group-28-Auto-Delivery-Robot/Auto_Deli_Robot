@@ -1,0 +1,18 @@
+<launch>
+    <group ns="communicate">
+        <node pkg="beginner_tutorials" name="test_listen" type="talker"/>
+    </group>
+
+    <group ns="communicate">
+        <node pkg="beginner_tutorials" name="test_read" type="listener"/>
+    </group>
+
+    <group ns="communicate">
+        <node pkg="beginner_tutorials" name="test_read2" type="listener"/>
+    </group>
+
+    <!-- <node pkg="turtlesim" name="mimic" type="mimic">
+        <remap from="input" to="turtlesim1/turtle1"/>
+        <remap from="output" to="turtlesim2/turtle1"/>
+    </node> -->
+</launch>
