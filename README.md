@@ -1,7 +1,6 @@
 # Auto_Deli_Robot  
 
-## Setup Workspace
----  
+## Setup Workspace  
 ### First Install All Essential Package
 1. Install Python 3   
 ``` sudo apt install python3 ```
