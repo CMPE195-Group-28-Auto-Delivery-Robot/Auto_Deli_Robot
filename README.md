@@ -4,6 +4,7 @@
 ### First Install All Essential Package
 1. Install Python 3   
 ``` sudo apt install python3 ```
+2. Install CMake
 2. Install ROS Medodic follow this guide https://wiki.ros.org/melodic/Installation/Ubuntu
 
 ### Build ROS WorkSpace
