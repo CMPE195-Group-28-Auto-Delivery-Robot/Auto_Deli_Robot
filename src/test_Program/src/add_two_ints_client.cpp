@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "Test_Program/AddTwoInts.h"
+#include "test_program/AddTwoInts.h"
 #include <cstdlib>
 
 int main(int argc, char **argv)
@@ -7,8 +7,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "add_two_ints_client");
 
   ros::NodeHandle n;
-  ros::ServiceClient client = n.serviceClient<Test_Program::AddTwoInts>("add_two_ints");
-  Test_Program::AddTwoInts srv;
+  ros::ServiceClient client = n.serviceClient<test_program::AddTwoInts>("add_two_ints");
+  test_program::AddTwoInts srv;
 
   ros::Rate loop_rate(5);
 
