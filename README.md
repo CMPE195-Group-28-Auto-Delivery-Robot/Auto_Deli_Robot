@@ -5,6 +5,8 @@
 1. Install Python 3   
 ``` sudo apt install python3 ```
 2. Install ROS Medodic follow this guide https://wiki.ros.org/melodic/Installation/Ubuntu
+3. Install the ROS plugins   
+   ``` sudo apt-get install ros-melodic-gps-common ```
 
 ### Build ROS WorkSpace
 1. First time bulid   
