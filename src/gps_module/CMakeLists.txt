@@ -105,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gps_module
-#  CATKIN_DEPENDS gpsd roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -204,3 +204,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(gps_talker_node src/gps_talker_node.cpp)
+target_link_libraries(gps_talker_node ${catkin_LIBRARIES})
+add_dependencies(gps_talker_node test_program_generate_messages_cpp)
