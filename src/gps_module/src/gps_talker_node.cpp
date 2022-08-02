@@ -2,34 +2,12 @@
 // http://controls.ece.unm.edu/documents/gpsTest.cpp
 #include <iostream>
 #include "ros/ros.h"
-#include "gps_common/GPSFix.h"
+#include "sensor_msgs/NavSatFix.h"
 
-class GpsTest
-{
-public:
-  // Type for GPS messages
-  gps_common::GPSFix gpsMsg;
-
-  // Constructor
-  GpsTest(ros::NodeHandle nh_) : n(nh_)
-  {
-    // Subscribing to the topic /fix
-    gps_sub = n.subscribe("/fix", 100, &GpsTest::gpsCallback, this);
-  }
-
-  // Callback Function for the GPS
-  void gpsCallback(const gps_common::GPSFixConstPtr &msg)
-  {
-    gpsMsg = *msg;
-  }
-
-private:
-  // Nodehandle
-  ros::NodeHandle n;
-
-  // Subscriber
-  ros::Subscriber gps_sub;
-};
+void locationCallback(const sensor_msgs::NavSatFix::ConstPtr& gps_location){
+  ROS_INFO("Current Location: [ Latitude: %.5f, longitude: %.5f ]\n", gps_location->latitude, gps_location->longitude);
+  ROS_INFO("Current High: %.5f\n",gps_location->altitude);
+}
 
 int main(int argc, char** argv)
 {
@@ -39,16 +17,9 @@ int main(int argc, char** argv)
 
   // Initializing the node for the GPS
   ros::init(argc, argv, "gps_Subscriber");
-  ros::NodeHandle nh_;
+  ros::NodeHandle gps_node_handle;
 
-  GpsTest *p = new GpsTest(nh_);
-
-  // Getting the data from the GPS
-  gpsLong = p->gpsMsg.longitude;
-  gpsLat = p->gpsMsg.latitude;
-
-  std::cout << "Current Latitude: " << gpsLat << std::endl;
-  std::cout << "Current Longitude " << gpsLong << std::endl;
+  ros::Subscriber gps_subber = gps_node_handle.subscribe("fix", 100, locationCallback);
 
   ros::spin();
   return 0;
