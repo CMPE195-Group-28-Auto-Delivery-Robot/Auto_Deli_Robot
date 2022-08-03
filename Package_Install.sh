@@ -5,3 +5,6 @@ apt-get install ros-melodic-mapviz -y
 apt install ros-melodic-mapviz-plugins -y
 apt install ros-melodic-tile-map -y
 apt-get install ros-melodic-rplidar-ros -y
+cd src/
+git clone https://github.com/stereolabs/zed-ros-examples.git
+cd ..
