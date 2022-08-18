@@ -15,19 +15,16 @@
   <build_depend>rplidar_ros</build_depend>
   <build_depend>eigen</build_depend>
   <build_depend>laser_geometry</build_depend>
-  <!-- <build_depend>eigen</build_depend> -->
   
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>rplidar_ros</build_export_depend>
   <build_export_depend>laser_geometry</build_export_depend>
-  <!-- <build_export_depend>eigen</build_export_depend> -->
   
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>rplidar_ros</exec_depend>
   <exec_depend>laser_geometry</exec_depend>
-  <!-- <exec_depend>eigen</exec_depend> -->
 
   <export>
 
