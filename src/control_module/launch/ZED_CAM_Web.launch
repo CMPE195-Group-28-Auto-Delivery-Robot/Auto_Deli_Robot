@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="screen">
+        <param name="port" value="8081"/>
+    </node>
+</launch>

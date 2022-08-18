@@ -110,7 +110,7 @@ window.onload = function () {
     // determine robot address automatically
     // robot_IP = location.hostname;
     // set robot address statically
-    robot_IP = "localhost";
+    robot_IP = "192.168.50.233";
 
     // // Init handle for rosbridge_websocket
     ros = new ROSLIB.Ros({
@@ -119,13 +119,12 @@ window.onload = function () {
 
     initVelocityPublisher();
     // get handle for video placeholder
-    // video = document.getElementById('video');
-    // // Populate video source 
-    // video.src = "http://" + robot_IP + ":8080/stream?topic=/camera/rgb/image_raw&type=mjpeg&quality=80";
-    // video.onload = function () {
-    //     // joystick and keyboard controls will be available only when video is correctly loaded
-    //     createJoystick();
-    //     initTeleopKeyboard();
-    // };
-    createJoystick();
+    video = document.getElementById('video');
+    // Populate video source 
+    video.src = "http://" + robot_IP + ":8081/stream?topic=/zed2/zed_node/rgb_raw/image_raw_color&type=mjpeg&quality=80";
+    video.onload = function () {
+        // joystick and keyboard controls will be available only when video is correctly loaded
+        createJoystick();
+        initTeleopKeyboard();
+    };
 }
