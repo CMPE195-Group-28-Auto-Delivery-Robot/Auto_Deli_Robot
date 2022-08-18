@@ -5,6 +5,8 @@ var robot_IP;
 var manager;
 var teleop;
 var ros;
+var joystck_size = 120;
+var robot_IP = "192.168.50.233";
 
 function moveAction(linear, angular) {
     if (linear !== undefined && angular !== undefined) {
@@ -60,17 +62,17 @@ function initTeleopKeyboard() {
     }
 }
 
-function createJoystick() {
+function createJoystick( joystic_id ) {
     // Check if joystick was aready created
     if (manager == null) {
-        joystickContainer = document.getElementById('joystick');
+        joystickContainer = document.getElementById(joystic_id);
         // joystck configuration, if you want to adjust joystick, refer to:
         // https://yoannmoinet.github.io/nipplejs/
         var options = {
             zone: joystickContainer,
-            position: { left: 50 + '%', top: 105 + 'px' },
+            position: { left: 50 + '%', top: joystck_size/2 + 'px' },
             mode: 'static',
-            size: 200,
+            size: joystck_size,
             color: '#0066ff',
             restJoystick: true
         };
@@ -106,11 +108,25 @@ function createJoystick() {
     }
 }
 
+function createCAM_with_stick(cam_id, stick_id, path){
+    cam = document.getElementById(cam_id);
+    cam.src = "http://" + robot_IP + ":8081/stream?topic="+path+"&type=mjpeg&quality=80";
+    cam.onload = function () {
+        // joystick and keyboard controls will be available only when video is correctly loaded
+        createJoystick(stick_id);
+    };
+}
+
+function createCAM( cam_id, path ){
+    cam = document.getElementById(cam_id);
+    cam.src = "http://" + robot_IP + ":8081/stream?topic="+path+"&type=mjpeg&quality=80";
+}
+
 window.onload = function () {
     // determine robot address automatically
     // robot_IP = location.hostname;
     // set robot address statically
-    robot_IP = "192.168.50.233";
+    
 
     // // Init handle for rosbridge_websocket
     ros = new ROSLIB.Ros({
@@ -119,12 +135,8 @@ window.onload = function () {
 
     initVelocityPublisher();
     // get handle for video placeholder
-    video = document.getElementById('video');
-    // Populate video source 
-    video.src = "http://" + robot_IP + ":8081/stream?topic=/zed2/zed_node/rgb_raw/image_raw_color&type=mjpeg&quality=80";
-    video.onload = function () {
-        // joystick and keyboard controls will be available only when video is correctly loaded
-        createJoystick();
-        initTeleopKeyboard();
-    };
+    createCAM_with_stick("rgb_cam","joystick","/zed2/zed_node/rgb_raw/image_raw_color");
+
+    createCAM('depth_cam',"/zed2/zed_node/depth/depth_registered");
+
 }

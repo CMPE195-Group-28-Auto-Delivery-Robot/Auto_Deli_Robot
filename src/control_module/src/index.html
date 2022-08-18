@@ -10,6 +10,22 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   </head>
   <body>
+
+    <!-- INFO -->
+    <div class="row my-4">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="alert alert-success">
+                <h4 class="alert-heading">Auto Delivery Robot Control</h4>
+                <ul>
+                    <li>set speed using a slider</li>
+                    <li>use joystick to move </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
     <div class="row">
         <div class="col-md-4"></div>
         <div class=" col-md-4">
@@ -24,32 +40,24 @@
     <!-- VIDEO -->
     <div class="row my-4">
         <div class="col d-flex justify-content-center">
-            <img src="" class="p-1 bg-dark" alt="" id="video" />
+            <img src="" class="p-1 bg-dark" alt="" id="rgb_cam" />
         </div>
     </div>
     
     <!-- JOYSTICK -->
     <div class="row my-4">
         <div class="col">
-            <div class="d-flex justify-content-center" style="width: 210px; height: 210px;">
+            <div class="d-flex justify-content-center" style="width: 120px; height: 120px;">
                 <div id="joystick"></div>
             </div>
         </div>
     </div>
-    
-    <!-- INFO -->
+
+    <!-- VIDEO -->
     <div class="row my-4">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <div class="alert alert-success">
-                <h4 class="alert-heading">Auto Delivery Robot Control</h4>
-                <ul>
-                    <li>set speed using a slider</li>
-                    <li>use joystick to move </li>
-                </ul>
-            </div>
+        <div class="col d-flex justify-content-center">
+            <img src="" class="p-1 bg-dark" alt="" id="depth_cam" />
         </div>
-        <div class="col-md-2"></div>
     </div>
 
     <!-- Optional JavaScript -->
