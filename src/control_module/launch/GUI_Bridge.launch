@@ -84,4 +84,9 @@
     <param name="services_glob" value="$(arg services_glob)"/>
     <param name="params_glob" value="$(arg params_glob)"/>
   </node>
+
+  <node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="screen">
+    <param name="port" value="8081"/>
+  </node>
+
 </launch>
