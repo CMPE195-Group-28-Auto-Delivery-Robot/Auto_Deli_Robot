@@ -11,12 +11,17 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   rplidar_ros
+  laser_geometry
 )
 
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES lidar_module
-  CATKIN_DEPENDS roscpp rospy rplidar_ros
+  CATKIN_DEPENDS 
+  roscpp 
+  rospy 
+  rplidar_ros
+  laser_geometry
 #  DEPENDS system_lib
 )
 
