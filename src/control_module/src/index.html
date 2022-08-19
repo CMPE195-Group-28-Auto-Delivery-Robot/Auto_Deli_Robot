@@ -8,13 +8,17 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        h5 {text-align: center;}
+    </style>
   </head>
+
   <body>
 
     <!-- INFO -->
     <div class="row my-4">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
             <div class="alert alert-success">
                 <h4 class="alert-heading">Auto Delivery Robot Control</h4>
                 <ul>
@@ -50,6 +54,24 @@
             <div class="d-flex justify-content-center" style="width: 120px; height: 120px;">
                 <div id="joystick"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- GPS -->
+    <div class="row my-4">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="alert alert-success">
+                <h5 class="alert-heading">GPS INFO: <span id="myText"></span></h5>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+
+    <!-- map -->
+    <div class="row my-4">
+        <div class="col d-flex justify-content-center">
+            <img src="" class="p-1 bg-dark" alt="" id="gps_map" />
         </div>
     </div>
 

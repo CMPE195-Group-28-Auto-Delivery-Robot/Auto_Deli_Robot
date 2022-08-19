@@ -1,7 +1,7 @@
 var twist;
 var cmdVel;
+var gpsfix;
 var publishImmidiately = true;
-var robot_IP;
 var manager;
 var teleop;
 var ros;
@@ -122,11 +122,42 @@ function createCAM( cam_id, path ){
     cam.src = "http://" + robot_IP + ":8081/stream?topic="+path+"&type=mjpeg&quality=80";
 }
 
+function initGPSSubscriber(){
+    // Init topic object
+    gpsfix = new ROSLIB.Topic({
+        ros: ros,
+        name: '/fix',
+        messageType: 'sensor_msgs/NavSatFix'
+    });
+}
+
+function initMap() {
+  // The location of Uluru
+  const uluru = { lat: -25.344, lng: 131.031 };
+  // The map, centered at Uluru
+  const map = new google.maps.Map(document.getElementById("gps_map"), {
+    zoom: 4,
+    center: uluru,
+  });
+  // The marker, positioned at Uluru
+  const marker = new google.maps.Marker({
+    position: uluru,
+    map: map,
+  });
+}
+
+function gps_subscribtion(){
+    gpsfix.subscribe(function(message) {
+        // gpsfix.unsubscribe();
+        gps_ui = document.getElementById("myText");
+        gps_ui.innerHTML = message.latitude + ", " + message.longitude + ", " + message.altitude;
+        // console.log('Received message on ' + gpsfix.name + ': ' + message.latitude + "," + message.longitude + "," + message.altitude);        
+    });
+}
+
+
+
 window.onload = function () {
-    // determine robot address automatically
-    // robot_IP = location.hostname;
-    // set robot address statically
-    
 
     // // Init handle for rosbridge_websocket
     ros = new ROSLIB.Ros({
@@ -134,9 +165,12 @@ window.onload = function () {
     });
 
     initVelocityPublisher();
+    initGPSSubscriber();
     // get handle for video placeholder
     createCAM_with_stick("rgb_cam","joystick","/zed2/zed_node/rgb_raw/image_raw_color");
 
     createCAM('depth_cam',"/zed2/zed_node/depth/depth_registered");
 
+    // initMap();
+    gps_subscribtion();
 }
