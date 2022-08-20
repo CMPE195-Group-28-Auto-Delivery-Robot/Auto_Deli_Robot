@@ -1,6 +1,7 @@
 var twist;
 var cmdVel;
 var gpsfix;
+var zedimu;
 var publishImmidiately = true;
 var manager;
 var teleop;
@@ -131,6 +132,15 @@ function initGPSSubscriber(){
     });
 }
 
+function initIMUSubscriber(){
+    // Init topic object
+    zedimu = new ROSLIB.Topic({
+        ros: ros,
+        name: '/zed2/zed_node/imu/data',
+        messageType: 'sensor_msgs/Imu'
+    });
+}
+
 function initMap() {
   // The location of Uluru
   const uluru = { lat: -25.344, lng: 131.031 };
@@ -149,9 +159,29 @@ function initMap() {
 function gps_subscribtion(){
     gpsfix.subscribe(function(message) {
         // gpsfix.unsubscribe();
-        gps_ui = document.getElementById("myText");
+        gps_ui = document.getElementById("gps_info");
         gps_ui.innerHTML = message.latitude + ", " + message.longitude + ", " + message.altitude;
         // console.log('Received message on ' + gpsfix.name + ': ' + message.latitude + "," + message.longitude + "," + message.altitude);        
+    });
+}
+
+function sleep(time){
+    var timeStamp = new Date().getTime();
+    var endTime = timeStamp + time;
+    while(true){
+        if (new Date().getTime() > endTime){
+            return;
+        } 
+    }
+}
+
+function imu_subscribtion(){
+    zedimu.subscribe(function(message) {
+        // gpsfix.unsubscribe();
+        imu_ui = document.getElementById("imu_info");
+        imu_ui.innerHTML = message.linear_acceleration.x + ", " + message.linear_acceleration.y + ", " + message.linear_acceleration.z;
+        // console.log('Received message on ' + gpsfix.name + ': ' + message.latitude + "," + message.longitude + "," + message.altitude);        
+        sleep(1);
     });
 }
 
@@ -166,6 +196,7 @@ window.onload = function () {
 
     initVelocityPublisher();
     initGPSSubscriber();
+    initIMUSubscriber();
     // get handle for video placeholder
     createCAM_with_stick("rgb_cam","joystick","/zed2/zed_node/rgb_raw/image_raw_color");
 
@@ -173,4 +204,5 @@ window.onload = function () {
 
     // initMap();
     gps_subscribtion();
+    imu_subscribtion();
 }
