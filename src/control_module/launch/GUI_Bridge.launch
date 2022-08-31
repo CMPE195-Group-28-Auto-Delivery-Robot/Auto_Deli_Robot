@@ -1,5 +1,5 @@
 <launch>
-  <arg name="port" default="9090" />
+  <arg name="port" default="10090" />
   <arg name="address" default="0.0.0.0" />
   <arg name="ssl" default="false" />
   <arg name="certfile" default=""/>
@@ -85,7 +85,7 @@
     <param name="params_glob" value="$(arg params_glob)"/>
   </node>
 
-  <node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="screen">
+  <node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="$(arg output)">
     <param name="port" value="8081"/>
   </node>
 
