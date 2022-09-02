@@ -1,0 +1,8 @@
+[Unit]
+Description=Development Service
+
+[Service]
+ExecStart=/home/deli_robot/Auto_Deli_Robot/Back_Service/Dev_Service_StartUp.sh
+
+[Install]
+WantedBy=multi-user.target

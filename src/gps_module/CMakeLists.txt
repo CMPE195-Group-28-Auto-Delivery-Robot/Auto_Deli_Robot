@@ -208,3 +208,7 @@ include_directories(
 add_executable(gps_talker_node src/gps_talker_node.cpp)
 target_link_libraries(gps_talker_node ${catkin_LIBRARIES})
 add_dependencies(gps_talker_node test_program_generate_messages_cpp)
+
+add_executable(gps_faker_node src/gps_faker_node.cpp)
+target_link_libraries(gps_faker_node ${catkin_LIBRARIES})
+add_dependencies(gps_faker_node test_program_generate_messages_cpp)
