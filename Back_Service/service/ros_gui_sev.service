@@ -1,0 +1,8 @@
+[Unit]
+Description=Backend of GUI
+
+[Service]
+ExecStart=/home/deli_robot/Auto_Deli_Robot/Back_Service/GUI_Service_StartUp.sh
+
+[Install]
+WantedBy=multi-user.target

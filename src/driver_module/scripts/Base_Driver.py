@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import ctypes
-import pylibi2c
+# import pylibi2c
 import rospy
 from geometry_msgs.msg import Twist 
 

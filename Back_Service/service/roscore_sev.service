@@ -1,0 +1,8 @@
+[Unit]
+Description=On Going Roscore
+
+[Service]
+ExecStart=/home/deli_robot/Auto_Deli_Robot/Back_Service/ROSCore_StartUp.sh
+
+[Install]
+WantedBy=multi-user.target
