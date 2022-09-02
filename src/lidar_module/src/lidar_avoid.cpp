@@ -39,11 +39,11 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "LaserScan_to_PointCloud");
     ros::NodeHandle n;
 
-    ros::Publisher CloudMap_pub = n.advertise<sensor_msgs::PointCloud>("CloudMap", 1000);
+    ros::Publisher CloudMap_pub = n.advertise<sensor_msgs::PointCloud>("deli_robot/CloudMap", 1000);
 
     scanCovertCloud Converter;
 
-    ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, &scanCovertCloud::scanCallback, &Converter);
+    ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/deli_robot/scan", 1000, &scanCovertCloud::scanCallback, &Converter);
 
     ros::Rate loop_rate(10);
 
