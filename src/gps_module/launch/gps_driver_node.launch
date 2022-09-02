@@ -1,10 +1,12 @@
 <launch>
-    <node pkg="nmea_navsat_driver" name="NMEA_GPS" type="nmea_serial_driver" output="screen">
-        <param name="port" value="/dev/ttyACM0"/>
-        <param name="baud" value="9600"/>
-        <param name="frame_id" value="gps" />
-        <param name="use_GNSS_time" value="False" />
-        <param name="time_ref_source" value="gps" />
-        <param name="useRMC" value="False" />
-    </node>
+    <group ns="deli_robot">
+        <node pkg="nmea_navsat_driver" name="NMEA_GPS" type="nmea_serial_driver" output="screen">
+            <param name="port" value="/dev/ttyACM0"/>
+            <param name="baud" value="38400"/>
+            <param name="frame_id" value="gps" />
+            <param name="use_GNSS_time" value="False" />
+            <param name="time_ref_source" value="gps" />
+            <param name="useRMC" value="False" />
+        </node>
+    </group>
 </launch>
