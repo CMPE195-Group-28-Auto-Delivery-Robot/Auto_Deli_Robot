@@ -1,3 +1,6 @@
 <launch>
-    <node pkg="driver_module" name="Driver" type="Base_Driver.py" output="screen"/>
+	<arg name="robot_name" default="deli_robot" />
+    <group ns="$(arg robot_name)">
+        <node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen"/>
+    </group>
 </launch>
