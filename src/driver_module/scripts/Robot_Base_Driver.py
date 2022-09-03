@@ -35,15 +35,15 @@ class i2CPWMDriver:
         self.Channels.servo[0].angle = Angle
         rospy.loginfo("Robot Turn to Angle: "+str(Angle-CENTER_SERVO_DEGREE()))
 
-    def SetThrottle(self, Power:int):
-        self.Channels.servo[1].angle = Power
-        rospy.loginfo("Robot Throttle Power: "+str(Power))
+    def SetThrottle(self, Power:float):
+        self.Channels.servo[1].fraction = Power
+        rospy.loginfo("Robot Throttle Power: "+str(Power*100))
     
 
 def callback(data: Twist, device: i2CPWMDriver):
     turnDegree = (((data.angular.z + 3) / 6) * RANGE_SERVO_DEGREE() + MIN_SERVO_DEGREE())
     device.SetTurningAngle(turnDegree)
-    robotThrottle = (((data.linear.x + 3) / 6) * 180)
+    robotThrottle = (data.linear.x + 3) / 6
     device.SetThrottle(robotThrottle)
     
 def RobotDriverMain():
@@ -53,6 +53,7 @@ def RobotDriverMain():
     driverBoard = i2CPWMDriver()
 
     driverBoard.SetTurningAngle(CENTER_SERVO_DEGREE())
+    driverBoard.SetThrottle(0.5)
 
     rospy.Subscriber("cmd_vel", Twist, callback, driverBoard)
 
