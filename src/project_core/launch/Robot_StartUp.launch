@@ -1,0 +1,136 @@
+<launch>
+	<arg name="robot_name" default="deli_robot" />
+	<arg name="port" default="10090" />
+	<arg name="address" default="0.0.0.0" />
+	<arg name="ssl" default="false" />
+	<arg name="certfile" default="" />
+	<arg name="keyfile" default="" />
+	<arg name="retry_startup_delay" default="5" />
+	<arg name="fragment_timeout" default="600" />
+	<arg name="delay_between_messages" default="0" />
+	<arg name="max_message_size" default="None" />
+	<arg name="unregister_timeout" default="10" />
+	<arg name="websocket_external_port" default="None" />
+	<arg name="use_compression" default="false" />
+	<arg name="authenticate" default="false" />
+	<arg name="websocket_ping_interval" default="0" />
+	<arg name="websocket_ping_timeout" default="30" />
+	<arg name="websocket_null_origin" default="true" />
+	<arg name="topics_glob" default="[*]" />
+	<arg name="services_glob" default="[*]" />
+	<arg name="params_glob" default="[*]" />
+	<arg name="bson_only_mode" default="false" />
+	<!-- Output: screen, log -->
+	<arg name="output" default="screen" />
+	<!-- Valid options for binary_encoder are "default", "b64" and "bson". -->
+	<arg unless="$(arg bson_only_mode)" name="binary_encoder" default="default" />
+	<arg name="svo_file" default="" />
+	<!-- <arg name="svo_file" default="path/to/svo/file.svo"> -->
+	<arg name="stream" default="" />
+	<!-- <arg name="stream" default="<ip_address>:<port>"> -->
+	<arg name="node_name" default="zed_node" />
+	<arg name="camera_model" default="zed2" />
+	<arg name="publish_urdf" default="true" />
+	<arg name="base_frame" default="base_link" />
+	<arg name="cam_pos_x" default="0.0" />
+	<!-- Position respect to base frame (i.e. "base_link) -->
+	<arg name="cam_pos_y" default="0.0" />
+	<!-- Position respect to base frame (i.e. "base_link) -->
+	<arg name="cam_pos_z" default="0.0" />
+	<!-- Position respect to base frame (i.e. "base_link) -->
+	<arg name="cam_roll" default="0.0" />
+	<!-- Orientation respect to base frame (i.e. "base_link) -->
+	<arg name="cam_pitch" default="0.0" />
+	<!-- Orientation respect to base frame (i.e. "base_link) -->
+	<arg name="cam_yaw" default="0.0" />
+	<!-- Orientation respect to base frame (i.e. "base_link) -->
+	<group if="$(arg ssl)">
+		<node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="$(arg output)">
+			<param name="certfile" value="$(arg certfile)" />
+			<param name="keyfile" value="$(arg keyfile)" />
+			<param name="authenticate" value="$(arg authenticate)" />
+			<param name="port" value="$(arg port)" />
+			<param name="address" value="$(arg address)" />
+			<param name="retry_startup_delay" value="$(arg retry_startup_delay)" />
+			<param name="fragment_timeout" value="$(arg fragment_timeout)" />
+			<param name="delay_between_messages" value="$(arg delay_between_messages)" />
+			<param name="max_message_size" value="$(arg max_message_size)" />
+			<param name="unregister_timeout" value="$(arg unregister_timeout)" />
+			<param name="use_compression" value="$(arg use_compression)" />
+			<param name="websocket_ping_interval" value="$(arg websocket_ping_interval)" />
+			<param name="websocket_ping_timeout" value="$(arg websocket_ping_timeout)" />
+			<param name="websocket_external_port" value="$(arg websocket_external_port)" />
+			<param name="websocket_null_origin" value="$(arg websocket_null_origin)" />
+			<param name="topics_glob" value="$(arg topics_glob)" />
+			<param name="services_glob" value="$(arg services_glob)" />
+			<param name="params_glob" value="$(arg params_glob)" />
+		</node>
+	</group>
+	<group unless="$(arg ssl)">
+		<node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="$(arg output)">
+			<param name="authenticate" value="$(arg authenticate)" />
+			<param name="port" value="$(arg port)" />
+			<param name="address" value="$(arg address)" />
+			<param name="retry_startup_delay" value="$(arg retry_startup_delay)" />
+			<param name="fragment_timeout" value="$(arg fragment_timeout)" />
+			<param name="delay_between_messages" value="$(arg delay_between_messages)" />
+			<param name="max_message_size" value="$(arg max_message_size)" />
+			<param name="unregister_timeout" value="$(arg unregister_timeout)" />
+			<param name="use_compression" value="$(arg use_compression)" />
+			<param name="websocket_ping_interval" value="$(arg websocket_ping_interval)" />
+			<param name="websocket_ping_timeout" value="$(arg websocket_ping_timeout)" />
+			<param name="websocket_external_port" value="$(arg websocket_external_port)" />
+			<param name="topics_glob" value="$(arg topics_glob)" />
+			<param name="services_glob" value="$(arg services_glob)" />
+			<param name="params_glob" value="$(arg params_glob)" />
+			<param name="bson_only_mode" value="$(arg bson_only_mode)" />
+		</node>
+	</group>
+	<node name="rosapi" pkg="rosapi" type="rosapi_node" output="$(arg output)">
+		<param name="topics_glob" value="$(arg topics_glob)" />
+		<param name="services_glob" value="$(arg services_glob)" />
+		<param name="params_glob" value="$(arg params_glob)" />
+	</node>
+	<node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="$(arg output)">
+		<param name="port" value="8081" />
+	</node>
+	<group ns="deli_robot">
+		<node pkg="nmea_navsat_driver" name="NMEA_GPS" type="nmea_serial_driver" output="screen">
+			<param name="port" value="/dev/ttyACM0" />
+			<param name="baud" value="38400" />
+			<param name="frame_id" value="map" />
+			<param name="use_GNSS_time" value="False" />
+			<param name="time_ref_source" value="gps" />
+			<param name="useRMC" value="False" />
+		</node>
+	</group>
+	<group ns="$(arg robot_name)">
+		<include file="$(find zed_wrapper)/launch/include/zed_camera.launch.xml">
+			<arg name="camera_name" value="$(arg robot_name)" />
+			<arg name="svo_file" value="$(arg svo_file)" />
+			<arg name="stream" value="$(arg stream)" />
+			<arg name="node_name" value="$(arg node_name)" />
+			<arg name="camera_model" value="$(arg camera_model)" />
+			<arg name="base_frame" value="$(arg base_frame)" />
+			<arg name="publish_urdf" value="$(arg publish_urdf)" />
+			<arg name="cam_pos_x" value="$(arg cam_pos_x)" />
+			<arg name="cam_pos_y" value="$(arg cam_pos_y)" />
+			<arg name="cam_pos_z" value="$(arg cam_pos_z)" />
+			<arg name="cam_roll" value="$(arg cam_roll)" />
+			<arg name="cam_pitch" value="$(arg cam_pitch)" />
+			<arg name="cam_yaw" value="$(arg cam_yaw)" />
+		</include>
+	</group>
+	<group ns="$(arg robot_name)">
+        <node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen"/>
+    </group>
+	<group ns="$(arg robot_name)">
+        <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+        	<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
+        	<param name="serial_baudrate"     type="int"    value="115200"/>
+        	<param name="frame_id"            type="string" value="map"/>
+        	<param name="inverted"            type="bool"   value="false"/>
+        	<param name="angle_compensate"    type="bool"   value="true"/>
+    	</node>
+    </group>
+</launch>

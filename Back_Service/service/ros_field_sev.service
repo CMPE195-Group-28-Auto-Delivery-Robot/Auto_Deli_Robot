@@ -1,0 +1,9 @@
+[Unit]
+Description=Development Service
+Requires = roscore_sev.servic
+
+[Service]
+ExecStart=/home/deli_robot/Auto_Deli_Robot/Back_Service/FieldTest_Service_StartUp.sh
+
+[Install]
+WantedBy=multi-user.target
