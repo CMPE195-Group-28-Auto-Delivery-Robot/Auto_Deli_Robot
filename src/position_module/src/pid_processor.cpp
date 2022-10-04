@@ -30,6 +30,8 @@ public:
     geometry_msgs::Twist GetProcessdMsg(){
         geometry_msgs::Twist currentRobotSpeed;
         currentRobotSpeed = m_robotOdometryMsg.twist.twist;
+        // Turn the Robot Speed into absoulate speed and retain the Z angler speed only
+        // Compare the current speed with the Input Twist
         return m_robotProcessMsg;
     }
 };
