@@ -163,6 +163,7 @@ target_link_libraries(pid_processor ${catkin_LIBRARIES})
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/position_processor.py
+  scripts/BNO055_IMU.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

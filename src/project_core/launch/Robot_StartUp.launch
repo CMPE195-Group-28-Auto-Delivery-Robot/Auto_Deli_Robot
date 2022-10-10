@@ -122,6 +122,7 @@
 		</include>
 	</group>
 	<group ns="$(arg robot_name)">
+        <node pkg="position_module" name="RobotImuNode" type="BNO055_IMU.py" output="screen"/>
         <node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen"/>
     </group>
 	<group ns="$(arg robot_name)">
@@ -153,7 +154,7 @@
            false, false, false,
            false, false, false]
         </rosparam>
-        <param name="imu0" value="/deli_robot/zed_node/imu/data" />
+        <param name="imu0" value="/deli_robot/sensors/imu" />
         <param name="imu0_differential" value="true"/>
         <rosparam param="imu0_config">
           [false, false, false, 
