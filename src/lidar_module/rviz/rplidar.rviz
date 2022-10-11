@@ -5,9 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
         - /RPLidarLaserScan1
-        - /RPLidarLaserScan1/Status1
         - /Odometry1
         - /Odometry1/Status1
       Splitter Ratio: 0.5
@@ -67,7 +65,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -82,7 +80,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -129,7 +127,7 @@ Visualization Manager:
           Value: true
         Value: true
       Enabled: true
-      Keep: 300
+      Keep: 10000
       Name: Odometry
       Position Tolerance: 0.10000000149011612
       Shape:
@@ -168,25 +166,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 40.11301040649414
+      Distance: 28.99263572692871
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.16518425941467285
-        Y: 0.3800186216831207
-        Z: 0.09206179529428482
+        X: -2.1099183559417725
+        Y: 1.531614065170288
+        Z: 3.8706743717193604
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.46979671716690063
+      Pitch: 0.6847955584526062
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.012213001027703285
+      Yaw: 5.5235795974731445
     Saved: ~
 Window Geometry:
   Displays:
@@ -204,5 +202,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1582
-  X: 141
-  Y: 5
+  X: 154
+  Y: 2
