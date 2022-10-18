@@ -1,0 +1,5 @@
+<launch>
+    <group ns="deli_robot">
+        <node pkg="object_detection_module" name="Object_Detector" type="object_detection.py" output="screen"></node>
+    </group>
+</launch>
