@@ -165,6 +165,10 @@
         </rosparam>
         <remap from="odometry/filtered" to="/$(arg robot_name)/odometry/map"/>
     </node>
+	<group ns="$(arg robot_name)">
+        <node pkg="project_core" name="Robot_Core_Sys" type="RobotCore" output="screen"></node>
+        <node pkg="position_module" name="Robot_PID_Ctrl" type="pid_processor" output="screen"></node>
+    </group>
 	<!-- <group ns="$(arg robot_name)">
         <node pkg="object_detection_module" name="Object_Detector" type="object_detection.py" output="screen"></node>
     </group> -->
