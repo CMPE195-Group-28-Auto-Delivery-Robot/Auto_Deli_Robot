@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  zed_interfaces
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,9 +104,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES project_core
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  # INCLUDE_DIRS include
+  LIBRARIES project_core
+  CATKIN_DEPENDS roscpp rospy std_msgs zed_interfaces
 #  DEPENDS system_lib
 )
 
@@ -204,3 +205,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(RobotCore src/RobotCore.cpp)
+target_link_libraries(RobotCore ${catkin_LIBRARIES})
+add_dependencies(RobotCore ${catkin_EXPORTED_TARGETS})
