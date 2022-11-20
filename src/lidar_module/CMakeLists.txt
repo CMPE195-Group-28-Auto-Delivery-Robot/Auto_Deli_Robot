@@ -41,5 +41,5 @@ include_directories(
 #   src/${PROJECT_NAME}/lidar_module.cpp
 # )
 
-add_executable(lidar_avoid src/lidar_avoid.cpp)
-target_link_libraries(lidar_avoid ${catkin_LIBRARIES})
+add_executable(lidarToPointcloud src/lidarToPointcloud.cpp)
+target_link_libraries(lidarToPointcloud ${catkin_LIBRARIES})
