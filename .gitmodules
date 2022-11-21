@@ -1,3 +1,6 @@
 [submodule "laser_line_extraction"]
 	path = laser_line_extraction
 	url = https://github.com/kam3k/laser_line_extraction.git
+[submodule "src/position_module/include/minmea"]
+	path = src/position_module/include/minmea
+	url = git@github.com:kosma/minmea.git
