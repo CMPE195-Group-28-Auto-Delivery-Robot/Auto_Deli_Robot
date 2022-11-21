@@ -1,0 +1,3 @@
+[submodule "src/laser_line_extraction"]
+	path = src/laser_line_extraction
+	url = git@github.com:kam3k/laser_line_extraction.git
