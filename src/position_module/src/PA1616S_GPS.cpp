@@ -119,6 +119,24 @@ int openSerial(portConfig serialCnf){
     return serialFp;
 } // Code Above Partially From https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#configuration-setup
 
+uint8_t stringCheckSum(std::string inStr){
+    uint8_t checkSum = inStr[0];
+    for(int i=1; i<inStr.size();i++){
+        checkSum ^= inStr[i];
+    }
+    return checkSum;
+}
+
+void sendCommand(int ioFp,std::string content){
+    char numStr[3];
+    char readStr[32];
+    int commandNum, result;
+    sprintf(numStr, "%X", stringCheckSum(content));
+    content = "$"+content+"*"+numStr+"\r\n";
+    // ROS_INFO("Send: %s",content.c_str());
+    write(ioFp, content.c_str(), content.size());
+}
+
 int main(int argc, char **argv){
     ros::init(argc, argv, "NMEA_GPS_Node");
     ros::NodeHandle rosHandle;
@@ -126,21 +144,20 @@ int main(int argc, char **argv){
     portConfig serialCnf;
     std::string gpsName;
     // Get Parameter Config
-    if (!rosHandle.getParam("PortPath", serialCnf.portPath))
+    if (!rosHandle.getParam(ros::this_node::getName()+"/PortPath", serialCnf.portPath))
     {
         ROS_ERROR("Failed to get param 'PortPath'");
         return -1;
     }
-    rosHandle.param("BaudRate", serialCnf.baudrate, 9600);
-    rosHandle.param<std::string>("GPS_Name", gpsName, "GPS");
-    rosHandle.param("DataBit", serialCnf.dataBit, 8);
+    rosHandle.param(ros::this_node::getName()+"BaudRate", serialCnf.baudrate, 9600);
+    rosHandle.param(ros::this_node::getName()+"DataBit", serialCnf.dataBit, 8);
     if( serialCnf.dataBit>8 || serialCnf.dataBit<5 ){
         ROS_ERROR("Data Bit set invalid");
         return -1;
     }
-    rosHandle.param("Parity", serialCnf.parity, false);
-    rosHandle.param("StopBit_Even", serialCnf.stopBitEven, false);
-    rosHandle.param("FlowCtrl", serialCnf.flowCtrl, false);
+    rosHandle.param(ros::this_node::getName()+"Parity", serialCnf.parity, false);
+    rosHandle.param(ros::this_node::getName()+"StopBit_Even", serialCnf.stopBitEven, false);
+    rosHandle.param(ros::this_node::getName()+"FlowCtrl", serialCnf.flowCtrl, false);
 
     serialFp = openSerial(serialCnf);
     if(serialFp < 0){
@@ -149,12 +166,16 @@ int main(int argc, char **argv){
 
     char readBuff[1024];
     memset(&readBuff, '\0', sizeof(readBuff));
-    ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(gpsName+"/fix", 1000);
-    
+    ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(ros::this_node::getName()+"/fix", 1000);
+    uint32_t lastSyncTime = ros::Time::now().sec;
+    sendCommand(serialFp, "PMTK102");
+    ros::Duration(3).sleep();
+    ROS_INFO("Boot Complete");
+    sendCommand(serialFp, "PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
+    sendCommand(serialFp, "PMTK220,100");
     ROS_INFO("GPS %s Node Started", gpsName.c_str());
     while(ros::ok){
         ros::spinOnce();
-        ros::Time gpsTime;
         sensor_msgs::NavSatFix gpsMsg;
         int num_bytes = read(serialFp, &readBuff, sizeof(readBuff));
         if (num_bytes < 0) {
@@ -165,9 +186,13 @@ int main(int argc, char **argv){
         std::stringstream msgStream(readBuff);
         std::string inLine;
         while(std::getline(msgStream, inLine, '$')){
+            if(inLine.empty()){
+                continue;
+            }
             inLine = "$"+inLine;
             inLine.erase(remove(inLine.begin(), inLine.end(), '\n'), inLine.end());
             inLine.erase(remove(inLine.begin(), inLine.end(), '\r'), inLine.end());
+            // ROS_INFO("Recive: %s", inLine.c_str());
             switch(minmea_sentence_id(inLine.c_str(), false)) {
             case MINMEA_SENTENCE_GGA: {
                 struct minmea_sentence_gga frame;
@@ -176,22 +201,30 @@ int main(int argc, char **argv){
                     gpsMsg.longitude = minmea_tocoord(&frame.longitude);
                     gpsMsg.altitude = minmea_tocoord(&frame.altitude);
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
+                    if(frame.fix_quality){
+                        ROS_INFO("GPS Fixed");
+                    }
                     switch(frame.fix_quality){
-                        case 0:
-                            gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
                         case 1:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
+                            break;
                         case 2:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_SBAS_FIX;
+                            break;
                         case 4:
                         case 5:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_GBAS_FIX;
+                            break;
+                        default:
+                            gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
+                            break;
                     }
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
                     gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_APPROXIMATED;
                     gpsMsg.position_covariance[0] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2) ;
+                    // ROS_INFO("GGA Parsed");
                 }
             } break;
 
