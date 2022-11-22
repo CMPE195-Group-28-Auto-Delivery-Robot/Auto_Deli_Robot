@@ -161,7 +161,7 @@ int main(int argc, char **argv){
     rosHandle.param(ros::this_node::getName()+"Parity", serialCnf.parity, false);
     rosHandle.param(ros::this_node::getName()+"StopBit_Even", serialCnf.stopBitEven, false);
     rosHandle.param(ros::this_node::getName()+"FlowCtrl", serialCnf.flowCtrl, false);
-    rosHandle.param(ros::this_node::getName()+"SerialOut", serialCnf.flowCtrl, false);
+    rosHandle.param(ros::this_node::getName()+"SerialOut", serialOut, false);
     rosHandle.param(ros::this_node::getName()+"ChipType", chipType, 0);
 
     serialFp = openSerial(serialCnf);
@@ -195,7 +195,7 @@ int main(int argc, char **argv){
 
 
     ROS_INFO("GPS %s Node Started", ros::this_node::getName().c_str());
-    while(ros::ok){
+    while(ros::ok()){
         ros::spinOnce();
         sensor_msgs::NavSatFix gpsMsg;
         int num_bytes = read(serialFp, &readBuff, sizeof(readBuff));
@@ -223,6 +223,7 @@ int main(int argc, char **argv){
                     gpsMsg.longitude = minmea_tocoord(&frame.longitude);
                     gpsMsg.altitude = minmea_tocoord(&frame.altitude);
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
+                    gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_APPROXIMATED;
                     switch(frame.fix_quality){
                         case 1:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
@@ -236,10 +237,10 @@ int main(int argc, char **argv){
                             break;
                         default:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
+                            gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
                             break;
                     }
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
-                    gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_APPROXIMATED;
                     gpsMsg.position_covariance[0] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2) ;
