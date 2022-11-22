@@ -1,16 +1,13 @@
 <launch>
-	<arg name="robot_name" default="deli_robot" />
-    <group ns="$(arg robot_name)">
-        <node pkg="position_module" name="UbloxM8" type="SerialGPSDriver" output="screen">
-            <param name="PortPath" value="/dev/ttyACM0"/>
-            <param name="ChipType" value="2" />
-            <param name="SerialOut" value="True" />
-            <param name="frame_id" value="map"/>
-            <param name="BaudRate" value="9600"/>
-            <param name="DataBit" value="8" />
-            <param name="Parity" value="False" />
-            <param name="StopBit_Even" value="False" />
-            <param name="FlowCtrl" value="False" />
-        </node>
-    </group>
+    <node pkg="position_module" name="UbloxM8" type="SerialGPSDriver" output="screen">
+        <param name="PortPath" value="/dev/ttyACM0"/>
+        <param name="ChipType" value="2" />
+        <param name="SerialOut" value="False" />
+        <param name="frame_id" value="map"/>
+        <param name="BaudRate" value="9600"/>
+        <param name="DataBit" value="8" />
+        <param name="Parity" value="False" />
+        <param name="StopBit_Even" value="False" />
+        <param name="FlowCtrl" value="False" />
+    </node>
 </launch>

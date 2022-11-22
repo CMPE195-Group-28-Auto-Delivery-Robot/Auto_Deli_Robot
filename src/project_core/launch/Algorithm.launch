@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="project_core" name="Robot_Core_Sys" type="RobotCore" output="screen"></node>
+    <node pkg="position_module" name="Robot_PID_Ctrl" type="pid_processor" output="screen"></node>
+</launch>
