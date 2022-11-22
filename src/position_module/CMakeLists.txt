@@ -136,9 +136,9 @@ add_library(minmea STATIC src/minmea/minmea.c)
 add_executable(pid_processor src/pid_processor.cpp)
 target_link_libraries(pid_processor ${catkin_LIBRARIES})
 
-add_executable(PA1616S_GPS src/PA1616S_GPS.cpp)
-target_link_libraries(PA1616S_GPS ${catkin_LIBRARIES})
-target_link_libraries(PA1616S_GPS minmea)
+add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
+target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
+target_link_libraries(SerialGPSDriver minmea)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

@@ -141,14 +141,17 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "NMEA_GPS_Node");
     ros::NodeHandle rosHandle;
     int serialFp;
+    int chipType;
+    bool serialOut;
     portConfig serialCnf;
-    std::string gpsName;
+    std::string frameID;
     // Get Parameter Config
     if (!rosHandle.getParam(ros::this_node::getName()+"/PortPath", serialCnf.portPath))
     {
         ROS_ERROR("Failed to get param 'PortPath'");
         return -1;
     }
+    rosHandle.param<std::string>(ros::this_node::getName()+"frame_id", frameID, "map");
     rosHandle.param(ros::this_node::getName()+"BaudRate", serialCnf.baudrate, 9600);
     rosHandle.param(ros::this_node::getName()+"DataBit", serialCnf.dataBit, 8);
     if( serialCnf.dataBit>8 || serialCnf.dataBit<5 ){
@@ -158,6 +161,8 @@ int main(int argc, char **argv){
     rosHandle.param(ros::this_node::getName()+"Parity", serialCnf.parity, false);
     rosHandle.param(ros::this_node::getName()+"StopBit_Even", serialCnf.stopBitEven, false);
     rosHandle.param(ros::this_node::getName()+"FlowCtrl", serialCnf.flowCtrl, false);
+    rosHandle.param(ros::this_node::getName()+"SerialOut", serialCnf.flowCtrl, false);
+    rosHandle.param(ros::this_node::getName()+"ChipType", chipType, 0);
 
     serialFp = openSerial(serialCnf);
     if(serialFp < 0){
@@ -167,13 +172,29 @@ int main(int argc, char **argv){
     char readBuff[1024];
     memset(&readBuff, '\0', sizeof(readBuff));
     ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(ros::this_node::getName()+"/fix", 1000);
-    uint32_t lastSyncTime = ros::Time::now().sec;
-    sendCommand(serialFp, "PMTK102");
-    ros::Duration(3).sleep();
-    ROS_INFO("Boot Complete");
-    sendCommand(serialFp, "PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
-    sendCommand(serialFp, "PMTK220,100");
-    ROS_INFO("GPS %s Node Started", gpsName.c_str());
+
+    switch (chipType)
+    {
+    case 1:
+        ROS_INFO("Chip: MT3339");
+        sendCommand(serialFp, "PMTK102");
+        ros::Duration(3).sleep();
+        ROS_INFO("Boot Complete");
+        sendCommand(serialFp, "PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
+        sendCommand(serialFp, "PMTK220,100");
+        break;
+
+    case 2:
+        ROS_INFO("Chip: UBlox M8");
+        
+        break;
+    
+    default:
+        break;
+    }
+
+
+    ROS_INFO("GPS %s Node Started", ros::this_node::getName().c_str());
     while(ros::ok){
         ros::spinOnce();
         sensor_msgs::NavSatFix gpsMsg;
@@ -192,7 +213,8 @@ int main(int argc, char **argv){
             inLine = "$"+inLine;
             inLine.erase(remove(inLine.begin(), inLine.end(), '\n'), inLine.end());
             inLine.erase(remove(inLine.begin(), inLine.end(), '\r'), inLine.end());
-            // ROS_INFO("Recive: %s", inLine.c_str());
+            if(serialOut)
+                ROS_INFO("Recive: %s", inLine.c_str());
             switch(minmea_sentence_id(inLine.c_str(), false)) {
             case MINMEA_SENTENCE_GGA: {
                 struct minmea_sentence_gga frame;
@@ -201,9 +223,6 @@ int main(int argc, char **argv){
                     gpsMsg.longitude = minmea_tocoord(&frame.longitude);
                     gpsMsg.altitude = minmea_tocoord(&frame.altitude);
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
-                    if(frame.fix_quality){
-                        ROS_INFO("GPS Fixed");
-                    }
                     switch(frame.fix_quality){
                         case 1:
                             gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
@@ -224,7 +243,8 @@ int main(int argc, char **argv){
                     gpsMsg.position_covariance[0] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2) ;
-                    // ROS_INFO("GGA Parsed");
+                    if(serialOut)
+                        ROS_INFO("GGA Parsed");
                 }
             } break;
 
@@ -235,7 +255,7 @@ int main(int argc, char **argv){
         gpsMsg.header.stamp = ros::Time::now();
         gps_pub.publish(gpsMsg);
     }
-    ROS_INFO("GPS %s Node End", gpsName.c_str());
+    ROS_INFO("GPS %s Node End", ros::this_node::getName().c_str());
     close(serialFp);
     return 0;
 }
