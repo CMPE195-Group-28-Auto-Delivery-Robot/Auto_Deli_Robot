@@ -1,0 +1,13 @@
+<launch>
+	<arg name="robot_name" default="deli_robot" />
+    <group ns="$(arg robot_name)">
+        <param name="GPS_Name" value="PA1616S" />
+        <param name="PortPath" value="/dev/ttyTHS2"/>
+        <param name="BaudRate" value="9600"/>
+        <param name="DataBit" value="8" />
+        <param name="Parity" value="False" />
+        <param name="StopBit_Even" value="False" />
+        <param name="FlowCtrl" value="False" />
+        <node pkg="position_module" name="PA1616S_GPS" type="PA1616S_GPS" output="screen"/>
+    </group>
+</launch>

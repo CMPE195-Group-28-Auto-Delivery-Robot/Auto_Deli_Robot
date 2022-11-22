@@ -124,7 +124,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/position_module.cpp
 # )
-
+add_library(minmea STATIC src/minmea/minmea.c)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -136,6 +136,9 @@ include_directories(
 add_executable(pid_processor src/pid_processor.cpp)
 target_link_libraries(pid_processor ${catkin_LIBRARIES})
 
+add_executable(PA1616S_GPS src/PA1616S_GPS.cpp)
+target_link_libraries(PA1616S_GPS ${catkin_LIBRARIES})
+target_link_libraries(PA1616S_GPS minmea)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
