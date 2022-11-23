@@ -20,7 +20,7 @@
 	<arg name="params_glob" default="[*]" />
 	<arg name="bson_only_mode" default="false" />
 	<!-- Output: screen, log -->
-	<arg name="output" default="screen" />
+	<arg name="output" default="log" />
 	<!-- Valid options for binary_encoder are "default", "b64" and "bson". -->
 	<arg unless="$(arg bson_only_mode)" name="binary_encoder" default="default" />
 	
