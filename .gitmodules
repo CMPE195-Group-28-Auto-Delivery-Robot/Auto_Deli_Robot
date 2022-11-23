@@ -4,3 +4,6 @@
 [submodule "src/position_module/src/minmea"]
 	path = src/position_module/src/minmea
 	url = git@github.com:kosma/minmea.git
+[submodule "src/garmin18x_usb"]
+	path = src/garmin18x_usb
+	url = git@github.com:chriswsuarez/garmin18x_usb.git
