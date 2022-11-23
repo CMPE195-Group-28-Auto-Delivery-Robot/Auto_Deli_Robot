@@ -1,3 +1,5 @@
+# ZED CAM Topic that can be useful
+
 /zed2/zed_node/imu/data                     sensor_msgs/Imu             
 
 /zed2/zed_node/right_raw/camera_info        sensor_msgs/CameraInfo
