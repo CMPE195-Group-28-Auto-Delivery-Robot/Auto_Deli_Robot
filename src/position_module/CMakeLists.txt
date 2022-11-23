@@ -124,7 +124,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/position_module.cpp
 # )
-
+add_library(minmea STATIC src/minmea/minmea.c)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -136,6 +136,13 @@ include_directories(
 add_executable(pid_processor src/pid_processor.cpp)
 target_link_libraries(pid_processor ${catkin_LIBRARIES})
 
+add_executable(gps_faker_node src/gps_faker_node.cpp)
+target_link_libraries(gps_faker_node ${catkin_LIBRARIES})
+add_dependencies(gps_faker_node test_program_generate_messages_cpp)
+
+add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
+target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
+target_link_libraries(SerialGPSDriver minmea)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

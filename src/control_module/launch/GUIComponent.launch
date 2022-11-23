@@ -1,5 +1,4 @@
-<launch>
-	<arg name="robot_name" default="deli_robot" />
+<launch>    
 	<arg name="port" default="10090" />
 	<arg name="address" default="0.0.0.0" />
 	<arg name="ssl" default="false" />
@@ -24,27 +23,8 @@
 	<arg name="output" default="screen" />
 	<!-- Valid options for binary_encoder are "default", "b64" and "bson". -->
 	<arg unless="$(arg bson_only_mode)" name="binary_encoder" default="default" />
-	<arg name="svo_file" default="" />
-	<!-- <arg name="svo_file" default="path/to/svo/file.svo"> -->
-	<arg name="stream" default="" />
-	<!-- <arg name="stream" default="<ip_address>:<port>"> -->
-	<arg name="node_name" default="zed_node" />
-	<arg name="camera_model" default="zed2" />
-	<arg name="publish_urdf" default="true" />
-	<arg name="base_frame" default="base_link" />
-	<arg name="cam_pos_x" default="0.0" />
-	<!-- Position respect to base frame (i.e. "base_link) -->
-	<arg name="cam_pos_y" default="0.0" />
-	<!-- Position respect to base frame (i.e. "base_link) -->
-	<arg name="cam_pos_z" default="0.0" />
-	<!-- Position respect to base frame (i.e. "base_link) -->
-	<arg name="cam_roll" default="0.0" />
-	<!-- Orientation respect to base frame (i.e. "base_link) -->
-	<arg name="cam_pitch" default="0.0" />
-	<!-- Orientation respect to base frame (i.e. "base_link) -->
-	<arg name="cam_yaw" default="0.0" />
-	<!-- Orientation respect to base frame (i.e. "base_link) -->
-	<group if="$(arg ssl)">
+	
+    <group if="$(arg ssl)">
 		<node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="$(arg output)">
 			<param name="certfile" value="$(arg certfile)" />
 			<param name="keyfile" value="$(arg keyfile)" />
@@ -94,43 +74,4 @@
 	<node pkg="web_video_server" name="CAM_WEB" type="web_video_server" output="$(arg output)">
 		<param name="port" value="8081" />
 	</node>
-	<group ns="deli_robot">
-		<node pkg="nmea_navsat_driver" name="NMEA_GPS" type="nmea_serial_driver" output="screen">
-			<param name="port" value="/dev/ttyACM0" />
-			<param name="baud" value="38400" />
-			<param name="frame_id" value="map" />
-			<param name="use_GNSS_time" value="False" />
-			<param name="time_ref_source" value="gps" />
-			<param name="useRMC" value="False" />
-		</node>
-	</group>
-	<group ns="$(arg robot_name)">
-		<include file="$(find zed_wrapper)/launch/include/zed_camera.launch.xml">
-			<arg name="camera_name" value="$(arg robot_name)" />
-			<arg name="svo_file" value="$(arg svo_file)" />
-			<arg name="stream" value="$(arg stream)" />
-			<arg name="node_name" value="$(arg node_name)" />
-			<arg name="camera_model" value="$(arg camera_model)" />
-			<arg name="base_frame" value="$(arg base_frame)" />
-			<arg name="publish_urdf" value="$(arg publish_urdf)" />
-			<arg name="cam_pos_x" value="$(arg cam_pos_x)" />
-			<arg name="cam_pos_y" value="$(arg cam_pos_y)" />
-			<arg name="cam_pos_z" value="$(arg cam_pos_z)" />
-			<arg name="cam_roll" value="$(arg cam_roll)" />
-			<arg name="cam_pitch" value="$(arg cam_pitch)" />
-			<arg name="cam_yaw" value="$(arg cam_yaw)" />
-		</include>
-	</group>
-	<group ns="$(arg robot_name)">
-        <node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen"/>
-    </group>
-	<group ns="$(arg robot_name)">
-        <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-        	<param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
-        	<param name="serial_baudrate"     type="int"    value="115200"/>
-        	<param name="frame_id"            type="string" value="map"/>
-        	<param name="inverted"            type="bool"   value="false"/>
-        	<param name="angle_compensate"    type="bool"   value="true"/>
-    	</node>
-    </group>
-</launch>
+</launch>    

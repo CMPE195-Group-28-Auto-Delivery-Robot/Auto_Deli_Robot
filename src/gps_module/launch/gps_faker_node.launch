@@ -1,5 +1,0 @@
-<launch>
-    <group ns="deli_robot">
-        <node pkg="gps_module" name="FAKE_GPS" type="gps_faker_node" output="screen"></node>
-    </group>
-</launch>

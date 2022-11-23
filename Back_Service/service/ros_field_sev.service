@@ -1,6 +1,7 @@
 [Unit]
 Description=Development Service
-Requires = roscore_sev.servic
+Requires = roscore_sev.service
+After = roscore_sev.service
 
 [Service]
 ExecStart=/home/deli_robot/Auto_Deli_Robot/Back_Service/FieldTest_Service_StartUp.sh
