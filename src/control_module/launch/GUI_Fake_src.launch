@@ -95,7 +95,7 @@
 		<param name="port" value="8081" />
 	</node>
 	<group ns="$(arg robot_name)">
-		<node pkg="gps_module" name="FAKE_GPS" type="gps_faker_node"></node>
+		<node pkg="position_module" name="FAKE_GPS" type="gps_faker_node"></node>
 	</group>
 	<group ns="$(arg robot_name)">
 		<include file="$(find zed_wrapper)/launch/include/zed_camera.launch.xml">

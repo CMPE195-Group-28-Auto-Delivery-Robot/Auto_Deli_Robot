@@ -52,3 +52,6 @@ CATKIN_IGNORE
 
 # Visual Studio Code
 .vscode
+
+# ROS Data bag
+*.bag
