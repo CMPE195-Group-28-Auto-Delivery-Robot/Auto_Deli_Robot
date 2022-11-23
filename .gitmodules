@@ -4,6 +4,3 @@
 [submodule "src/position_module/src/minmea"]
 	path = src/position_module/src/minmea
 	url = git@github.com:kosma/minmea.git
-[submodule "src/pygarmin"]
-	path = src/pygarmin
-	url = git@github.com:CMPE195-Group-28-Auto-Delivery-Robot/pygarmin.git
