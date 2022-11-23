@@ -3,7 +3,7 @@
   <arg name="path_to_project" default="$(env HOME)/Auto_Deli_Robot" />
 
   <node pkg="mapviz" type="mapviz" name="mapviz">
-    <param name="config" value="$(arg path_to_project)/mapviz_config/config"/>
+    <param name="config" value="$(arg path_to_project)src/position_module/mapviz_config/config"/>
   </node>
 
   <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
