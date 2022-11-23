@@ -170,7 +170,7 @@ int main(int argc, char **argv){
         return serialFp;
     }
 
-    char readBuff[1024];
+    char readBuff[256];
     memset(&readBuff, '\0', sizeof(readBuff));
     ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(ros::this_node::getName()+"/fix", 1000);
     ros::Publisher serial_pub = rosHandle.advertise<std_msgs::String>(ros::this_node::getName()+"/Serial", 1000);
@@ -188,7 +188,7 @@ int main(int argc, char **argv){
 
     case 2:
         ROS_INFO("Chip: UBlox M8");
-        
+        //TODO: Ublox Command
         break;
     
     default:
@@ -263,6 +263,7 @@ int main(int argc, char **argv){
         }
         gpsMsg.header.stamp = ros::Time::now();
         gps_pub.publish(gpsMsg);
+        memset(&readBuff, '\0', sizeof(readBuff));
     }
     ROS_INFO("GPS %s Node End", ros::this_node::getName().c_str());
     close(serialFp);
