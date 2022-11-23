@@ -3,6 +3,7 @@
 #include <iostream>
 #include "ros/ros.h"
 #include "sensor_msgs/NavSatFix.h"
+#include "std_msgs/String.h"
 #include "minmea/minmea.h"
 
 #include <fcntl.h> // Contains file controls like O_RDWR
@@ -142,27 +143,27 @@ int main(int argc, char **argv){
     ros::NodeHandle rosHandle;
     int serialFp;
     int chipType;
-    bool serialOut;
     portConfig serialCnf;
     std::string frameID;
+    std_msgs::String serialMsg;
+    std::stringstream serialStream;
     // Get Parameter Config
     if (!rosHandle.getParam(ros::this_node::getName()+"/PortPath", serialCnf.portPath))
     {
         ROS_ERROR("Failed to get param 'PortPath'");
         return -1;
     }
-    rosHandle.param<std::string>(ros::this_node::getName()+"frame_id", frameID, "map");
-    rosHandle.param(ros::this_node::getName()+"BaudRate", serialCnf.baudrate, 9600);
-    rosHandle.param(ros::this_node::getName()+"DataBit", serialCnf.dataBit, 8);
+    rosHandle.param<std::string>(ros::this_node::getName()+"/frame_id", frameID, "map");
+    rosHandle.param(ros::this_node::getName()+"/BaudRate", serialCnf.baudrate, 9600);
+    rosHandle.param(ros::this_node::getName()+"/DataBit", serialCnf.dataBit, 8);
     if( serialCnf.dataBit>8 || serialCnf.dataBit<5 ){
         ROS_ERROR("Data Bit set invalid");
         return -1;
     }
-    rosHandle.param(ros::this_node::getName()+"Parity", serialCnf.parity, false);
-    rosHandle.param(ros::this_node::getName()+"StopBit_Even", serialCnf.stopBitEven, false);
-    rosHandle.param(ros::this_node::getName()+"FlowCtrl", serialCnf.flowCtrl, false);
-    rosHandle.param(ros::this_node::getName()+"SerialOut", serialOut, false);
-    rosHandle.param(ros::this_node::getName()+"ChipType", chipType, 0);
+    rosHandle.param(ros::this_node::getName()+"/Parity", serialCnf.parity, false);
+    rosHandle.param(ros::this_node::getName()+"/StopBit_Even", serialCnf.stopBitEven, false);
+    rosHandle.param(ros::this_node::getName()+"/FlowCtrl", serialCnf.flowCtrl, false);
+    rosHandle.param(ros::this_node::getName()+"/ChipType", chipType, 0);
 
     serialFp = openSerial(serialCnf);
     if(serialFp < 0){
@@ -172,6 +173,7 @@ int main(int argc, char **argv){
     char readBuff[1024];
     memset(&readBuff, '\0', sizeof(readBuff));
     ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(ros::this_node::getName()+"/fix", 1000);
+    ros::Publisher serial_pub = rosHandle.advertise<std_msgs::String>(ros::this_node::getName()+"/Serial", 1000);
 
     switch (chipType)
     {
@@ -190,6 +192,7 @@ int main(int argc, char **argv){
         break;
     
     default:
+        ROS_INFO("Chip: Unknown");
         break;
     }
 
@@ -198,6 +201,7 @@ int main(int argc, char **argv){
     while(ros::ok()){
         ros::spinOnce();
         sensor_msgs::NavSatFix gpsMsg;
+        gpsMsg.header.frame_id = frameID;
         int num_bytes = read(serialFp, &readBuff, sizeof(readBuff));
         if (num_bytes < 0) {
             ROS_ERROR("Error reading: %s", strerror(errno));
@@ -213,8 +217,10 @@ int main(int argc, char **argv){
             inLine = "$"+inLine;
             inLine.erase(remove(inLine.begin(), inLine.end(), '\n'), inLine.end());
             inLine.erase(remove(inLine.begin(), inLine.end(), '\r'), inLine.end());
-            if(serialOut)
-                ROS_INFO("Recive: %s", inLine.c_str());
+            serialStream << inLine;
+            serialMsg.data = serialStream.str();
+            serial_pub.publish(serialMsg);
+            serialStream.str("");
             switch(minmea_sentence_id(inLine.c_str(), false)) {
             case MINMEA_SENTENCE_GGA: {
                 struct minmea_sentence_gga frame;
@@ -243,9 +249,11 @@ int main(int argc, char **argv){
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
                     gpsMsg.position_covariance[0] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
-                    gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2) ;
-                    if(serialOut)
-                        ROS_INFO("GGA Parsed");
+                    gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2);
+                    serialStream << "GGA Parsed";
+                    serialMsg.data = serialStream.str();
+                    serial_pub.publish(serialMsg);
+                    serialStream.str("");
                 }
             } break;
 

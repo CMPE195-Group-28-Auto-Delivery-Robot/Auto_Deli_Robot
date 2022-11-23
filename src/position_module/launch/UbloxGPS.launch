@@ -2,7 +2,6 @@
     <node pkg="position_module" name="UbloxM8" type="SerialGPSDriver" output="screen">
         <param name="PortPath" value="/dev/ttyACM0"/>
         <param name="ChipType" value="2" />
-        <param name="SerialOut" value="False" />
         <param name="frame_id" value="map"/>
         <param name="BaudRate" value="9600"/>
         <param name="DataBit" value="8" />
