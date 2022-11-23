@@ -21,8 +21,10 @@
 2. source the setup.bash so ROS can regonize paskage in the workspace
    ``` source devel/setup.bash ```
    If you don't want to run this line everytime you can add
-   ``` source <path to the Auto_Deli_Robot>/Auto_Deli_Robot/devel/setup.bash ```
-   to ```~/.bashrc```
+
+```bash
+   echo "source <path to the Auto_Deli_Robot>/Auto_Deli_Robot/devel/setup.bash" >> ~/.bashrc
+```
 
 ---
 
@@ -33,7 +35,7 @@
 - [Help Script](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/Help_Script)
 - [Data Record](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/data_record)
 - [Back Service](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/Back_Service)
-- [Project Wiki](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Delivery_Robot_Web_Control_GUI) ***Work In Progress***
+- [Project Wiki](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/Project_Wiki) ***Work In Progress***
 
 ---  
 
