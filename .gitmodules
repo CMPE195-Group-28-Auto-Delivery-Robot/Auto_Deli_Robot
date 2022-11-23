@@ -6,4 +6,4 @@
 	url = git@github.com:kosma/minmea.git
 [submodule "src/garmin18x_usb"]
 	path = src/garmin18x_usb
-	url = git@github.com:CMPE195-Group-28-Auto-Delivery-Robot/garmin18x_usb.git
+	url = git@github.com:skywalkerRex/garmin18x_usb.git
