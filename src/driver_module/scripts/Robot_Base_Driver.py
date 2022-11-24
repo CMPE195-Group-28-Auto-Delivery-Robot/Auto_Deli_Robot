@@ -55,7 +55,7 @@ def RobotDriverMain():
     driverBoard.SetTurningAngle(CENTER_SERVO_DEGREE())
     driverBoard.SetThrottle(0.5)
 
-    rospy.Subscriber("cmd_vel", Twist, callback, driverBoard)
+    rospy.Subscriber("controlVel", Twist, callback, driverBoard)
     # rospy.Subscriber("controlVel", Twist, callback, driverBoard)
 
     rospy.spin()

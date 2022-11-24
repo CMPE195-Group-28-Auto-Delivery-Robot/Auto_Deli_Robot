@@ -2,5 +2,5 @@
     <node pkg="position_module" name="RobotImuNode" type="BNO055_IMU.py" output="screen"/>
     <node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen"/>
 	<include file="$(find position_module)/launch/MT3339GPS.launch"/>
-	<include file="$(find position_module)/launch/UbloxGPS.launch"/>
+	<!-- <include file="$(find position_module)/launch/UbloxGPS.launch"/> -->
 </launch>
