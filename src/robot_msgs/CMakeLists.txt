@@ -52,6 +52,8 @@ add_message_files(
   bounding3d_msg.msg
   object_msg.msg
   multi_objects_msg.msg
+  destPoint_msg.msg
+  dest_list_msg.msg
 )
 
 ## Generate services in the 'srv' folder
