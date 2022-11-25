@@ -1,0 +1,13 @@
+<launch>
+	<arg name="robot_name"/>
+    <!-- Driver level Component -->
+	<include file="$(find lidar_module)/launch/Rplidar.launch"/>
+	<include file="$(find project_core)/launch/module_launch/BaseDriver.launch"/>
+	<include file="$(find project_core)/launch/module_launch/ZEDCam.launch">
+		<arg name="robot_name" value="$(arg robot_name)" />
+	</include>
+	<!-- Algorithm Component -->
+	<include file="$(find position_module)/launch/Localization.launch">
+		<arg name="robot_name" value="$(arg robot_name)" />
+	</include>
+</launch>

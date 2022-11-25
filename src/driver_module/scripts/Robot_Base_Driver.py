@@ -49,14 +49,15 @@ def callback(data: Twist, device: i2CPWMDriver):
 def RobotDriverMain():
 
     rospy.init_node('Robot_Base_Driver', anonymous=True)
-
+    
+    subPath = rospy.get_param(rospy.get_name()+"/SubPath","cmd_vel");
+    # rospy.loginfo(rospy.get_name()+"/SubPath: "+subPath);
     driverBoard = i2CPWMDriver()
 
     driverBoard.SetTurningAngle(CENTER_SERVO_DEGREE())
     driverBoard.SetThrottle(0.5)
 
-    rospy.Subscriber("controlVel", Twist, callback, driverBoard)
-    # rospy.Subscriber("controlVel", Twist, callback, driverBoard)
+    rospy.Subscriber(subPath, Twist, callback, driverBoard)
 
     rospy.spin()
 

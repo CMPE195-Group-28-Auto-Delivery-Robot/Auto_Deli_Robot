@@ -4,17 +4,12 @@
 	<include file="$(find control_module)/launch/GUIComponent.launch"/>
 
 	<group ns="$(arg robot_name)">
-		<!-- Driver level Component -->
-		<include file="$(find project_core)/launch/Rplidar.launch"/>
-		<include file="$(find project_core)/launch/BaseDriver.launch"/>
-		<include file="$(find project_core)/launch/ZEDCam.launch">
+		<include file="$(find project_core)/launch/module_launch/Common_StartUp.launch">
 			<arg name="robot_name" value="$(arg robot_name)" />
 		</include>
-
-		<!-- Algorithm Component -->
-		<include file="$(find position_module)/launch/Localization.launch">
-			<arg name="robot_name" value="$(arg robot_name)" />
-		</include>
-		<include file="$(find position_module)/launch/Algorithm.launch"/>
+		<include file="$(find project_core)/launch/module_launch/Algorithm.launch"/>
+		<node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen">
+    	    <param name="SubPath" value="controlVel" />
+    	</node>
     </group>
 </launch>
