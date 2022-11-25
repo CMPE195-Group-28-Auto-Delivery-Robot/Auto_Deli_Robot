@@ -3,23 +3,12 @@
 from lib2to3.pgen2 import driver
 from time import sleep
 import rospy
+import math
+import numpy as np
 from sensor_msgs.msg import Imu 
 import board
 import busio
 import adafruit_bno055
-
-def MAX_SERVO_DEGREE():
-    return 130;
-
-def MIN_SERVO_DEGREE():
-    return 40;
-
-def RANGE_SERVO_DEGREE():
-    return (MAX_SERVO_DEGREE()-MIN_SERVO_DEGREE());
-
-def CENTER_SERVO_DEGREE():
-    return (RANGE_SERVO_DEGREE())/2+MIN_SERVO_DEGREE();
-
 
 class i2cBNO055:
     def __init__(self):
@@ -31,10 +20,14 @@ class i2cBNO055:
         tempMsg = Imu()
         # print("Linear acceleration (m/s^2): {}".format(self.bno.linear_acceleration))
         tempMsg.header.stamp = rospy.Time.now()
-        tempMsg.header.frame_id = "deli_robot_imu_link"
-        tempMsg.orientation.x = self.bno.euler[0]
-        tempMsg.orientation.y = self.bno.euler[1]
-        tempMsg.orientation.z = self.bno.euler[2]
+        tempMsg.header.frame_id = "base_link"
+        roll = math.radians(self.bno.euler[0])
+        pitch = math.radians(self.bno.euler[1])
+        yaw = math.radians(self.bno.euler[2])
+        tempMsg.orientation.x = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        tempMsg.orientation.y = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+        tempMsg.orientation.z = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+        tempMsg.orientation.w = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
         tempMsg.linear_acceleration.x = self.bno.linear_acceleration[0]
         tempMsg.linear_acceleration.y = self.bno.linear_acceleration[1]
         tempMsg.linear_acceleration.z = self.bno.linear_acceleration[2]

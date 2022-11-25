@@ -8,8 +8,10 @@ project(position_module)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  roscpp
   rospy
   std_msgs
+  robot_msgs
   robot_localization
 )
 
@@ -49,15 +51,11 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 # add_message_files(
 #   FILES
-#   Message1.msg
-#   Message2.msg
 # )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
 #   FILES
-#   Service1.srv
-#   Service2.srv
 # )
 
 ## Generate actions in the 'action' folder
@@ -125,6 +123,7 @@ include_directories(
 #   src/${PROJECT_NAME}/position_module.cpp
 # )
 add_library(minmea STATIC src/minmea/minmea.c)
+add_library(SerialGPSObject STATIC src/SerialGPSObject.cpp)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -143,6 +142,7 @@ add_dependencies(gps_faker_node test_program_generate_messages_cpp)
 add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
 target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
 target_link_libraries(SerialGPSDriver minmea)
+target_link_libraries(SerialGPSDriver SerialGPSObject)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
