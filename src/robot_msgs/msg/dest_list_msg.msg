@@ -1,0 +1,1 @@
+destPoint_msg[] dest_list
