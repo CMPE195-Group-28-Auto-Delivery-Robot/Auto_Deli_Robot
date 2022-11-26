@@ -143,24 +143,5 @@ void SerialGPSObject::RebootGPS(){
 
 bool SerialGPSObject::RebootGPS(robot_msgs::RebootGPS::Request &req,
                                 robot_msgs::RebootGPS::Response &res){
-    switch (chipType)
-    {
-    case 1:
-        ROS_INFO("Chip: MT3339");
-        sendCommand("PMTK102");
-        ros::Duration(3).sleep();
-        ROS_INFO("Boot Complete");
-        sendCommand("PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
-        sendCommand("PMTK220,100");
-        break;
-
-    case 2:
-        ROS_INFO("Chip: UBlox M8");
-        //TODO: Ublox Command
-        break;
-    
-    default:
-        ROS_INFO("Chip: Unknown");
-        break;
-    }
+    RebootGPS();
 }

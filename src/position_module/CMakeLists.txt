@@ -124,6 +124,7 @@ include_directories(
 # )
 add_library(minmea STATIC src/minmea/minmea.c)
 add_library(SerialGPSObject STATIC src/SerialGPSObject.cpp)
+add_library(pidController STATIC src/pidController.cpp)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -134,6 +135,8 @@ add_library(SerialGPSObject STATIC src/SerialGPSObject.cpp)
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(pid_processor src/pid_processor.cpp)
 target_link_libraries(pid_processor ${catkin_LIBRARIES})
+target_link_libraries(pid_processor pidController)
+target_link_libraries(pid_processor jsoncpp)
 
 add_executable(gps_faker_node src/gps_faker_node.cpp)
 target_link_libraries(gps_faker_node ${catkin_LIBRARIES})
