@@ -1,8 +1,8 @@
 <launch>
   <node name="line_extractor" pkg="laser_line_extraction" type="line_extraction_node">
     <param name="~frequency" value="30.0" />
-    <param name="~frame_id" value="map" />
-    <param name="~scan_topic" value="deli_robot/scan" />
+    <param name="~frame_id" value="laser" />
+    <param name="~scan_topic" value="scan" />
     <param name="~publish_markers" value="true" />
     <param name="~bearing_std_dev" value="1e-5" />
     <param name="~range_std_dev" value="0.012" />
@@ -17,4 +17,3 @@
     <param name="~min_line_points" value="10" />
   </node>
 </launch>
-
