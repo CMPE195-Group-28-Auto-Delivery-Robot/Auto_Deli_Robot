@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   robot_msgs
   robot_localization
 )
-
+catkin_package()
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 

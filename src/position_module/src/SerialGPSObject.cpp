@@ -1,7 +1,6 @@
 #include "SerialGPSObject.h"
 
 int SerialGPSObject::openSerial(){
-    int serialFp;
     struct termios ttyCnf;
     serialFp = open(portPath.c_str(), O_RDWR);
     if (serialFp < 0) {

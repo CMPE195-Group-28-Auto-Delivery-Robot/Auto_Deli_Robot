@@ -1,9 +1,6 @@
 #include <cmath>
 #include "ros/ros.h"
-#include "zed_interfaces/ObjectsStamped.h"
-#include "nav_msgs/Odometry.h"
-#include "geometry_msgs/PoseStamped.h"
-#include "laser_line_extraction/LineSegmentList.h"
+
 
 #define RAD2DEG(x) ((x)*180./M_PI)
 
@@ -12,11 +9,7 @@ private:
     zed_interfaces::ObjectsStamped m_objectDetectionMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     laser_line_extraction::LineSegmentList m_lineExtrationLst;
-
-    const float Kp = 1;
-    const float Ki = 1;
-    const float Kd = 1;
-
+    
 public:
     infoCollector(){
 
@@ -59,6 +52,7 @@ int main(int argc, char **argv)
     ros::Publisher cmdVel_pub = rosHandle.advertise<geometry_msgs::PoseStamped>("goalPosition", 1000);
     ros::Subscriber odom_sub = rosHandle.subscribe<nav_msgs::Odometry>("odometry/map", 1000, &infoCollector::OdomCallback, &controlNode);
     ros::Subscriber control_sub = rosHandle.subscribe<zed_interfaces::ObjectsStamped>("zed_node/obj_det/objects", 1000, &infoCollector::ObjectCallback, &controlNode);
+    ros::Subscriber line_extra_sub = rosHandle.subscribe<laser_line_extraction::LineSegmentList>("line_segments", 1000, &infoCollector::LineExtraCallback, &controlNode);
     ros::Subscriber line_extra_sub = rosHandle.subscribe<laser_line_extraction::LineSegmentList>("line_segments", 1000, &infoCollector::LineExtraCallback, &controlNode);
     ros::Rate loop_rate(5);
 
