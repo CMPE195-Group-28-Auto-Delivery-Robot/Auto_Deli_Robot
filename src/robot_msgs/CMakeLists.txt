@@ -48,18 +48,24 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(
-  FILES
-  bounding3d_msg.msg
-  object_msg.msg
-  multi_objects_msg.msg
-  destPoint_msg.msg
-  dest_list_msg.msg
+    FILES
+    bounding3d_msg.msg
+    object_msg.msg
+    multi_objects_msg.msg
+    destPoint_msg.msg
+    dest_list_msg.msg
 )
 
 ## Generate services in the 'srv' folder
 add_service_files(
-  FILES
-  RebootGPS.srv
+    FILES
+    RebootGPS.srv
+    UpdateAngularKd.srv
+    UpdateAngularKi.srv
+    UpdateAngularKp.srv
+    UpdateSpeedKd.srv
+    UpdateSpeedKi.srv
+    UpdateSpeedKp.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -71,9 +77,9 @@ add_service_files(
 
 # Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
-  std_msgs  # Or other packages containing msgs
-  robot_msgs
+    DEPENDENCIES
+    std_msgs  # Or other packages containing msgs
+    robot_msgs
 )
 
 ################################################

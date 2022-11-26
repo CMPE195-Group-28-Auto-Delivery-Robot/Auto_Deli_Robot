@@ -1,12 +1,14 @@
 {
-    "speedPid" : {
-        "Kp" : 1.0,
-        "Ki" : 2.0,
-        "Kd" : 3.0
-    },
-    "angularPid" : {
-        "Kp" : 4.0,
-        "Ki" : 5.0,
-        "Kd" : 6.0
-    }
+	"angularPid" : 
+	{
+		"Kd" : 0,
+		"Ki" : 0,
+		"Kp" : 2
+	},
+	"speedPid" : 
+	{
+		"Kd" : 0,
+		"Ki" : 0,
+		"Kp" : 1
+	}
 }
