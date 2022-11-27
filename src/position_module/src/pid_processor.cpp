@@ -20,6 +20,7 @@ int main(int argc, char **argv)
     }
     
     ros::Publisher cmdVel_pub = rosHandle.advertise<geometry_msgs::Twist>("controlVel", 1000);
+    ros::Publisher speed_pub = rosHandle.advertise<std_msgs::Float32>("robotSpeed", 1000);
     ros::Subscriber odom_sub = rosHandle.subscribe<nav_msgs::Odometry>("odometry/map", 1000, &pidController::OdomCallback, &pidNode);
     ros::Subscriber control_sub = rosHandle.subscribe<geometry_msgs::Twist>("cmd_vel", 1000, &pidController::ControlCallback, &pidNode);
     ros::Subscriber pose_sub = rosHandle.subscribe<geometry_msgs::PoseStamped>("goalPosition", 1000, &pidController::TargetCallback, &pidNode);
@@ -34,8 +35,9 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(15);
     ROS_INFO("PID Node Started");
     while(ros::ok()){
-        cmdVel_pub.publish(pidNode.GetProcessdMsg());
         ros::spinOnce();
+        cmdVel_pub.publish(pidNode.GetSpeedCtrlMsg());
+        speed_pub.publish(pidNode.GetCurrSpeed());
         loop_rate.sleep();
     }
     ROS_INFO("PID Node Ended");

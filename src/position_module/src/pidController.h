@@ -1,20 +1,26 @@
 #include <jsoncpp/json/json.h>
 #include "ros/ros.h"
-#include "sensor_msgs/Imu.h"
+#include "std_msgs/Float32.h"
 #include "nav_msgs/Odometry.h"
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/PoseStamped.h"
+
+// Custom msgs and srvs
 #include "robot_msgs/UpdateAngularKp.h"
 #include "robot_msgs/UpdateAngularKi.h"
 #include "robot_msgs/UpdateAngularKd.h"
 #include "robot_msgs/UpdateSpeedKp.h"
 #include "robot_msgs/UpdateSpeedKi.h"
 #include "robot_msgs/UpdateSpeedKd.h"
+
+// Custom Libirary
 #include "pidAlgorithm/pidRegulater.h"
+
 #pragma once
 
 class pidController{
 private:
+    float m_currspeed;
     geometry_msgs::Twist m_robotControlMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     geometry_msgs::PoseStamped m_robotTargetPoseMsg;
@@ -29,7 +35,9 @@ public:
     void TargetCallback(const geometry_msgs::PoseStamped::ConstPtr& tagMsg);
     bool ReadPIDConfig();
     bool SavePIDConfig();
-    geometry_msgs::Twist GetProcessdMsg();
+
+    geometry_msgs::Twist GetSpeedCtrlMsg();
+    std_msgs::Float32 GetCurrSpeed();
     
     bool UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,
                           robot_msgs::UpdateAngularKp::Response &res );

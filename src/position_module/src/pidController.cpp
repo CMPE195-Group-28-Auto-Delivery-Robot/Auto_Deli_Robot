@@ -71,7 +71,7 @@ bool pidController::SavePIDConfig(){
     return true;
 }
 
-geometry_msgs::Twist pidController::GetProcessdMsg(){
+geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     float headAngle, speedAngle;
     geometry_msgs::Twist m_robotProcessMsg;
     geometry_msgs::Twist currRobotTwist;
@@ -79,21 +79,27 @@ geometry_msgs::Twist pidController::GetProcessdMsg(){
 
     currRobotTwist = m_robotOdometryMsg.twist.twist;
     currRobotPose = m_robotOdometryMsg.pose.pose;
-    double currentOrien, currlinSpeed, currAngSpeed;
+    float currentOrien, currAngSpeed;
     
     currentOrien = sqrt(pow(currRobotPose.orientation.x,2)+pow(currRobotPose.orientation.y,2));
-    currlinSpeed = sqrt(pow(currRobotTwist.linear.x,2)+pow(currRobotTwist.linear.y,2));
+    m_currspeed = sqrt(pow(currRobotTwist.linear.x,2)+pow(currRobotTwist.linear.y,2));
 
-    headAngle = atan2(currRobotPose.orientation.y, currRobotPose.orientation.x);
-    speedAngle = atan2(currRobotTwist.linear.y, currRobotTwist.linear.x);
-    if(abs((speedAngle * 180)/M_PI)>90){
-        currlinSpeed *= -1;
+    headAngle = atan2(currRobotPose.orientation.y, currRobotPose.orientation.x); // Calculate the Head Angle
+    speedAngle = atan2(currRobotTwist.linear.y, currRobotTwist.linear.x);  // Calculate the Speed Angle
+    if(abs((speedAngle * 180)/M_PI)>90){ // if the difference between two angle is greater than 90 degree it is going back 
+        m_currspeed *= -1;
     }
 
-    m_robotProcessMsg.linear.x = m_speedPid.getResult(currlinSpeed, m_robotControlMsg.linear.x);
+    m_robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
     m_robotProcessMsg.angular.z = m_robotControlMsg.angular.z;
     
     return m_robotProcessMsg;
+}
+
+std_msgs::Float32 pidController::GetCurrSpeed(){
+    std_msgs::Float32 temp;
+    temp.data = m_currspeed;
+    return temp;
 }
 
 bool pidController::UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,
