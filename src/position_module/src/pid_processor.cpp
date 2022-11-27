@@ -20,9 +20,9 @@ int main(int argc, char **argv)
     }
     
     ros::Publisher cmdVel_pub = rosHandle.advertise<geometry_msgs::Twist>("controlVel", 1000);
-    ros::Subscriber odom_sub = rosHandle.subscribe<nav_msgs::Odometry>("/deli_robot/odometry/map", 1000, &pidController::OdomCallback, &pidNode);
-    ros::Subscriber control_sub = rosHandle.subscribe<geometry_msgs::Twist>("/deli_robot/cmd_vel", 1000, &pidController::ControlCallback, &pidNode);
-    ros::Subscriber pose_sub = rosHandle.subscribe<geometry_msgs::PoseStamped>("/deli_robot/goalPosition", 1000, &pidController::TargetCallback, &pidNode);
+    ros::Subscriber odom_sub = rosHandle.subscribe<nav_msgs::Odometry>("odometry/map", 1000, &pidController::OdomCallback, &pidNode);
+    ros::Subscriber control_sub = rosHandle.subscribe<geometry_msgs::Twist>("cmd_vel", 1000, &pidController::ControlCallback, &pidNode);
+    ros::Subscriber pose_sub = rosHandle.subscribe<geometry_msgs::PoseStamped>("goalPosition", 1000, &pidController::TargetCallback, &pidNode);
     ros::ServiceServer serviceakp = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKp", &pidController::UpdateAngularKp, &pidNode);
     ros::ServiceServer serviceaki = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKi", &pidController::UpdateAngularKi, &pidNode);
     ros::ServiceServer serviceakd = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKd", &pidController::UpdateAngularKd, &pidNode);
