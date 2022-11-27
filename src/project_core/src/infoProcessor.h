@@ -11,9 +11,9 @@
 
 class infoProcessor{
 private:
-    int avoid_angle{0};
-    int move_distance{0};
-    int search_distance{0};
+    int avoid_angle;
+    int move_distance;
+    int search_distance;
     struct location{
         float x;
         float y;
