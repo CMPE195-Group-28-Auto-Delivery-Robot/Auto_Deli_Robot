@@ -130,6 +130,7 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     }
 
     robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
+    ROS_INFO("PID Speed Log: %f, %f, %f", (m_currspeed-m_robotControlMsg.linear.x), m_speedPid.getcerr(), m_speedPid.getperr());
     robotProcessMsg.angular.z = m_robotControlMsg.angular.z;
     return robotProcessMsg;
 }

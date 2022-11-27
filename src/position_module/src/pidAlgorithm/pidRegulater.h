@@ -17,6 +17,8 @@ public:
     float getKp();
     float getKi();
     float getKd();
+    float getcerr();
+    float getperr();
     float getResult(float currVal, float goalVal);
     float getResult(float currErr);
 };

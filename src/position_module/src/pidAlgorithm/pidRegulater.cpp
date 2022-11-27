@@ -24,11 +24,17 @@ float pidRegulater::getKi(){
 float pidRegulater::getKd(){
     return m_Kd;
 }
+float pidRegulater::getcerr(){
+    return m_cum_error;
+}
+float pidRegulater::getperr(){
+    return m_pre_error;
+}
 
 float pidRegulater::getResult(float currErr){
     float result;;
-    result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
     m_cum_error += currErr;
+    result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
     m_pre_error = currErr;
 }
 
