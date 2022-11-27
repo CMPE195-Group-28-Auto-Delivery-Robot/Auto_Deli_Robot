@@ -32,14 +32,15 @@ float pidRegulater::getperr(){
 }
 
 float pidRegulater::getResult(float currErr){
-    float result;;
+    float result;
     m_cum_error += currErr;
     result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
     m_pre_error = currErr;
+    return result;
 }
 
 float pidRegulater::getResult(float currVal, float goalVal){
     float currErr;
     currErr = goalVal - currVal;
-    getResult(currErr);
+    return getResult(currErr);
 }
