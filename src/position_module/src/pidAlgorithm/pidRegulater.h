@@ -18,4 +18,5 @@ public:
     float getKi();
     float getKd();
     float getResult(float currVal, float goalVal);
+    float getResult(float currErr);
 };

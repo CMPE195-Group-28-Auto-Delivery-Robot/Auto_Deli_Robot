@@ -25,11 +25,15 @@ float pidRegulater::getKd(){
     return m_Kd;
 }
 
-float pidRegulater::getResult(float currVal, float goalVal){
-    float result;
-    float currErr;
-    currErr = goalVal - currVal;
+float pidRegulater::getResult(float currErr){
+    float result;;
     result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
     m_cum_error += currErr;
     m_pre_error = currErr;
+}
+
+float pidRegulater::getResult(float currVal, float goalVal){
+    float currErr;
+    currErr = goalVal - currVal;
+    getResult(currErr);
 }
