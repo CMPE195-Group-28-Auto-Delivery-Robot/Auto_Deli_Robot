@@ -1,6 +1,8 @@
 <launch>
 	<arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
-        <node pkg="position_module" name="PID_Processor" type="pid_processor" output="screen"/>
+        <node pkg="position_module" name="PID_Processor" type="pid_processor" output="screen">
+            <param name="configPath" value="$(find position_module)/pid_config/pidConfig.json" />
+        </node>
     </group>
 </launch>
