@@ -10,22 +10,16 @@
 #include "robot_msgs/UpdateSpeedKp.h"
 #include "robot_msgs/UpdateSpeedKi.h"
 #include "robot_msgs/UpdateSpeedKd.h"
+#include "pidAlgorithm/pidRegulater.h"
 #pragma once
 
 class pidController{
 private:
-    typedef struct{
-        float Kp;
-        float Ki;
-        float Kd;
-        float pre_error; // Previous Error
-        float cum_error; // Accumulation Error
-    } pidParam;
     geometry_msgs::Twist m_robotControlMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     geometry_msgs::PoseStamped m_robotTargetPoseMsg;
-    pidParam m_speedPid;
-    pidParam m_angularPid;
+    pidRegulater m_speedPid;
+    pidRegulater m_angularPid;
     std::string m_pidConfigPath;
 
 public:
