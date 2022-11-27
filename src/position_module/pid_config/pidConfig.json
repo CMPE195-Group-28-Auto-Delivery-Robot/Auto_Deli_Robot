@@ -2,19 +2,19 @@
 	"angularPid" : 
 	{
 		"Kd" : 0.1,
-		"Ki" : 2,
-		"Kp" : 2
+		"Ki" : 1,
+		"Kp" : 1
 	},
 	"speedPid" : 
 	{
-		"Kd" : 0.1,
-		"Ki" : 2,
-		"Kp" : 2
+		"Kd" : 3,
+		"Ki" : 10,
+		"Kp" : 20
 	},
 	"distancePid" : 
 	{
-		"Kd" : 0.1,
-		"Ki" : 2,
-		"Kp" : 2
+		"Kd" : 1,
+		"Ki" : 5,
+		"Kp" : 5
 	}
 }
