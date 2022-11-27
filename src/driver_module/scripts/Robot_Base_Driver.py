@@ -10,6 +10,12 @@ import adafruit_pca9685
 import adafruit_motor.servo
 from adafruit_servokit import ServoKit
 
+def MAX_Speed_RANGE():
+    return 20;
+
+def MAX_ANG_RANGE():
+    return 20;
+
 def MAX_SERVO_DEGREE():
     return 130;
 
@@ -41,9 +47,21 @@ class i2CPWMDriver:
     
 
 def callback(data: Twist, device: i2CPWMDriver):
-    turnDegree = (((data.angular.z + 3) / 6) * RANGE_SERVO_DEGREE() + MIN_SERVO_DEGREE())
+    if data.angular.z > MAX_ANG_RANGE()/2:
+        rospy.loginfo("Angular Too High")
+        data.angular.z = MAX_ANG_RANGE()/2
+    if data.angular.z < -MAX_ANG_RANGE()/2:
+        rospy.loginfo("Angular Too Low")
+        data.angular.z = -MAX_ANG_RANGE()/2
+    turnDegree = (((data.angular.z + MAX_ANG_RANGE()/2) / MAX_ANG_RANGE()) * RANGE_SERVO_DEGREE() + MIN_SERVO_DEGREE())
     device.SetTurningAngle(turnDegree)
-    robotThrottle = (data.linear.x + 3) / 6
+    if data.linear.x > MAX_Speed_RANGE()/2:
+        rospy.loginfo("Speed Too High")
+        data.linear.x = MAX_Speed_RANGE()/2
+    if data.linear.x < -MAX_Speed_RANGE()/2:
+        rospy.loginfo("Speed Too Low")
+        data.linear.x = -MAX_Speed_RANGE()/2
+    robotThrottle = (data.linear.x + MAX_Speed_RANGE()/2) / MAX_Speed_RANGE()
     device.SetThrottle(robotThrottle)
     
 def RobotDriverMain():
