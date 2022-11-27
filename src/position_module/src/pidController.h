@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include <jsoncpp/json/json.h>
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
@@ -12,6 +14,9 @@
 #include "robot_msgs/UpdateSpeedKp.h"
 #include "robot_msgs/UpdateSpeedKi.h"
 #include "robot_msgs/UpdateSpeedKd.h"
+#include "robot_msgs/UpdateDistanceKp.h"
+#include "robot_msgs/UpdateDistanceKi.h"
+#include "robot_msgs/UpdateDistanceKd.h"
 
 // Custom Libirary
 #include "pidAlgorithm/pidRegulater.h"
@@ -20,13 +25,16 @@
 
 class pidController{
 private:
+    bool m_goalSet;
     float m_currspeed;
     geometry_msgs::Twist m_robotControlMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     geometry_msgs::PoseStamped m_robotTargetPoseMsg;
+    pidRegulater m_distancePid;
     pidRegulater m_speedPid;
     pidRegulater m_angularPid;
     std::string m_pidConfigPath;
+    ros::Time m_lastCmdRecevied;
 
 public:
     pidController(std::string pidConfigPath);
@@ -38,6 +46,7 @@ public:
 
     geometry_msgs::Twist GetSpeedCtrlMsg();
     std_msgs::Float32 GetCurrSpeed();
+    bool IsGoalSet();
     
     bool UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,
                           robot_msgs::UpdateAngularKp::Response &res );
@@ -51,5 +60,11 @@ public:
                         robot_msgs::UpdateSpeedKi::Response &res );
     bool UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
                         robot_msgs::UpdateSpeedKd::Response &res );
+    bool UpdateDistanceKp( robot_msgs::UpdateDistanceKp::Request &req,
+                           robot_msgs::UpdateDistanceKp::Response &res );
+    bool UpdateDistanceKi( robot_msgs::UpdateDistanceKi::Request &req,
+                           robot_msgs::UpdateDistanceKi::Response &res );
+    bool UpdateDistanceKd( robot_msgs::UpdateDistanceKd::Request &req,
+                           robot_msgs::UpdateDistanceKd::Response &res );
 
 };

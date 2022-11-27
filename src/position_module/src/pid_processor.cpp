@@ -30,6 +30,9 @@ int main(int argc, char **argv)
     ros::ServiceServer serviceskp = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateSpeedKp", &pidController::UpdateSpeedKp, &pidNode);
     ros::ServiceServer serviceski = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateSpeedKi", &pidController::UpdateSpeedKi, &pidNode);
     ros::ServiceServer serviceskd = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateSpeedKd", &pidController::UpdateSpeedKd, &pidNode);
+    ros::ServiceServer servicedkp = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateDistanceKp", &pidController::UpdateDistanceKp, &pidNode);
+    ros::ServiceServer servicedki = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateDistanceKi", &pidController::UpdateDistanceKi, &pidNode);
+    ros::ServiceServer servicedkd = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateDistanceKd", &pidController::UpdateDistanceKd, &pidNode);
 
 
     ros::Rate loop_rate(15);
