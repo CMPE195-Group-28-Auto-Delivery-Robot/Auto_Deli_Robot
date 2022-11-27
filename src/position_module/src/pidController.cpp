@@ -89,9 +89,16 @@ bool pidController::SavePIDConfig(){
     return true;
 }
 
+float pidController::AngleDiff(float ax, float ay,
+                               float bx, float by){
+    float det, dot;
+    dot = ax*bx + ay*by;
+    det = ax*by - ay*bx;
+    return atan2(det, dot);
+}
+
 geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
-    float headAngle, speedAngle;
-    float goaldist, goalAngle;
+    float goaldist, angleDiff;
     geometry_msgs::Twist robotProcessMsg;
     geometry_msgs::Twist currRobotTwist;
     geometry_msgs::Pose currRobotPose;
@@ -102,9 +109,8 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     
     
     m_currspeed = sqrt(pow(currRobotTwist.linear.x,2)+pow(currRobotTwist.linear.y,2)); // Calculate CurrSpeed
-    headAngle = atan2(currRobotPose.orientation.y, currRobotPose.orientation.x); // Calculate the Head Angle
-    speedAngle = atan2(currRobotTwist.linear.y, currRobotTwist.linear.x);  // Calculate the Speed Angle
-    if(abs(((headAngle-speedAngle) * 180)/M_PI)>90){ // if the difference between two angle is greater than 90 degree it is going back 
+    if(abs(AngleDiff(currRobotPose.orientation.x, currRobotPose.orientation.y,
+                     currRobotTwist.linear.x, currRobotTwist.linear.y))>(M_PI/2)){ // if the difference between two angle is greater than 90 degree it is going back 
         m_currspeed *= -1;
     }
 
@@ -115,10 +121,11 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
         yDiff = m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y;
 
         goaldist = sqrt(pow(xDiff,2)+pow(yDiff,2));
-        goalAngle = atan2(yDiff, xDiff);
+        angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
+                              currRobotPose.position.x, currRobotPose.position.y);
 
         robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
-        robotProcessMsg.angular.z = m_angularPid.getResult(headAngle, goalAngle);
+        robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
         return robotProcessMsg;
     }
 

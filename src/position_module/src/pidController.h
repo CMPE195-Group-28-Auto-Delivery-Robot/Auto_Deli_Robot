@@ -35,6 +35,8 @@ private:
     pidRegulater m_angularPid;
     std::string m_pidConfigPath;
     ros::Time m_lastCmdRecevied;
+    float AngleDiff(float ax, float ay,
+                    float bx, float by);
 
 public:
     pidController(std::string pidConfigPath);
