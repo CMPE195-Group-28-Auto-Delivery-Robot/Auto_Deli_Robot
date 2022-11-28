@@ -8,6 +8,7 @@
 #include "geometry_msgs/PoseStamped.h"
 
 // Custom msgs and srvs
+#include "robot_msgs/ChangeOpMode.h"
 #include "robot_msgs/GoHome.h"
 #include "robot_msgs/UpdateAngularKp.h"
 #include "robot_msgs/UpdateAngularKi.h"
@@ -26,6 +27,7 @@
 
 class pidController{
 private:
+    bool m_opMode; // If true PID Mode, else Direct Mode
     bool m_goalSet;
     float m_currspeed;
     float m_arrivalRange;
@@ -52,6 +54,8 @@ public:
     std_msgs::Float32 GetCurrSpeed();
     bool IsGoalSet();
     
+    bool ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
+                       robot_msgs::ChangeOpMode::Response &res );
     bool GoHome( robot_msgs::GoHome::Request &req,
                  robot_msgs::GoHome::Response &res );
     bool UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,

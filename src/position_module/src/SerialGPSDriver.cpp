@@ -22,7 +22,7 @@ int main(int argc, char **argv){
         ROS_ERROR("Failed to get param 'PortPath'");
         return -1;
     }
-    rosHandle.param<std::string>(ros::this_node::getName()+"/frame_id", frameID, "map");
+    rosHandle.param<std::string>(ros::this_node::getName()+"/frame_id", frameID, "gps");
     rosHandle.param(ros::this_node::getName()+"/BaudRate", gpsDevice.baudrate, 9600);
     rosHandle.param(ros::this_node::getName()+"/DataBit", gpsDevice.dataBit, 8);
     if( gpsDevice.dataBit>8 || gpsDevice.dataBit<5 ){

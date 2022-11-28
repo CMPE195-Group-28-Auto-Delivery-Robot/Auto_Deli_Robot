@@ -27,6 +27,8 @@ int main(int argc, char **argv)
     ros::Subscriber odom_sub = rosHandle.subscribe<nav_msgs::Odometry>("odometry/map", 1000, &pidController::OdomCallback, &pidNode);
     ros::Subscriber control_sub = rosHandle.subscribe<geometry_msgs::Twist>("cmd_vel", 1000, &pidController::ControlCallback, &pidNode);
     ros::Subscriber pose_sub = rosHandle.subscribe<geometry_msgs::PoseStamped>("goalPosition", 1000, &pidController::TargetCallback, &pidNode);
+    ros::ServiceServer servuceHome = rosHandle.advertiseService("GoHome", &pidController::GoHome, &pidNode);
+    ros::ServiceServer serviceMode = rosHandle.advertiseService(ros::this_node::getName()+"/ChangeOpMode", &pidController::ChangeOpMode, &pidNode);
     ros::ServiceServer serviceakp = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKp", &pidController::UpdateAngularKp, &pidNode);
     ros::ServiceServer serviceaki = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKi", &pidController::UpdateAngularKi, &pidNode);
     ros::ServiceServer serviceakd = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKd", &pidController::UpdateAngularKd, &pidNode);

@@ -3,6 +3,7 @@
 
 pidController::pidController(std::string pidConfigPath, float range): 
     m_pidConfigPath(pidConfigPath), m_arrivalRange(range){
+    m_goalSet = false;
 }
 
 void pidController::OdomCallback(const nav_msgs::Odometry::ConstPtr& odomMsg)
@@ -115,23 +116,28 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     }
 
     if(IsGoalSet()){
+        // ROS_INFO("Node In Control");
         goaldist = sqrt(
                     pow((m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x),2)
                   + pow((m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y),2));
         if((currTime-m_lastCmdRecevied).toSec()>5 && goaldist > m_arrivalRange){ // If GUI didn't control in 5 sec and goal is set go to the goal
-            // ROS_INFO("Node In Control");
-            angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
+	    angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
                                   currRobotPose.position.x, currRobotPose.position.y);
 
-            robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
+            if(goaldist > 0.6)
+	        goaldist = 0.6;
+	    robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }
     }
 
-
-    ROS_INFO("PID Speed Log: %f, %f, %f", (m_robotControlMsg.linear.x-m_currspeed), m_speedPid.getcerr(), m_speedPid.getperr());
-    robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
+    if(m_opMode){
+        ROS_INFO("PID Speed Log: %f, %f, %f", (m_robotControlMsg.linear.x-m_currspeed), m_speedPid.getcerr(), m_speedPid.getperr());
+        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
+    }else{
+        robotProcessMsg.linear.x = m_robotControlMsg.linear.x;
+    }
     robotProcessMsg.angular.z = m_robotControlMsg.angular.z;
     return robotProcessMsg;
 }
@@ -140,6 +146,17 @@ std_msgs::Float32 pidController::GetCurrSpeed(){
     std_msgs::Float32 temp;
     temp.data = m_currspeed;
     return temp;
+}
+
+bool pidController::ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
+                       robot_msgs::ChangeOpMode::Response &res ){
+    m_opMode = !m_opMode;
+    if(m_opMode){
+        res.result = "Change to PID Mode";
+    }else{
+        res.result = "Change to Direct Mode";
+    }
+    return true;
 }
 
 bool pidController::GoHome( robot_msgs::GoHome::Request &req,
