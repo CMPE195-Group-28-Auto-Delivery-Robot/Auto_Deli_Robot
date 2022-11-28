@@ -2,6 +2,7 @@
     <node pkg="project_core" name="Robot_Core_Sys" type="RobotCore" output="screen"></node>
     <node pkg="position_module" name="Robot_PID_Ctrl" type="pid_processor" output="screen">
         <param name="configPath" value="$(find position_module)/pid_config/pidConfig.json" />
+        <param name="arrivalRange" value="0.1" />
     </node>
 	<include file="$(find lidar_module)/launch/launch_line_extraction.launch"/>
 </launch>

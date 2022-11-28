@@ -7,13 +7,16 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Robot_PID_Node");
     ros::NodeHandle rosHandle;
     std::string pidConfigPath;
+    float rangeParam;
 
     if(!rosHandle.getParam(ros::this_node::getName()+"/configPath",pidConfigPath)){
         ROS_ERROR("Config File Parameter Missing");
         return -1;
     }
+
+    rosHandle.param(ros::this_node::getName()+"/arrivalRange", rangeParam, float(0.1));
     
-    pidController pidNode(pidConfigPath);
+    pidController pidNode(pidConfigPath, rangeParam);
 
     if(!pidNode.ReadPIDConfig()){
         return -1;

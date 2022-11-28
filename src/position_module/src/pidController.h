@@ -8,6 +8,7 @@
 #include "geometry_msgs/PoseStamped.h"
 
 // Custom msgs and srvs
+#include "robot_msgs/GoHome.h"
 #include "robot_msgs/UpdateAngularKp.h"
 #include "robot_msgs/UpdateAngularKi.h"
 #include "robot_msgs/UpdateAngularKd.h"
@@ -27,6 +28,7 @@ class pidController{
 private:
     bool m_goalSet;
     float m_currspeed;
+    float m_arrivalRange;
     geometry_msgs::Twist m_robotControlMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     geometry_msgs::PoseStamped m_robotTargetPoseMsg;
@@ -39,7 +41,7 @@ private:
                     float bx, float by);
 
 public:
-    pidController(std::string pidConfigPath);
+    pidController(std::string pidConfigPath, float range);
     void OdomCallback(const nav_msgs::Odometry::ConstPtr& odomMsg);
     void ControlCallback(const geometry_msgs::Twist::ConstPtr& controlMsg);
     void TargetCallback(const geometry_msgs::PoseStamped::ConstPtr& tagMsg);
@@ -50,6 +52,8 @@ public:
     std_msgs::Float32 GetCurrSpeed();
     bool IsGoalSet();
     
+    bool GoHome( robot_msgs::GoHome::Request &req,
+                 robot_msgs::GoHome::Response &res );
     bool UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,
                           robot_msgs::UpdateAngularKp::Response &res );
     bool UpdateAngularKi( robot_msgs::UpdateAngularKi::Request &req,
