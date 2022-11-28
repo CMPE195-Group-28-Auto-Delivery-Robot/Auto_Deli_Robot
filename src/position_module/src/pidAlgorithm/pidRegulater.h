@@ -14,6 +14,7 @@ public:
     void setKp(float val);
     void setKi(float val);
     void setKd(float val);
+    void Clear();
     float getKp();
     float getKi();
     float getKd();

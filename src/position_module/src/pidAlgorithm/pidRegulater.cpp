@@ -1,8 +1,7 @@
 #include "pidRegulater.h"
 
 pidRegulater::pidRegulater(){
-    m_pre_error = 0;
-    m_cum_error = 0;
+    Clear();
 }
 
 void pidRegulater::setKp(float val){
@@ -29,6 +28,11 @@ float pidRegulater::getcerr(){
 }
 float pidRegulater::getperr(){
     return m_pre_error;
+}
+
+void pidRegulater::Clear(){
+    m_pre_error = 0;
+    m_cum_error = 0;
 }
 
 float pidRegulater::getResult(float currErr){

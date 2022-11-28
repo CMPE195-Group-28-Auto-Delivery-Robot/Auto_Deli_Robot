@@ -60,6 +60,8 @@ bool pidController::SavePIDConfig(){
     std::ofstream configFile;
     Json::Value j_root, j_speedPid, j_angularPid, j_distancePid;
     configFile.open(m_pidConfigPath);
+    m_speedPid.Clear();
+    m_angularPid.Clear();
     if(!configFile.is_open()){
         ROS_ERROR("Config File cannot Found");
         return false;
@@ -109,6 +111,7 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
                   + pow((m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y),2));
         if(goaldist < m_arrivalRange){
             ROS_INFO("Goal Point Arrived");
+            m_angularPid.Clear();
             m_goalSet = false;
         }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
             float headAngle;
@@ -142,6 +145,7 @@ bool pidController::ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
                        robot_msgs::ChangeOpMode::Response &res ){
     m_opMode = !m_opMode;
     if(m_opMode){
+        m_speedPid.Clear();
         res.result = "Change to PID Mode";
         ROS_INFO("Change to PID Mode");
     }else{
@@ -165,6 +169,7 @@ bool pidController::GoHome( robot_msgs::GoHome::Request &req,
 bool pidController::ClearGoal( robot_msgs::ClearGoal::Request &req,
                     robot_msgs::ClearGoal::Response &res ){
     m_goalSet = false;
+    m_angularPid.Clear();
     return true;
 }
 
