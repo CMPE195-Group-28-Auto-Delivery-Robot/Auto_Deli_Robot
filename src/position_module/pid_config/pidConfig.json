@@ -7,9 +7,9 @@
 	},
 	"speedPid" : 
 	{
-		"Kd" : 3,
-		"Ki" : 10,
-		"Kp" : 20
+		"Kd" : 1,
+		"Ki" : 0.5,
+		"Kp" : 4.5
 	},
 	"distancePid" : 
 	{

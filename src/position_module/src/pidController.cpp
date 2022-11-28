@@ -109,8 +109,7 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     
     
     m_currspeed = sqrt(pow(currRobotTwist.linear.x,2)+pow(currRobotTwist.linear.y,2)); // Calculate CurrSpeed
-    if(abs(AngleDiff(currRobotPose.orientation.x, currRobotPose.orientation.y,
-                     currRobotTwist.linear.x, currRobotTwist.linear.y))>(M_PI/2)){ // if the difference between two angle is greater than 90 degree it is going back 
+    if(abs(atan2(currRobotTwist.linear.y,currRobotTwist.linear.x))>(M_PI/2)){ // if the difference between two angle is greater than 90 degree it is going back 
         m_currspeed *= -1;
     }
 
@@ -129,8 +128,8 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
         return robotProcessMsg;
     }
 
+    ROS_INFO("PID Speed Log: %f, %f, %f", (m_robotControlMsg.linear.x-m_currspeed), m_speedPid.getcerr(), m_speedPid.getperr());
     robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
-    ROS_INFO("PID Speed Log: %f, %f, %f", (m_currspeed-m_robotControlMsg.linear.x), m_speedPid.getcerr(), m_speedPid.getperr());
     robotProcessMsg.angular.z = m_robotControlMsg.angular.z;
     return robotProcessMsg;
 }
