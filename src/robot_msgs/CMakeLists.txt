@@ -60,6 +60,7 @@ add_message_files(
 add_service_files(
     FILES
     ChangeOpMode.srv
+    ClearGoal.srv
     GoHome.srv
     RebootGPS.srv
     UpdateAngularKd.srv

@@ -9,6 +9,7 @@
 
 // Custom msgs and srvs
 #include "robot_msgs/ChangeOpMode.h"
+#include "robot_msgs/ClearGoal.h"
 #include "robot_msgs/GoHome.h"
 #include "robot_msgs/UpdateAngularKp.h"
 #include "robot_msgs/UpdateAngularKi.h"
@@ -56,6 +57,8 @@ public:
     
     bool ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
                        robot_msgs::ChangeOpMode::Response &res );
+    bool ClearGoal( robot_msgs::ClearGoal::Request &req,
+                    robot_msgs::ClearGoal::Response &res );
     bool GoHome( robot_msgs::GoHome::Request &req,
                  robot_msgs::GoHome::Response &res );
     bool UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,

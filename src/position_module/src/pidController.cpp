@@ -176,6 +176,12 @@ bool pidController::GoHome( robot_msgs::GoHome::Request &req,
     return true;
 }
 
+bool pidController::ClearGoal( robot_msgs::ClearGoal::Request &req,
+                    robot_msgs::ClearGoal::Response &res ){
+    m_goalSet = false;
+    return true;
+}
+
 bool pidController::UpdateAngularKp( robot_msgs::UpdateAngularKp::Request &req,
                                      robot_msgs::UpdateAngularKp::Response &res ){
     ROS_DEBUG("Change Angular Kp From %f to %f", m_angularPid.getKp(), req.value);
