@@ -4,6 +4,7 @@
 pidController::pidController(std::string pidConfigPath, float range): 
     m_pidConfigPath(pidConfigPath), m_arrivalRange(range){
     m_goalSet = false;
+    m_opMode = true;
 }
 
 void pidController::OdomCallback(const nav_msgs::Odometry::ConstPtr& odomMsg)
@@ -115,25 +116,28 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
         m_currspeed *= -1;
     }
 
-    if(IsGoalSet()){
+    if(IsGoalSet() && (currTime-m_lastCmdRecevied).toSec()>5){
         // ROS_INFO("Node In Control");
         goaldist = sqrt(
                     pow((m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x),2)
                   + pow((m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y),2));
-        if((currTime-m_lastCmdRecevied).toSec()>5 && goaldist > m_arrivalRange){ // If GUI didn't control in 5 sec and goal is set go to the goal
-	    angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
+        if(goaldist > m_arrivalRange){
+            ROS_INFO("Goal Point Arrived");
+            m_goalSet = false;
+        }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
+	        angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
                                   currRobotPose.position.x, currRobotPose.position.y);
-
+            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
             if(goaldist > 0.6)
-	        goaldist = 0.6;
-	    robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
+	            goaldist = 0.6;
+	        robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }
     }
 
     if(m_opMode){
-        ROS_INFO("PID Speed Log: %f, %f, %f", (m_robotControlMsg.linear.x-m_currspeed), m_speedPid.getcerr(), m_speedPid.getperr());
+        // ROS_INFO("PID Speed Log: %f, %f, %f", (m_robotControlMsg.linear.x-m_currspeed), m_speedPid.getcerr(), m_speedPid.getperr());
         robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_robotControlMsg.linear.x);
     }else{
         robotProcessMsg.linear.x = m_robotControlMsg.linear.x;
@@ -153,8 +157,10 @@ bool pidController::ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
     m_opMode = !m_opMode;
     if(m_opMode){
         res.result = "Change to PID Mode";
+        ROS_INFO("Change to PID Mode");
     }else{
         res.result = "Change to Direct Mode";
+        ROS_INFO("Change to Direct Mode");
     }
     return true;
 }
