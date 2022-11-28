@@ -4,41 +4,76 @@ infoProcessor::infoProcessor(int alert_angle, int step_size, int alert_distance)
     avoid_angle = alert_angle;
     move_distance = step_size;
     search_distance = alert_distance;
+
 }
 
+//  Update odometry info, it is in map level
 void infoProcessor::OdomCallback(const nav_msgs::Odometry::ConstPtr &odomMsg)
 {
     m_robotOdometryMsg = *(odomMsg.get());
+    current_position.x = m_robotOdometryMsg.pose.pose.position.x;
+    current_position.y = m_robotOdometryMsg.pose.pose.position.y;
 }
 
+//  Update object detection in map level
+//  TODO: Transform function need to be implemented
 void infoProcessor::ObjectCallback(const zed_interfaces::ObjectsStamped::ConstPtr &objectMsg)
 {
     m_objectDetectionMsg = *(objectMsg.get());
 }
 
+//  Update obstacle position in map level
 void infoProcessor::LineExtraCallback(const laser_line_extraction::LineSegmentList::ConstPtr &lineExtraLts)
 {
     m_lineExtrationLst = *(lineExtraLts.get());
     for (auto temp : m_lineExtrationLst.line_segments)
     {
-        obstacle obstacle_line;
-        obstacle_line.start.x = (int)temp.start[0];
-        obstacle_line.start.y = (int)temp.start[1];
-        obstacle_line.end.x = (int)temp.end[0];
-        obstacle_line.end.y = (int)temp.end[1];
-        input_lidar_info.push_back(obstacle_line);
+        input_lidar_info.push_back(laserToMap(temp));
     }
 }
 
-void infoProcessor::GoalPositionCallback(const geometry_msgs::PoseStamped::ConstPtr &lineExtraLts)
-{
-    m_goalPosition = *(lineExtraLts.get());
-    dest_position.x = m_goalPosition.pose.position.x;
-    dest_position.y = m_goalPosition.pose.position.y;
+//  Reciveing the path from Google Maps API, Transfer the points into location struct.
+//  Convert from destPoint type to location struct in code for easier implement and RESET counter.
+void infoProcessor::DestListCallback(const robot_msgs::dest_list_msg::ConstPtr &lineExtraLts){
+    m_goalPositions = *(lineExtraLts.get());
+    std::vector<robot_msgs::destPoint_msg> destList = m_goalPositions.dest_list;
+    for(auto point : destList){
+        progress.push_back(earthToMap(point));
+    }
+    progressCounter = 0;
+}  
+
+//TODO: Early version of implementing tf transform between laser(line_extraction) to map. Map will only process location struct data.
+infoProcessor::obstacle infoProcessor::laserToMap(laser_line_extraction::LineSegment seg){
+    obstacle temp;
+    temp.start.x = seg.start[0];
+    temp.start.y = seg.start[1];
+    temp.end.x = seg.end[0];
+    temp.end.y = seg.end[1];
+    return temp;
 }
 
-geometry_msgs::PoseStamped infoProcessor::getTarget()
-{
+//TODO: Early version of implementing tf transform between earth(satellite GPS) to map. Map will only process location struct data.
+infoProcessor::location infoProcessor::earthToMap(robot_msgs::destPoint_msg loc){
+    location temp;
+    temp.x = loc.lat;
+    temp.y = loc.lng;
+    return temp;
+}
+
+// Return distance between 2 location
+float infoProcessor::distance(location a, location b){
+    return sqrt(pow(a.x-b.x,2)+pow(a.y-b.y,2));
+}
+
+//Major algorithum, based on current position, goal position, obstacles posistion and mvoe distance to calculate the next move's location
+geometry_msgs::PoseStamped infoProcessor::getNextStep()
+{ 
+    if(distance(current_position, progress[progressCounter]) <= min_reach_distance && progressCounter <= progress.size()){
+        progressCounter++;
+    }
+    //when robot reach step goal, switch to next goal. If robot already reach final goal, nothing will change.
+    dest_position = progress[progressCounter]; //Set current goal position.
     for (auto temp : input_lidar_info)
     {
         addObstacle(temp);
@@ -227,11 +262,11 @@ geometry_msgs::PoseStamped infoProcessor::getTarget()
             location temp_point;
             temp_point.x = (int)segment.start.x;
             temp_point.y = (int)segment.start.y;
-            obstacle_map.push_back(temp_point);
+            obstacle_map.emplace(temp_point);
             cur_loc.x += x_forward;
             cur_loc.y += y_forward;
             x_diff -= x_rate;
             y_diff -= y_rate;
         }
-        obstacle_map.push_back(segment.end);
+        obstacle_map.emplace(segment.end);
     }
