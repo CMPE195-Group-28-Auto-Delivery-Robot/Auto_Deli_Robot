@@ -139,11 +139,15 @@ add_executable(gps_faker_node src/gps_faker_node.cpp)
 target_link_libraries(gps_faker_node ${catkin_LIBRARIES})
 add_dependencies(gps_faker_node test_program_generate_messages_cpp)
 
+add_executable(path_faker_node src/path_faker_node.cpp)
+target_link_libraries(path_faker_node ${catkin_LIBRARIES})
+add_dependencies(path_faker_node test_program_generate_messages_cpp)
+
 add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
 target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
 target_link_libraries(SerialGPSDriver minmea)
 target_link_libraries(SerialGPSDriver SerialGPSObject)
-
+catkin_package()
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

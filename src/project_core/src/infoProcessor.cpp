@@ -176,6 +176,8 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
                 right++;
             }
         }
+        std::cout<<current_position.x<<std::endl;
+        std::cout<<current_position.y<<std::endl;
         return locToPoseConvet(current_position);
     }
 
