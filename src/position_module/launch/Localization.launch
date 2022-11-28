@@ -1,8 +1,8 @@
 <launch>
 	<arg name="robot_name"/>
 
-	<node pkg="robot_localization" type="ukf_localization_node"
-            name="$(arg robot_name)_ukf_map_node"
+	<node pkg="robot_localization" type="ekf_localization_node"
+            name="$(arg robot_name)_ekf_map_node"
             clear_params="true">
         <param name="frequency" value="15" />
         <param name="sensor_timeout" value="0.5" />
@@ -33,7 +33,7 @@
         <remap from="odometry/filtered" to="odometry/map"/>
     </node>
 
-    <!-- <node pkg="robot_localization" type="ukf_localization_node"
+    <node pkg="robot_localization" type="ukf_localization_node"
           name="$(arg robot_name)_ukf_gps_node"
           clear_params="true">
         <param name="frequency" value="10" />
@@ -84,5 +84,5 @@
         <remap from="odometry/filtered" to="odometry/gps" />
         <remap from="odometry/gps" to="MT3339/odom" />
         <remap from="gps/filtered" to="MT3339/filtered_fix" />
-    </node> -->
+    </node>
 </launch>
