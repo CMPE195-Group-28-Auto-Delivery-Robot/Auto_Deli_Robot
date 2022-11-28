@@ -35,7 +35,6 @@ private:
     geometry_msgs::Twist m_robotControlMsg;
     nav_msgs::Odometry m_robotOdometryMsg;
     geometry_msgs::PoseStamped m_robotTargetPoseMsg;
-    pidRegulater m_distancePid;
     pidRegulater m_speedPid;
     pidRegulater m_angularPid;
     std::string m_pidConfigPath;
@@ -73,11 +72,5 @@ public:
                         robot_msgs::UpdateSpeedKi::Response &res );
     bool UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
                         robot_msgs::UpdateSpeedKd::Response &res );
-    bool UpdateDistanceKp( robot_msgs::UpdateDistanceKp::Request &req,
-                           robot_msgs::UpdateDistanceKp::Response &res );
-    bool UpdateDistanceKi( robot_msgs::UpdateDistanceKi::Request &req,
-                           robot_msgs::UpdateDistanceKi::Response &res );
-    bool UpdateDistanceKd( robot_msgs::UpdateDistanceKd::Request &req,
-                           robot_msgs::UpdateDistanceKd::Response &res );
 
 };

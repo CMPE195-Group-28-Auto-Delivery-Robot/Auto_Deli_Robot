@@ -69,9 +69,6 @@ add_service_files(
     UpdateSpeedKd.srv
     UpdateSpeedKi.srv
     UpdateSpeedKp.srv
-    UpdateDistanceKd.srv
-    UpdateDistanceKi.srv
-    UpdateDistanceKp.srv
 )
 
 ## Generate actions in the 'action' folder

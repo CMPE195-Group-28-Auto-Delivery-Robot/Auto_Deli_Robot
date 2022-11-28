@@ -52,14 +52,6 @@ bool pidController::ReadPIDConfig(){
     m_angularPid.setKp(j_angularPid.get("Kp", 1.0).asFloat());
     m_angularPid.setKi(j_angularPid.get("Ki", 0.0).asFloat());
     m_angularPid.setKd(j_angularPid.get("Kd", 0.0).asFloat());
-    if((j_distancePid = j_root["distancePid"]) == Json::Value::null){
-        ROS_ERROR("Distance Pid Config Missing");
-        configFile.close();
-        return false;
-    }
-    m_distancePid.setKp(j_distancePid.get("Kp", 1.0).asFloat());
-    m_distancePid.setKi(j_distancePid.get("Ki", 0.0).asFloat());
-    m_distancePid.setKd(j_distancePid.get("Kd", 0.0).asFloat());
     configFile.close();
     return true;
 }
@@ -82,11 +74,6 @@ bool pidController::SavePIDConfig(){
     j_angularPid["Kd"] = m_angularPid.getKd();
     j_root["angularPid"] = j_angularPid;
 
-    j_distancePid["Kp"] = m_distancePid.getKp();
-    j_distancePid["Ki"] = m_distancePid.getKi();
-    j_distancePid["Kd"] = m_distancePid.getKd();
-    j_root["distancePid"] = j_distancePid;
-
     configFile << j_root;
     configFile.close();
     return true;
@@ -101,7 +88,7 @@ float pidController::AngleDiff(float ax, float ay,
 }
 
 geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
-    float goaldist, angleDiff;
+    float goaldist, goalAngle;
     geometry_msgs::Twist robotProcessMsg;
     geometry_msgs::Twist currRobotTwist;
     geometry_msgs::Pose currRobotPose;
@@ -109,7 +96,6 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
 
     currRobotPose = m_robotOdometryMsg.pose.pose;
     currRobotTwist = m_robotOdometryMsg.twist.twist;
-    
     
     m_currspeed = sqrt(pow(currRobotTwist.linear.x,2)+pow(currRobotTwist.linear.y,2)); // Calculate CurrSpeed
     if(abs(atan2(currRobotTwist.linear.y,currRobotTwist.linear.x))>(M_PI/2)){ // if the difference between two angle is greater than 90 degree it is going back 
@@ -121,17 +107,17 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
         goaldist = sqrt(
                     pow((m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x),2)
                   + pow((m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y),2));
-        if(goaldist > m_arrivalRange){
+        if(goaldist < m_arrivalRange){
             ROS_INFO("Goal Point Arrived");
             m_goalSet = false;
         }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
-	        angleDiff = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
+            float headAngle;
+            headAngle = atan2(m_robotTargetPoseMsg.pose.orientation.y, m_robotTargetPoseMsg.pose.orientation.x);
+	        goalAngle = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
                                   currRobotPose.position.x, currRobotPose.position.y);
-            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
-            if(goaldist > 0.6)
-	            goaldist = 0.6;
-	        robotProcessMsg.linear.x = m_distancePid.getResult(m_currspeed, goaldist);
-            robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
+            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, goalAngle);
+	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.6);
+            robotProcessMsg.angular.z = m_angularPid.getResult(headAngle, goalAngle);
             return robotProcessMsg;
         }
     }
@@ -221,26 +207,5 @@ bool pidController::UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
                                    robot_msgs::UpdateSpeedKd::Response &res ){
     ROS_DEBUG("Change Speed Kd From %f to %f", m_speedPid.getKd(), req.value);
     m_speedPid.setKd(req.value);
-    return SavePIDConfig();
-}
-
-bool pidController::UpdateDistanceKp( robot_msgs::UpdateDistanceKp::Request &req,
-                                   robot_msgs::UpdateDistanceKp::Response &res ){
-    ROS_DEBUG("Change Distance Kp From %f to %f", m_distancePid.getKp(), req.value);
-    m_distancePid.setKp(req.value);
-    return SavePIDConfig();
-}
-
-bool pidController::UpdateDistanceKi( robot_msgs::UpdateDistanceKi::Request &req,
-                                   robot_msgs::UpdateDistanceKi::Response &res ){
-    ROS_DEBUG("Change Distance Ki From %f to %f", m_distancePid.getKi(), req.value);
-    m_distancePid.setKi(req.value);
-    return SavePIDConfig();
-}
-
-bool pidController::UpdateDistanceKd( robot_msgs::UpdateDistanceKd::Request &req,
-                                   robot_msgs::UpdateDistanceKd::Response &res ){
-    ROS_DEBUG("Change Distance Kd From %f to %f", m_distancePid.getKd(), req.value);
-    m_distancePid.setKd(req.value);
     return SavePIDConfig();
 }
