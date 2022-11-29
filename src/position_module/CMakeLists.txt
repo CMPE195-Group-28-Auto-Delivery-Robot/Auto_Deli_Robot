@@ -143,6 +143,14 @@ add_executable(path_faker_node src/path_faker_node.cpp)
 target_link_libraries(path_faker_node ${catkin_LIBRARIES})
 add_dependencies(path_faker_node test_program_generate_messages_cpp)
 
+add_executable(obs_faker_node src/obs_faker_node.cpp)
+target_link_libraries(obs_faker_node ${catkin_LIBRARIES})
+add_dependencies(obs_faker_node test_program_generate_messages_cpp)
+
+add_executable(odom_faker_node src/odom_faker_node.cpp)
+target_link_libraries(odom_faker_node ${catkin_LIBRARIES})
+add_dependencies(odom_faker_node test_program_generate_messages_cpp)
+
 add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
 target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
 target_link_libraries(SerialGPSDriver minmea)

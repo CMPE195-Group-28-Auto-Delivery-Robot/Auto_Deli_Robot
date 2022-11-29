@@ -1,0 +1,8 @@
+<launch>
+    <group ns="deli_robot">
+        <node pkg="position_module" name="FAKE_path" type="path_faker_node" output="screen"></node>
+        <node pkg="position_module" name="FAKE_OBS" type="obs_faker_node" output="screen"></node>
+        <node pkg="position_module" name="FAKE_ODOM" type="odom_faker_node" output="screen"></node>
+    </group>
+</launch>
+<!-- Those are the node only need once -->

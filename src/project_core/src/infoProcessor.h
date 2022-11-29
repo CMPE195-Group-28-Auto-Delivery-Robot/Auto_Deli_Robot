@@ -50,17 +50,21 @@ private:
     std::vector<obstacle> input_lidar_info;                             //Vector to store obstacles
     int progressCounter;                                                //Step counter for path
     float min_reach_distance;                                           //If distance between robot and goal within this range, consider robot can go next step
+    bool odomInitialize;
+    bool lineInitialize;
+    bool destInitialize;
+    
 
 
 
 public:
-    infoProcessor(int alert_angle, int step_size, int alert_distance);
+    infoProcessor(int alert_angle, int step_size, int alert_distance, float min_reach_distance);
     void OdomCallback(const nav_msgs::Odometry::ConstPtr& odomMsg);
     void ObjectCallback(const zed_interfaces::ObjectsStamped::ConstPtr& objectMsg);
     void LineExtraCallback(const laser_line_extraction::LineSegmentList::ConstPtr& lineExtraLts);
     void DestListCallback(const robot_msgs::dest_list_msg::ConstPtr& lineExtraLts);
     geometry_msgs::PoseStamped getNextStep();
-    location getPosition(float angle);
+    location getPosition(float angle, int dis);
     float getAngle();
     bool isClear(location nextStep);
     void addObstacle(obstacle line);
