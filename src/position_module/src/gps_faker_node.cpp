@@ -18,8 +18,8 @@ sensor_msgs::NavSatFix RandomGPSMsgs(int seq){
     srandom(fakeMsg.header.stamp.nsec);
 
     fakeMsg.altitude = 10 + double(rand()%100000-50000)/100000.00;
-    fakeMsg.latitude = 10;
-    fakeMsg.longitude = 10;
+    fakeMsg.latitude = 37.420221660199104 + double(rand()%100000-50000)/1000000000.00;
+    fakeMsg.longitude = -121.87291934241432 + double(rand()%100000-50000)/1000000000.00;
     // [651.7809000000001, 0.0, 0.0, 0.0, 651.7809000000001, 0.0, 0.0, 0.0, 2607.1236000000004]
     fakeMsg.position_covariance.assign(0);
     fakeMsg.position_covariance.at(0) = 651.7809000000001;
@@ -27,7 +27,7 @@ sensor_msgs::NavSatFix RandomGPSMsgs(int seq){
     fakeMsg.position_covariance.at(8) = 2607.1236000000004;
     fakeMsg.position_covariance_type = 1;
     
-    // ROS_INFO("Fake GPS: %f, %f", fakeMsg.latitude, fakeMsg.longitude);
+    ROS_INFO("Fake GPS: %f, %f", fakeMsg.latitude, fakeMsg.longitude);
     return fakeMsg;
 }
 
