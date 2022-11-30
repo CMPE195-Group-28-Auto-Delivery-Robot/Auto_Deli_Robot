@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="project_core" name="RobotCore_Node" type="RobotCore" output="screen">
+    <node pkg="project_core" name="Robot_Core_Sys" type="RobotCore" output="screen">
         <param name="avoid_angle" value="20"/>
         <param name="move_distance" value="3"/>
         <param name="search_distance" value="10"/>
