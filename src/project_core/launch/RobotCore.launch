@@ -1,10 +1,8 @@
 <launch>
-    <group ns="deli_robot">
-        <node pkg="project_core" name="RobotCore_Node" type="RobotCore" output="screen">
-            <param name="avoid_angle" value="20"/>
-            <param name="move_distance" value="3"/>
-            <param name="search_distance" value="10"/>
-            <param name="min_reach_distance" value="1.0"/>
-        </node>
-    </group>
+    <node pkg="project_core" name="RobotCore_Node" type="RobotCore" output="screen">
+        <param name="avoid_angle" value="20"/>
+        <param name="move_distance" value="3"/>
+        <param name="search_distance" value="10"/>
+        <param name="min_reach_distance" value="1.0"/>
+    </node>
 </launch>
