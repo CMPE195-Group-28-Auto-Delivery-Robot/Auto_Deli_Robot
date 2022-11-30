@@ -1,0 +1,1 @@
+rosbag record -o pidtest /deli_robot/controlVel /deli_robot/robotSpeed /deli_robot/odometry/map /deli_robot/cmd_vel 

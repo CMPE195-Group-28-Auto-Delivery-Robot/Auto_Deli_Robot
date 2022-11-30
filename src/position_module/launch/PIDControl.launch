@@ -3,6 +3,7 @@
     <group ns="$(arg robot_name)">
         <node pkg="position_module" name="PID_Processor" type="pid_processor" output="screen">
             <param name="configPath" value="$(find position_module)/pid_config/pidConfig.json" />
+            <param name="arrivalRange" value="0.1" />
         </node>
     </group>
 </launch>

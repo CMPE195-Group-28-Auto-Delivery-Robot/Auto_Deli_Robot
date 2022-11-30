@@ -6,7 +6,7 @@
 			<arg name="robot_name" value="$(arg robot_name)" />
 		</include>
 		<include file="$(find project_core)/launch/module_launch/Algorithm.launch"/>
-		<node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen">
+		<node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="log">
     	    <param name="SubPath" value="controlVel" />
     	</node>
     </group>
