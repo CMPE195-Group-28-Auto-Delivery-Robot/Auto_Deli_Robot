@@ -107,8 +107,8 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     if(IsGoalSet() && (currTime-m_lastCmdRecevied).toSec()>5){
         // ROS_INFO("Node In Control");
         float xDiff, yDiff;
-        xDiff = m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x;
-        yDiff = m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y;
+        xDiff = currRobotPose.position.x - m_robotTargetPoseMsg.pose.position.x;
+        yDiff = currRobotPose.position.y - m_robotTargetPoseMsg.pose.position.y;
         goaldist = sqrt(pow(xDiff,2) + pow(yDiff,2));
         if(goaldist < m_arrivalRange){
             ROS_INFO("Goal Point Arrived");

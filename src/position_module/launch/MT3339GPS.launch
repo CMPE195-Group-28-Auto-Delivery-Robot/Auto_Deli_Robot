@@ -2,7 +2,7 @@
     <node pkg="position_module" name="MT3339" type="SerialGPSDriver" output="screen">
         <param name="PortPath" value="/dev/ttyTHS2"/>
         <param name="ChipType" value="1" />
-        <param name="frame_id" value="gps"/>
+        <param name="frame_id" value="map"/>
         <param name="BaudRate" value="9600"/>
         <param name="DataBit" value="8" />
         <param name="Parity" value="False" />
