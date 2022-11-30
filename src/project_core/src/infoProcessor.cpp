@@ -5,8 +5,8 @@ infoProcessor::infoProcessor(int alert_angle, int step_size, int alert_distance,
     avoid_angle = alert_angle;
     move_distance = step_size;
     search_distance = alert_distance;
-    min_reach = min_reach_distance;
-    progressCounter = 0;
+    min_reach_distance = min_reach;
+
     odomInitialize = false;
     lineInitialize = false;
     destInitialize = false;
@@ -19,7 +19,6 @@ void infoProcessor::OdomCallback(const nav_msgs::Odometry::ConstPtr &odomMsg)
     current_position.x = m_robotOdometryMsg.pose.pose.position.x;
     current_position.y = m_robotOdometryMsg.pose.pose.position.y;
     odomInitialize = true;
-    ROS_INFO("Got Odom");
 }
 
 //  Update object detection in map level
@@ -33,27 +32,28 @@ void infoProcessor::ObjectCallback(const zed_interfaces::ObjectsStamped::ConstPt
 void infoProcessor::LineExtraCallback(const laser_line_extraction::LineSegmentList::ConstPtr &lineExtraLts)
 {
     m_lineExtrationLst = *(lineExtraLts.get());
+    input_lidar_info.clear();
     for (auto temp : m_lineExtrationLst.line_segments)
     {
         input_lidar_info.push_back(laserToMap(temp));
     }
     lineInitialize = true;
-    ROS_INFO("Got obs lines");
 }
 
 //  Reciveing the path from Google Maps API, Transfer the points into location struct.
 //  Convert from destPoint type to location struct in code for easier implement and RESET counter.
 void infoProcessor::DestListCallback(const robot_msgs::dest_list_msg::ConstPtr &lineExtraLts)
-{
+{   
+    
     m_goalPositions = *(lineExtraLts.get());
-    std::vector<robot_msgs::destPoint_msg> destList = m_goalPositions.dest_list;
-    for (auto point : destList)
+    progress.clear();
+    for (auto point : m_goalPositions.dest_list)
     {
         progress.push_back(earthToMap(point));
     }
-
+    progressCounter = 0;
+    dest_position = progress[progressCounter];
     destInitialize = true;
-    ROS_INFO("Got dest list");
 }
 
 // TODO: Early version of implementing tf transform between laser(line_extraction) to map. Map will only process location struct data.
@@ -84,66 +84,48 @@ float infoProcessor::distance(location a, location b)
     return result;
 }
 
+bool infoProcessor::isInitialized()
+{
+    return (odomInitialize && lineInitialize && destInitialize);
+}
 
-
+bool infoProcessor::isEnd()
+{
+    if(progressCounter == progress.size()){
+        return true;
+    }
+    if (distance(current_position, dest_position) <= min_reach_distance && progressCounter < progress.size())
+    {
+        progressCounter++;
+        if(progressCounter == progress.size()){
+            destInitialize = false;
+            return true;
+        }
+        dest_position = progress[progressCounter]; // Set current goal position.
+        // Robot reached proper distance to the target, assume it reached. progressCounter increase
+    }
+    return false;
+}
 
 // Major algorithum, based on current position, goal position, obstacles posistion and mvoe distance to calculate the next move's location
 geometry_msgs::PoseStamped infoProcessor::getNextStep()
-{
-    if (odomInitialize == false || lineInitialize == false || destInitialize == false)
+{   ROS_INFO("ProgressCounter: %d", progressCounter);
+    if (distance(current_position, dest_position) <= move_distance && isClear(getPosition(getAngle(), move_distance)))
     {
-        current_position.x = 50;
-        current_position.y = 50;
-        if (odomInitialize)
-        {
-            ROS_INFO("odomInitialize = true");
-        }
-        else
-        {
-            ROS_INFO("odomInitialize = false");
-        }
-        if (lineInitialize)
-        {
-            ROS_INFO("lineInitialize = true");
-        }
-        else
-        {
-            ROS_INFO("lineInitialize = false");
-        }
-        if (destInitialize)
-        {
-            ROS_INFO("destInitialize = true");
-        }
-        else
-        {
-            ROS_INFO("destInitialize = false");
-        }
-        return locToPoseConvet(current_position);
+        return locToPoseConvet(dest_position);
+        // If distance is close enough, no obstacle in between of the target and robot
     }
+    ROS_INFO("Progress: %d %d", progressCounter, progress.size());
 
-    if (distance(current_position, progress[progressCounter]) <= min_reach_distance && progressCounter < progress.size())
-    {
-        progressCounter++;
-    }
-    else if (progressCounter == progress.size())
-    {
-        ROS_INFO("You have reached destination");
-        return locToPoseConvet(current_position);
-    }
-    ROS_INFO("ProgressCounter %d", progressCounter);
-    ROS_INFO("Start algorithm");
     // when robot reach step goal, switch to next goal. If robot already reach final goal, nothing will change.
-    dest_position = progress[progressCounter]; // Set current goal position.
+    
 
     // obstacle_map.empty(); // Empty the obstacle map
-    for (auto temp : input_lidar_info)
+    for (auto tempObs : input_lidar_info)
     {
-        addObstacle(temp);
+        addObstacle(tempObs);
+        // ROS_INFO("Obstacle in (%f,%f), (%f,%f)", temp.start.x,temp.start.y,temp.end.x,temp.end.y);
     }
-    for (auto points : obstacle_map){
-        ROS_INFO("Point x: %f, y: %f",points.x, points.y);
-    }
-    ROS_INFO("Obstacle placed");
 
     bool isFront = true;
     bool isTurn = false;
@@ -158,12 +140,7 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
     double right_target_angel = 0;
 
     float current_angle = getAngle();
-    ROS_INFO("Angle = %f",current_angle);
     int half_angle = avoid_angle / 2;
-
-    // if(distance(current_position, progress[progressCounter]) <= move_distance){
-    //     return locToPoseConvet(progress[progressCounter]);
-    // }
 
     while (left != -90 && right != 90)
     {
@@ -212,10 +189,8 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
                     }
                 }
 
-
                 if (left_pass == half_angle && right_pass == half_angle)
-                {   ROS_INFO("Break 1");
-                    ROS_INFO("Angle = %f @break1",current_angle);
+                {
                     return locToPoseConvet(getPosition(right_target_angel, move_distance));
                 }
             }
@@ -246,7 +221,7 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
                 {
                     left_pass--;
                     if (left_pass == 0)
-                    {   ROS_INFO("Break 2");
+                    {
                         return locToPoseConvet(getPosition(left_target_angel - half_angle, move_distance));
                     }
                 }
@@ -271,7 +246,7 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
                 {
                     right_pass--;
                     if (right_pass == 0)
-                    {   ROS_INFO("Break 3");
+                    {
                         return locToPoseConvet(getPosition(right_target_angel + half_angle, move_distance));
                     }
                 }
@@ -284,8 +259,7 @@ geometry_msgs::PoseStamped infoProcessor::getNextStep()
             right++;
         }
     }
-    ROS_INFO("finish one calculation");
-    ROS_INFO("Break 4");
+    ROS_ERROR("Dead end reached");
     return locToPoseConvet(current_position);
 }
 
@@ -293,7 +267,8 @@ geometry_msgs::PoseStamped infoProcessor::locToPoseConvet(infoProcessor::locatio
 {
     geometry_msgs::PoseStamped stamp;
     stamp.pose.position.x = loc.x;
-    stamp.pose.position.y = loc.x;
+    stamp.pose.position.y = loc.y;
+    ROS_INFO("Robot move to (%f, %f)", loc.x, loc.y);
     return stamp;
 }
 
@@ -314,8 +289,8 @@ float infoProcessor::getAngle()
 
 bool infoProcessor::isClear(location nextStep)
 {
-    float x_diff = current_position.x - nextStep.x;
-    float y_diff = current_position.y - nextStep.y;
+    float x_diff = fabs(current_position.x - nextStep.x);
+    float y_diff = fabs(current_position.y - nextStep.y);
     float x_rate = x_diff / (y_diff + x_diff);
     float y_rate = y_diff / (y_diff + x_diff);
     float x_forward = x_rate;
@@ -339,7 +314,7 @@ bool infoProcessor::isClear(location nextStep)
         for (auto temp : obstacle_map)
         {
             if (temp_point.x == temp.x && temp_point.y == temp.y)
-            {
+            {   
                 return false;
             }
         }
@@ -354,8 +329,8 @@ bool infoProcessor::isClear(location nextStep)
 
 void infoProcessor::addObstacle(obstacle segment)
 {
-    float x_diff = segment.start.x - segment.end.x;
-    float y_diff = segment.start.y - segment.end.y;
+    float x_diff = fabs(segment.start.x - segment.end.x);
+    float y_diff = fabs(segment.start.y - segment.end.y);
     float x_rate = x_diff / (y_diff + x_diff);
     float y_rate = y_diff / (y_diff + x_diff);
     float x_forward = x_rate;
@@ -385,8 +360,6 @@ void infoProcessor::addObstacle(obstacle segment)
     location newObstacle;
     newObstacle.x = (int)segment.end.x;
     newObstacle.y = (int)segment.end.y;
-
+    //ROS_INFO("Obstacle: (%f, %f", newObstacle.x, newObstacle.y);
     obstacle_map.emplace(newObstacle);
-
-    
 }

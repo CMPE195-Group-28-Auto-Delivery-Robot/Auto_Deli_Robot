@@ -29,7 +29,7 @@ private:
         // id is returned as hash function
         size_t operator()(const location& t) const
         {
-            return t.x;
+            return t.x*t.y+1024;
         }
     };
     struct obstacle{
@@ -54,6 +54,7 @@ private:
     bool lineInitialize;
     bool destInitialize;
     
+    
 
 
 
@@ -72,6 +73,7 @@ public:
     obstacle laserToMap(laser_line_extraction::LineSegment seg);
     location earthToMap(robot_msgs::destPoint_msg loc);
     float distance(location a, location b);
-
+    bool isInitialized();
+    bool isEnd();
 
 };

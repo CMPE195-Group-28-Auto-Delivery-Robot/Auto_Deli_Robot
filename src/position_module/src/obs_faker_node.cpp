@@ -8,7 +8,7 @@ laser_line_extraction::LineSegmentList FakeObstacle(){
     laser_line_extraction::LineSegmentList fakeObsList;
     laser_line_extraction::LineSegment line1;
     line1.start = {40,70};
-    line1.end = {55,65};
+    line1.end = {60,62};
     laser_line_extraction::LineSegment line2;
     line2.start = {40,41};
     line2.end = {40,60};

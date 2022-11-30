@@ -21,8 +21,8 @@ int main(int argc, char** argv)
     odom.pose.pose.position.y = 50;
     ros::init(argc, argv, "odom_faker");
     ros::NodeHandle n;
-    ros::Subscriber fakeOdomSus = n.subscribe<geometry_msgs::PoseStamped>("nextStep", 1000, &OdomCallback);
-    ros::Publisher fakeGPSpub = n.advertise<nav_msgs::Odometry>("currentPosition", 1000);
+    ros::Subscriber fakeOdomSus = n.subscribe<geometry_msgs::PoseStamped>("goalPosition", 1000, &OdomCallback);
+    ros::Publisher fakeGPSpub = n.advertise<nav_msgs::Odometry>("odometry/map", 1000);
 
     ros::Rate loop_rate(5);
 

@@ -17,7 +17,7 @@ robot_msgs::dest_list_msg FakePath(){
     path2.lat = 35;
     path2.lng = 50;
     fakeMsg.dest_list.push_back(path1);
-    //fakeMsg.dest_list.push_back(path2);
+    fakeMsg.dest_list.push_back(path2);
     return fakeMsg;
 
 }
