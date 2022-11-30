@@ -74,11 +74,11 @@ def RobotDriverMain():
 
     driverBoard.SetTurningAngle(CENTER_SERVO_DEGREE())
     driverBoard.SetThrottle(0.5)
-    rospy.sleep(0.5)
+    rospy.sleep(0.2)
     driverBoard.SetThrottle(0.2)
-    rospy.sleep(0.5)
+    rospy.sleep(0.2)
     driverBoard.SetThrottle(0.8)
-    rospy.sleep(0.5)
+    rospy.sleep(0.2)
     driverBoard.SetThrottle(0.5)
 
     rospy.Subscriber(subPath, Twist, callback, driverBoard)

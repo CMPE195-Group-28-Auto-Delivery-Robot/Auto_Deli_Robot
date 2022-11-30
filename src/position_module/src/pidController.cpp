@@ -90,7 +90,7 @@ float pidController::AngleDiff(float ax, float ay,
 }
 
 geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
-    float goaldist, goalAngle;
+    float goaldist, angleDiff;
     geometry_msgs::Twist robotProcessMsg;
     geometry_msgs::Twist currRobotTwist;
     geometry_msgs::Pose currRobotPose;
@@ -106,21 +106,20 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
 
     if(IsGoalSet() && (currTime-m_lastCmdRecevied).toSec()>5){
         // ROS_INFO("Node In Control");
-        goaldist = sqrt(
-                    pow((m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x),2)
-                  + pow((m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y),2));
+        float xDiff, yDiff;
+        xDiff = m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x;
+        yDiff = m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y;
+        goaldist = sqrt(pow(xDiff,2) + pow(yDiff,2));
         if(goaldist < m_arrivalRange){
             ROS_INFO("Goal Point Arrived");
             m_angularPid.Clear();
             m_goalSet = false;
         }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
-            float headAngle;
-            headAngle = atan2(m_robotTargetPoseMsg.pose.orientation.y, m_robotTargetPoseMsg.pose.orientation.x);
-	        goalAngle = AngleDiff(m_robotTargetPoseMsg.pose.position.x, m_robotTargetPoseMsg.pose.position.y,
-                                  currRobotPose.position.x, currRobotPose.position.y);
-            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, goalAngle);
+	        angleDiff = AngleDiff(xDiff, yDiff,
+                                  m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y);
+            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
 	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.6);
-            robotProcessMsg.angular.z = m_angularPid.getResult(headAngle, goalAngle);
+            robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }
     }
