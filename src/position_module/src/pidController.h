@@ -17,9 +17,6 @@
 #include "robot_msgs/UpdateSpeedKp.h"
 #include "robot_msgs/UpdateSpeedKi.h"
 #include "robot_msgs/UpdateSpeedKd.h"
-#include "robot_msgs/UpdateDistanceKp.h"
-#include "robot_msgs/UpdateDistanceKi.h"
-#include "robot_msgs/UpdateDistanceKd.h"
 
 // Custom Libirary
 #include "pidAlgorithm/pidRegulater.h"
