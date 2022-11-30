@@ -125,6 +125,7 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/project_core.cpp
 # )
+add_library(infoProcessor STATIC src/infoProcessor.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -207,4 +208,6 @@ include_directories(
 # catkin_add_nosetests(test)
 add_executable(RobotCore src/RobotCore.cpp)
 target_link_libraries(RobotCore ${catkin_LIBRARIES})
+target_link_libraries(RobotCore infoProcessor)
 add_dependencies(RobotCore ${catkin_EXPORTED_TARGETS})
+catkin_package()

@@ -36,6 +36,7 @@
 - [Data Record](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/data_record)
 - [Back Service](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/Back_Service)
 - [Project Wiki](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/tree/main/Project_Wiki) ***Work In Progress***
+- [Project Web GUI](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Delivery_Robot_Web_Control_GUI) ***External***
 
 ---  
 
