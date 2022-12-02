@@ -1,5 +1,13 @@
 # Auto_Deli_Robot  
 
+## Project Demo
+
+You can check out our [Project Demo Video](https://youtu.be/-dlxQ5arHP0) on Youtube.
+
+![Robot Image](https://github.com/CMPE195-Group-28-Auto-Delivery-Robot/Auto_Deli_Robot/blob/main/RobotImage.jpg?raw=true)
+
+---
+
 ## Setup Workspace  
 
 ### First Install All Essential Package
@@ -7,12 +15,20 @@
 1. Install Python 3
 ``` sudo apt install python3 ```
 2. Install ROS Medodic follow this guide <https://wiki.ros.org/melodic/Installation/Ubuntu>
-3. Install the required Component  
+3. Install the required Component
+   1. If set up on local machine (Must be Ubuntu 18.04 Environment)
 
-```bash
-   cd <path to Auto_Deli_Robot>/Auto_Deli_Robot
-   sudo ./Package_Install.sh
-```
+      ```bash
+         cd <path to Auto_Deli_Robot>/Auto_Deli_Robot
+         sudo ./Developer_Packages.sh
+      ```
+
+   2. If set up on Robot
+
+      ```bash
+         cd <path to Auto_Deli_Robot>/Auto_Deli_Robot
+         sudo ./Robot_Packages.sh
+      ```
 
 ### Build ROS WorkSpace
 
