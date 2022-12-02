@@ -59,6 +59,9 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
     FILES
+    ChangeOpMode.srv
+    ClearGoal.srv
+    GoHome.srv
     RebootGPS.srv
     UpdateAngularKd.srv
     UpdateAngularKi.srv
@@ -66,9 +69,6 @@ add_service_files(
     UpdateSpeedKd.srv
     UpdateSpeedKi.srv
     UpdateSpeedKp.srv
-    UpdateDistanceKd.srv
-    UpdateDistanceKi.srv
-    UpdateDistanceKp.srv
 )
 
 ## Generate actions in the 'action' folder

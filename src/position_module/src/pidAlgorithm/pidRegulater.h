@@ -14,8 +14,12 @@ public:
     void setKp(float val);
     void setKi(float val);
     void setKd(float val);
+    void Clear();
     float getKp();
     float getKi();
     float getKd();
+    float getcerr();
+    float getperr();
     float getResult(float currVal, float goalVal);
+    float getResult(float currErr);
 };

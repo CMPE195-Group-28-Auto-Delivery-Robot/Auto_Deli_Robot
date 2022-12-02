@@ -1,8 +1,7 @@
 #include "pidRegulater.h"
 
 pidRegulater::pidRegulater(){
-    m_pre_error = 0;
-    m_cum_error = 0;
+    Clear();
 }
 
 void pidRegulater::setKp(float val){
@@ -24,12 +23,28 @@ float pidRegulater::getKi(){
 float pidRegulater::getKd(){
     return m_Kd;
 }
+float pidRegulater::getcerr(){
+    return m_cum_error;
+}
+float pidRegulater::getperr(){
+    return m_pre_error;
+}
 
-float pidRegulater::getResult(float currVal, float goalVal){
+void pidRegulater::Clear(){
+    m_pre_error = 0;
+    m_cum_error = 0;
+}
+
+float pidRegulater::getResult(float currErr){
     float result;
-    float currErr;
-    currErr = goalVal - currVal;
     result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
     m_cum_error += currErr;
     m_pre_error = currErr;
+    return result;
+}
+
+float pidRegulater::getResult(float currVal, float goalVal){
+    float currErr;
+    currErr = goalVal - currVal;
+    return getResult(currErr);
 }

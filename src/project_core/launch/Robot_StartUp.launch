@@ -8,7 +8,7 @@
 			<arg name="robot_name" value="$(arg robot_name)" />
 		</include>
 		<include file="$(find lidar_module)/launch/launch_line_extraction.launch"/>
-		<node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="screen">
+		<node pkg="driver_module" name="Driver" type="Robot_Base_Driver.py" output="log">
     	    <param name="SubPath" value="cmd_vel" />
     	</node>
     </group>

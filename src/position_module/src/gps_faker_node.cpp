@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "gps_faker");
     ros::NodeHandle n;
 
-    ros::Publisher fakeGPSpub = n.advertise<sensor_msgs::NavSatFix>("fix", 1000);
+    ros::Publisher fakeGPSpub = n.advertise<sensor_msgs::NavSatFix>("MT3339/fix", 1000);
 
     ros::Rate loop_rate(1);
 
