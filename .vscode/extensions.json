@@ -1,0 +1,20 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "twxs.cmake",
+        "mhutchie.git-graph",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "ms-python.python",
+        "ms-iot.vscode-ros",
+        "mikeburgh.xml-format",
+        "jeff-hykin.better-cpp-syntax",
+        "zhuangtongfa.material-theme",
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-ssh-edit",
+        "ms-vscode.remote-explorer",
+        "wayou.vscode-todo-highlight",
+        "ms-vscode-remote.remote-wsl"
+    ]
+}

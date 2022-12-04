@@ -51,7 +51,9 @@ qtcreator-*
 CATKIN_IGNORE
 
 # Visual Studio Code
-.vscode
+.vscode/tasks.json
+.vscode/settings.json
+.vscode/c_cpp_properties.json
 
 # ROS Data bag
 *.bag
