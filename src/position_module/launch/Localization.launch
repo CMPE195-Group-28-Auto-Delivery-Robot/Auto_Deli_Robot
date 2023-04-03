@@ -53,7 +53,7 @@
            true,  true,  true, 
            false, false, false]
         </rosparam>
-        <param name="odom1" value="MT3339/odom" />
+        <param name="odom1" value="UbloxF9P/odom" />
         <param name="odom1_differential" value="false"/>
         <rosparam param="odom1_config">
           [true,  true,  true, 
@@ -80,9 +80,9 @@
         <param name="yaw_offset" value="2.2165682"/>
         <param name="publish_filtered_gps" value="true"/>
         <remap from="imu/data" to="sensors/imu" />
-        <remap from="gps/fix" to="MT3339/fix" />
+        <remap from="gps/fix" to="UbloxF9P/fix" />
         <remap from="odometry/filtered" to="odometry/gps" />
-        <remap from="odometry/gps" to="MT3339/odom" />
-        <remap from="gps/filtered" to="MT3339/filtered_fix" />
+        <remap from="odometry/gps" to="UbloxF9P/odom" />
+        <remap from="gps/filtered" to="UbloxF9P/filtered_fix" />
     </node>
 </launch>
