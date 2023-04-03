@@ -101,6 +101,8 @@ int main(int argc, char **argv){
                     gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2);
                     serialStream << "GGA Parsed";
+                    gpsMsg.header.stamp = ros::Time::now();
+                    gps_pub.publish(gpsMsg);
                     serialMsg.data = serialStream.str();
                     serial_pub.publish(serialMsg);
                     serialStream.str("");
@@ -111,8 +113,6 @@ int main(int argc, char **argv){
                 break;
             }
         }
-        gpsMsg.header.stamp = ros::Time::now();
-        gps_pub.publish(gpsMsg);
         memset(&readBuff, '\0', sizeof(readBuff));
     }
     ROS_INFO("GPS %s Node End", ros::this_node::getName().c_str());
