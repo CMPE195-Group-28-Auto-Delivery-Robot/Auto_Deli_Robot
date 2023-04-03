@@ -130,7 +130,7 @@ void SerialGPSObject::RebootGPS(){
         break;
 
     case 2:
-        ROS_INFO("Chip: UBlox M8");
+        ROS_INFO("Chip: UBlox");
         //TODO: Ublox Command
         break;
     
