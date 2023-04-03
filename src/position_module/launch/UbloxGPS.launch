@@ -1,5 +1,5 @@
 <launch>
-    <node pkg="position_module" name="UbloxM8" type="SerialGPSDriver" output="screen">
+    <node pkg="position_module" name="UbloxF9P" type="SerialGPSDriver" output="screen">
         <param name="PortPath" value="/dev/ttyACM0"/>
         <param name="ChipType" value="2" />
         <param name="frame_id" value="map"/>
