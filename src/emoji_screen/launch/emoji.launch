@@ -1,0 +1,5 @@
+<launch>
+  <node name="emoji_node" pkg="emoji" type="emoji_node.py" output="screen">
+        <remap from="/gps" to="/deli_robot/MT3339/fix"/>
+  </node>
+</launch>
