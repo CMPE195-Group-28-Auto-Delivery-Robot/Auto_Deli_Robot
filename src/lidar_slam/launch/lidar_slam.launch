@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="lidar_slam" name="lidar_slam" type="lidar_slam_node" output="screen">
+    <remap from="/lidar_slam/scan" to="/deli_robot/scan"/>
+  </node>
+   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lidar_slam)/rviz_cfg/lidar_slam.rviz"/>
+</launch>
