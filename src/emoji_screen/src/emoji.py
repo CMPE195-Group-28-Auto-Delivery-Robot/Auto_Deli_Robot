@@ -33,7 +33,8 @@ def show(path):
     for frame in ImageSequence.Iterator(Image.open(path)):
         frame = frame.convert('RGB')
         cv2_frame = numpy.array(frame)
-        show_frame = cv2.cvtColor(cv2_frame, cv2.COLOR_RGB2BGR)
+        resize_frame = cv2.resize(cv2_frame, (1920, 480))
+        show_frame = cv2.cvtColor(resize_frame, cv2.COLOR_RGB2BGR)
         cv2.imshow("emo", show_frame)
         cv2.waitKey(15)
 
@@ -62,7 +63,7 @@ class emoji:
 
     def __init__(self):
         screen = cv2.namedWindow("emo", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("emo", 1920, 400)
+        cv2.resizeWindow("emo", 1920, 480)
         cv2.setWindowProperty("emo", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         self.order_queue = deque()
         self.flag = 0
