@@ -21,7 +21,7 @@ class emoji_node:
             rate.sleep()
 
     def gps_callback(self, msg):
-        if msg.status.status == 0:
+        if msg.status.status != 0:
             if self.screen.check_order() != 4:
                 self.screen.add_order(4)
                 #print("lost gps")
