@@ -130,12 +130,12 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     //ros::Subscriber sub_multiecho_laserscan = nh.subscribe<sensor_msgs::MultiEchoLaserScan>("/multiecho_scan", 100, multiecho_laserscan_callback);
-    ros::Subscriber sub_laserscan = nh.subscribe<sensor_msgs::LaserScan>("/lidar_slam/scan", 100, laserscan_callback);
+    ros::Subscriber sub_laserscan = nh.subscribe<sensor_msgs::LaserScan>("/scan", 100, laserscan_callback);
 
-    pub_laserscan = nh.advertise<sensor_msgs::LaserScan>("/laserscan", 100);
+    //pub_laserscan = nh.advertise<sensor_msgs::LaserScan>("/laserscan", 100);
     pub_pose = nh.advertise<geometry_msgs::PoseStamped>("/est_pose", 100);
     pub_path = nh.advertise<nav_msgs::Path>("/path", 100);
-    pub_map2d = nh.advertise<nav_msgs::OccupancyGrid>("/map", 100);
+    //pub_map2d = nh.advertise<nav_msgs::OccupancyGrid>("/map", 100);
     ros::spin();
     return 0;
 }
