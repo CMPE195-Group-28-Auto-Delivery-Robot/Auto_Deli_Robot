@@ -1,5 +1,6 @@
 <launch>
-  <node name="emoji_node" pkg="emoji_screen" type="emoji_node.py" output="screen">
-        <remap from="/gps" to="/deli_robot/UbloxF9P/fix"/>
-  </node>
+    <node pkg="emoji_screen" type="emoji_node.py" name="emoji_node" output="screen">
+        <remap from="/gps" to="UbloxF9P/fix"/>
+        <remap from="/message" to="emoji_screen/message"/>
+    </node>
 </launch>

@@ -12,7 +12,7 @@ class emoji_node:
     def __init__(self):
         rospy.init_node('emoji_node')
         rospy.Subscriber('/gps', NavSatFix, self.gps_callback)
-        rospy.Subscriber('/test', String, self.msg_callback)
+        rospy.Subscriber('/message', String, self.msg_callback)
         self.screen = emoji.emoji()
         self.thread = threading.Thread(target=self.screen.run())
         self.thread.start()
@@ -31,15 +31,15 @@ class emoji_node:
                 #print("get gps")
 
     def msg_callback(self, msg):
-        if msg.data == "a":
+        if msg.data == "error":
             if self.screen.check_order() != 3:
                 self.screen.add_order(3)
                 #print("error")
-        elif msg.data == "b":
+        elif msg.data == "pass":
             if self.screen.check_order() != 0:
                 self.screen.add_order(0)
                 #print("pass")
-        elif msg.data == "c":
+        elif msg.data == "end":
             self.screen.add_order(5)
             #print("end")
 

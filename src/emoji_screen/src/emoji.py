@@ -7,7 +7,7 @@ from PIL import Image, ImageSequence
 import numpy
 
 
-
+# emoji face gif
 N_N = "/home/deli_robot/Auto_Deli_Robot/src/emoji_screen/gif/N_N.gif"
 N_B = "/home/deli_robot/Auto_Deli_Robot/src/emoji_screen/gif/N_B.gif"
 
@@ -29,6 +29,7 @@ OP = "/home/deli_robot/Auto_Deli_Robot/src/emoji_screen/gif/OP.gif"
 ED = "/home/deli_robot/Auto_Deli_Robot/src/emoji_screen/gif/ED.gif"
 
 
+# display input gif
 def show(path):
     for frame in ImageSequence.Iterator(Image.open(path)):
         frame = frame.convert('RGB')
@@ -38,7 +39,7 @@ def show(path):
         cv2.imshow("emo", show_frame)
         cv2.waitKey(15)
 
-
+# keep looping the normal face
 def normal():
     num = random.randint(1, 16)
     if num <= 6:
@@ -68,6 +69,7 @@ class emoji:
         self.order_queue = deque()
         self.flag = 0
 
+    # change to error face
     def error(self):
         show(E_W_1)
         while True:
@@ -78,6 +80,7 @@ class emoji:
                     show(E_W_3)
                     return temp_flag
 
+    # change to no gps face
     def noGPS(self):
         show(E_G_1)
         while True:
@@ -88,9 +91,11 @@ class emoji:
                     show(E_G_3)
                     return temp_flag
 
+    # add order
     def add_order(self, flag_num):
         self.order_queue.append(flag_num)
 
+    # get current order
     def check_order(self):
         if len(self.order_queue) == 0:
             return -1
@@ -98,6 +103,7 @@ class emoji:
         self.order_queue.append(temp)
         return temp
 
+    # main function
     def run(self):
         show(OP)
         while True:
