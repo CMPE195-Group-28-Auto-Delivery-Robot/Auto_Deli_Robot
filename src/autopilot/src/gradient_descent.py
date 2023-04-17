@@ -6,13 +6,13 @@ import numpy as np
 from public_algorithm import distance_angle_point_to_line, distance_point_to_point, angle_point_to_point
 from loc_weighted_regression import loc_weighted_regression
 
-# 保留多数像素的初始路径为大致方向
-angle_length = 10
+
+# initially attractive and repulsive forces 
 attractive_force = 5
 repulsive_force = 2 * attractive_force
 
 
-# 添加终点，范围内有强吸引，整体有弱吸引
+# Add endpoint with strong attraction in range and weak attraction overall
 # finish
 def add_target_point(goal_coordinate, x, y, target_area=10):
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
@@ -29,7 +29,7 @@ def add_target_point(goal_coordinate, x, y, target_area=10):
     return x_vector, y_vector, to_goal_angle
 
 
-# 添加起点，范围内有强排斥
+# Add starting point with strong rejection in range
 # finish
 def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=5):
     to_start_distance = distance_point_to_point(x, y, start_coordinate)
@@ -42,7 +42,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=5):
     return x_vector, y_vector
 
 
-# 添加障碍物线段，范围内有强排斥，外围有向目标吸引
+# Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
 def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight, surround=10, curve=10):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
@@ -65,7 +65,7 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
     return x_vector, y_vector
 
 
-# 添加低权重区，范围内有弱排斥，外围有向目标吸引
+# Add a low weight zone with weak repulsion in the range and attraction toward the target in the periphery
 # finish
 def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, surround=10):
     intersections = 0
@@ -92,7 +92,7 @@ def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coo
     return x_vector, y_vector
 
 
-# 添加斜坡
+# Add Slope, for tilt gradient
 # finish
 def add_slope(slope_angle, x_vector, y_vector, force=5):
     x_vector += 100 * attractive_force * force * math.cos(slope_angle)
@@ -100,7 +100,7 @@ def add_slope(slope_angle, x_vector, y_vector, force=5):
     return x_vector, y_vector
 
 
-# 返回下一步移动坐标
+# Return to next move coordinates
 # finish
 def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length, step_depth=20):
     path = prev_path
@@ -118,7 +118,7 @@ def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_
     return path[-step_depth:], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
 
 
-# 推算出可视范围内的未来移动趋势
+# Extrapolate the overall vector map
 # finish
 def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope):
     x_vector_arr = np.zeros_like(x_map)
@@ -136,7 +136,7 @@ def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacle
     return x_vector_arr, y_vector_arr
 
 
-# 调用接口
+# Function interface
 # finish
 def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstacles, restricted_areas, prev_path, slope, step_length):
     x_map, y_map = np.meshgrid(x_arr, y_arr)

@@ -32,7 +32,7 @@ class autopilot_node:
 
         self.local_point = Point()
 
-    # 接收当前gps坐标
+    # Callback function to receive the current gps coordinates
     def gps_callback(self, msg):
         self.curren_point[0] = msg.latitude
         self.curren_point[1] = msg.longitude
@@ -41,7 +41,7 @@ class autopilot_node:
         else:
             self.lost_gps = True
 
-    # 接收障碍物坐标的回调函数
+    # Callback function to receive the coordinates of the obstacle
     def obstacles_callback(self, msg):
 
         gps_point = Point()
@@ -60,7 +60,7 @@ class autopilot_node:
             self.obstacles.append((line_segment.start, line_segment.end))
         '''
 
-    # 接收物体识别信息
+    # Callback function to receive object recognition information
     def object_callback(self, msg):
         self.objects = []
         for temp_object in msg.objects:
@@ -70,7 +70,7 @@ class autopilot_node:
         else:
             self.step_length = 2
 
-    # 接收目标坐标指令
+    # Callback function to receive target coordinates command
     def command_callback(self, msg):
         target_list = []
         for dest_point in msg.dest_list:
@@ -78,20 +78,15 @@ class autopilot_node:
         self.target_point = target_list.pop(0)
 
     def autopilot_node(self):
-        # 初始化节点
         rospy.init_node('path_planner_node')
-        # 订阅障碍物坐标和当前坐标
-        # /deli_robot/UbloxF9P/fix
+        # Subscribe to topics
         rospy.Subscriber('/gps', dest_list_msg, self.gps_callback)
-        # /deli_robot/destList_array
         rospy.Subscriber('/destination', dest_list_msg, self.command_callback)
-        # /deli_robot/line_segments
         rospy.Subscriber('/obstacles', LineSegmentList, self.obstacles_callback)
-        # /deli_robot/zed_node/obj_det/objects
         rospy.Subscriber('/objects', ObjectsStamped, self.object_callback)
         # rospy.Subscriber('/lawn', ObjectsStamped, self.object_callback)
 
-        # 发布路径规划结果
+        # Publish results
         # /deli_robot/set_pose
         path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
 
@@ -106,32 +101,40 @@ class autopilot_node:
             test1.publish(self.local_point)
             rate.sleep()
         '''
+
+        # main function
         while not rospy.is_shutdown():
-            # 如果有任务并且gps信号正常
+            # start work if gps working and get order
             if self.status and not self.lost_gps:
                 temp_target_point = []
                 temp_target_point[0] = self.target_point[0] - self.curren_point[0]
                 temp_target_point[1] = self.target_point[1] - self.curren_point[1]
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.step_length, temp_target_point)
+                # check point
                 if done:
                     path_publisher.publish(self.target_point)
+                    # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
                         self.node.start()
                         print("log: check")
+                    # finish all point
                     else:
                         self.status = False
-                        print("log： done")
+                        print("log: done")
+                # next pose
                 elif path:
                     path[0] += self.curren_point[0]
                     path[1] += self.curren_point[1]
                     path_publisher.publish(path)
                     print("======")
                     print(path)
+                # error
                 else:
                     self.status = False
                     msg_publisher.publish("error")
                     print("error: cannot move")
+            # get order
             elif self.target_point:
                 self.status = True
                 self.node.start()

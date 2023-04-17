@@ -3,7 +3,7 @@
 import numpy as np
 
 
-# 局部加权线性回归
+# Local weighted linear regression
 # finish
 def loc_weighted_regression(input_path, step_length, tau=2):
     length = len(input_path)

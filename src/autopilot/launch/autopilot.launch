@@ -1,5 +1,5 @@
 <launch>
-  <node name="autopilot" pkg="autopilot" type="autopilot_node.py" output="screen">
+  <node pkg="autopilot" type="autopilot_node.py" name="autopilot_node" output="screen">
         <remap from="/gps" to="/deli_robot/UbloxF9P/fix"/>
         <remap from="/destination" to="/deli_robot/destList_array"/>
         <remap from="/obstacles" to="/deli_robot/line_segments"/>

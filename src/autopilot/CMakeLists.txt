@@ -109,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES autopilot
-#  CATKIN_DEPENDS geometry_msgs laser_line_extraction nav_msgs robot_msgs rospy std_msgs zed_interfaces
+   CATKIN_DEPENDS geometry_msgs laser_line_extraction nav_msgs robot_msgs rospy std_msgs zed_interfaces
 #  DEPENDS system_lib
 )
 
@@ -208,3 +208,4 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+catkin_package()

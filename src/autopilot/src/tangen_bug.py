@@ -7,7 +7,7 @@ from public_algorithm import distance_angle_point_to_line
 two_pi, half_pi = 2 * math.pi, math.pi / 3
 
 
-# 判断两组线段是否相交
+# check two sets of line segments intersect
 # finish
 def check_intersection_line(line_1, line_2):
     line_1_start, line_1_end = line_1
@@ -22,7 +22,7 @@ def check_intersection_line(line_1, line_2):
     return (0 <= intersection_1 <= 1) and (0 <= intersection_2 <= 1)
 
 
-# 计算限制区域的最大距离
+# Calculate the maximum distance of the restricted area
 # finish
 def restricted_area_size(restricted_areas_coordinate):
     x1, y1 = restricted_areas_coordinate[0]
@@ -32,7 +32,7 @@ def restricted_area_size(restricted_areas_coordinate):
     return max(math.sqrt((x1 - x3) ** 2 + (y1 - y3) ** 2), math.sqrt((x2 - x4) ** 2 + (y2 - y4) ** 2))
 
 
-# 判断线段和区域是否相交
+# check line segment and a region intersect
 # finish
 def check_intersection_area(line, area):
     for i in range(4):
@@ -43,7 +43,7 @@ def check_intersection_area(line, area):
     return False
 
 
-# 添加死区
+# Add dead zone
 # finish
 def add_dead_zone(dead_zones, angle):
     dead_zone_start = angle - half_pi
@@ -56,7 +56,7 @@ def add_dead_zone(dead_zones, angle):
     return dead_zones
 
 
-# 合并死区
+# Merge dead zone
 # finish
 def get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles, check_depth=20, check_angle=half_pi):
     dead_zones = []
@@ -74,7 +74,7 @@ def get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles, che
     return dead_zones
 
 
-# 获得安全区范围
+# get safe zone coverage
 # finish
 def get_safe_zone(dead_zones):
     safe_zone_start, safe_zone_end = 0, 0
@@ -96,7 +96,7 @@ def get_safe_zone(dead_zones):
     return [safe_zone_start % two_pi, safe_zone_end % two_pi]
 
 
-# 寻找最近点
+# Find the closest angel
 def closest_angle(angle_1, angle_2, target_angle):
     distance1 = abs(target_angle - angle_1) % two_pi
     distance2 = abs(target_angle - angle_2) % two_pi
@@ -110,7 +110,7 @@ def closest_angle(angle_1, angle_2, target_angle):
         return angle_2
 
 
-# 保持贴墙
+# Keep moving against the wall
 # finish
 def bug_direction(safe_zone, to_goal_angel, prev_slope):
     if prev_slope:
@@ -118,7 +118,7 @@ def bug_direction(safe_zone, to_goal_angel, prev_slope):
     return closest_angle(safe_zone[0], safe_zone[1], to_goal_angel)
 
 
-# 调用接口
+# Function interfaces
 # finish
 def tangent_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope):
     to_goal_angel = math.atan2(target_point[1] - curren_coordinate[1], target_point[0] - curren_coordinate[0])

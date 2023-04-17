@@ -3,21 +3,21 @@
 import math
 
 
-# 返回点到点的距离
+# Return the point-to-point distance
 # finish
 def distance_point_to_point(x1, y1, point):
     distance = math.sqrt((point[0] - x1) ** 2 + (point[1] - y1) ** 2)
     return distance
 
 
-# 返回点到点的角度
+# Return the point-to-point angle
 # finish
 def angle_point_to_point(x1, y1, point):
     angle = math.atan2(point[1] - y1, point[0] - x1)
     return angle
 
 
-# 返回点到线段的距离和角度
+# Returns the distance and angle from the point to the line segment
 # finish
 def distance_angle_point_to_line(x, y, line_left, line_right):
     x1, y1 = line_left
