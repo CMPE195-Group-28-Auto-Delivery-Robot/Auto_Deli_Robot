@@ -29,8 +29,8 @@ class autopilot_node:
         self.step_length = 2
         self.lost_gps = False
         self.node = autopilot.autopilot()
-
         self.local_point = Point()
+        self.run()
 
     # Callback function to receive the current gps coordinates
     def gps_callback(self, msg):
@@ -48,6 +48,8 @@ class autopilot_node:
         gps_point.x = msg.latitude
         gps_point.y = msg.longitude
         gps_point.z = msg.altitude
+
+        print(gps_point)
 
         transform_listener = TransformListener(rospy.Duration(1))
         transform = transform_listener.lookup_transform("map", "base_link", rospy.Time())
@@ -77,8 +79,8 @@ class autopilot_node:
             target_list.append([dest_point.lat, dest_point.lng])
         self.target_point = target_list.pop(0)
 
-    def autopilot_node(self):
-        rospy.init_node('path_planner_node')
+    def run(self):
+        rospy.init_node('autopilot_node')
         # Subscribe to topics
         rospy.Subscriber('/gps', dest_list_msg, self.gps_callback)
         rospy.Subscriber('/destination', dest_list_msg, self.command_callback)
@@ -93,8 +95,8 @@ class autopilot_node:
         # /deli_robot/emoji_message
         msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
 
-        test1 = rospy.Publisher('/test1', Pose, queue_size=10)
-
+        test1 = rospy.Publisher('/test1', Point, queue_size=10)
+        
         # 1hz
         rate = rospy.Rate(1)
         while not rospy.is_shutdown():
