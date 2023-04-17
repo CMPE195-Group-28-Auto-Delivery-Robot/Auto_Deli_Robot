@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import rospy
+from tf2_ros import TransformListener
+from tf2_geometry_msgs import do_transform_point
 from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
+from geometry_msgs.msg import Quaternion, Point, Pose
 from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, Header
@@ -28,6 +31,8 @@ class autopilot_node:
         self.lost_gps = False
         self.node = autopilot.autopilot()
 
+        self.local_point = Point()
+
     # 接收当前gps坐标
     def gps_callback(self, msg):
         self.curren_point[0] = msg.latitude
@@ -39,9 +44,22 @@ class autopilot_node:
 
     # 接收障碍物坐标的回调函数
     def obstacles_callback(self, msg):
+
+        gps_point = Point()
+        gps_point.x = msg.latitude
+        gps_point.y = msg.longitude
+        gps_point.z = msg.altitude
+
+        transform_listener = TransformListener(rospy.Duration(1))
+        transform = transform_listener.lookup_transform("map", "base_link", rospy.Time())
+        self.local_point = do_transform_point(gps_point, transform)
+
+
+        '''
         self.obstacles = []
         for line_segment in msg.line_segments:
             self.obstacles.append((line_segment.start, line_segment.end))
+        '''
 
     # 接收物体识别信息
     def object_callback(self, msg):
@@ -68,7 +86,7 @@ class autopilot_node:
         rospy.Subscriber('/gps', dest_list_msg, self.gps_callback)
         # /deli_robot/destList_array
         rospy.Subscriber('/destination', dest_list_msg, self.command_callback)
-        # /deli_robot / line_segments
+        # /deli_robot/line_segments
         rospy.Subscriber('/obstacles', LineSegmentList, self.obstacles_callback)
         # /deli_robot/zed_node/obj_det/objects
         rospy.Subscriber('/objects', ObjectsStamped, self.object_callback)
@@ -81,9 +99,14 @@ class autopilot_node:
         # /deli_robot/emoji_message
         msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
 
+        test1 = rospy.Publisher('/test1', Pose, queue_size=10)
+
         # 1hz
         rate = rospy.Rate(1)
-
+        while not rospy.is_shutdown():
+            test1.publish(self.local_point)
+            rate.sleep()
+        '''
         while not rospy.is_shutdown():
             # 如果有任务并且gps信号正常
             if self.status and not self.lost_gps:
@@ -114,7 +137,7 @@ class autopilot_node:
                 self.status = True
                 self.node.start()
             rate.sleep()
-
+        '''
 
 if __name__ == '__main__':
     try:

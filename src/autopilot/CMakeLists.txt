@@ -12,6 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   robot_msgs
   rospy
+  tf2_ros
+  tf2_geometry_msgs
+  geometry_msgs
   std_msgs
   zed_interfaces
 )
