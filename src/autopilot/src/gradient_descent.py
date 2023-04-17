@@ -115,8 +115,7 @@ def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_
             repeat_flag += 1
     if path[-1] == target_point or path[-2] == target_point or path[-3] == target_point:
         repeat_flag = 0
-    # return path[-step_depth:], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
-    return path[-step_depth:], path[-(step_depth - step_length)], repeat_flag
+    return path[-step_depth:], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
 
 
 # 推算出可视范围内的未来移动趋势
