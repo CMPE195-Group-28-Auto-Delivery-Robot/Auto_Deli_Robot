@@ -2,7 +2,6 @@
 
 import rospy
 from tf2_ros import TransformListener
-from tf2_geometry_msgs import do_transform_point
 from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
 from geometry_msgs.msg import Quaternion, Point, Pose
