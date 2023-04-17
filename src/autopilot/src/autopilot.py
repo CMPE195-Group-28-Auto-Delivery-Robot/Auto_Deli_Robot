@@ -4,6 +4,7 @@ import random
 import numpy as np
 
 import gradient_descent
+import tangen_bug
 
 resolution = 100
 zoom_rate = 10000000
@@ -54,8 +55,7 @@ class autopilot:
             return None, True
         elif abs(next_coordinate[0] - target_point[0]) <= merge and abs(next_coordinate[1] - target_point[1]) <= merge:
             return None, True
-        #if slope is not None:
-        else:
+        if self.slope is not None:
             if repeat_flag > 2:
                 if self.repeat_time > 2:
                     return None, False
@@ -63,10 +63,10 @@ class autopilot:
                 next_coordinate[1] += random.randint(-1, 1)
                 print("error: jump")
                 self.repeat_time += 1
-            #else:
-                #slope = ObstacleAvoidance.tangent_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope)
-                #print("tangent_bug:slope")
-        #elif repeat_flag > 1:
-            #slope = ObstacleAvoidance.tangent_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope)
-            #print("tangent_bug:slope")
+            else:
+                self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, slope)
+                print("tangent_bug:slope")
+        elif repeat_flag > 1:
+            self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, slope)
+            print("tangent_bug:slope")
         return undo_coordinate_fix(next_coordinate), False
