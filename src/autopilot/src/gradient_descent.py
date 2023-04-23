@@ -142,8 +142,11 @@ def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacle
 def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstacles, restricted_areas, prev_path, slope, step_length):
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
-    save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path, step_length)
     
     matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, obstacles)
+    
+    save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path, step_length)
+    
+    
     
     return save_path, next_coordinate, repeat_flag, slope

@@ -6,14 +6,17 @@ import numpy as np
 import gradient_descent
 import tangen_bug
 
-resolution = 100
+resolution = 50
 
 def coordinate_fix(fix, coordinate):
-    coordinate[0] -= fix[0]
-    coordinate[1] -= fix[1]
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
+    coordinate[0] *= 10
+    coordinate[1] *= 10
     coordinate[0] += resolution / 2
     coordinate[1] += resolution / 2
     return coordinate
+
 
 
 def coordinates_fix(fix, coordinates):
@@ -23,10 +26,12 @@ def coordinates_fix(fix, coordinates):
 
 
 def undo_coordinate_fix(fix, coordinate):
-    coordinate[0] += fix[0]
-    coordinate[1] += fix[1]
     coordinate[0] -= resolution / 2
     coordinate[1] -= resolution / 2
+    coordinate[0] /= 10
+    coordinate[1] /= 10
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
     return coordinate
 
 
@@ -38,7 +43,7 @@ class autopilot:
         self.slope = None
         self.path = []
         self.save_path = []
-        self.start_point = [50, 50]
+        self.start_point = [resolution / 2, resolution / 2]
         self.repeat_time = 0
 
     def start(self):
@@ -46,7 +51,7 @@ class autopilot:
         self.repeat_time = 0
 
     def get_next(self, obstacles, restricted_areas, step_length, curren_point, target_point, merge=5):
-        target_point = coordinate_fix(curren_point, target_point)
+        #target_point = coordinate_fix(curren_point, target_point)
         obstacles = coordinates_fix(curren_point, obstacles)
         restricted_areas = coordinates_fix(curren_point, restricted_areas)
         self.save_path, next_coordinate, repeat_flag, self.slope = gradient_descent.gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope, step_length)

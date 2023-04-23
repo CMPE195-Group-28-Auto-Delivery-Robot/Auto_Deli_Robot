@@ -82,7 +82,7 @@ class autopilot_node:
     def __init__(self):
         self.status = False
         self.target_list = []
-        self.target_point = [30, 30]
+        self.target_point = [100, 100]
         self.curren_point = [0.0, 0.0]
         self.objects = []
         self.obstacles = []
@@ -100,10 +100,9 @@ class autopilot_node:
     def gps_callback(self, msg):
 
         #gps2etm(msg.latitude, msg.longitude, msg.altitude)
-        self.local_point = Odometry2Point(msg, "odom" ,"base_link").point
-        print(self.local_point)
-        self.curren_point[0] = self.local_point.x
-        self.curren_point[1] = self.local_point.y
+        #self.local_point = Odometry2Point(msg, "odom" ,"base_link").point
+        self.curren_point[0] = msg.pose.pose.position.x
+        self.curren_point[1] = msg.pose.pose.position.y
         '''
         if msg.status.status == 0:
             self.lost_gps = False
@@ -161,16 +160,15 @@ class autopilot_node:
        
         # 1hz
         rate = rospy.Rate(1)
-        while not rospy.is_shutdown():
-            test1.publish(self.local_point)
-            
-            rate.sleep()
-
         # main function
         while not rospy.is_shutdown():
             # start work if gps working and get order
-            if self.status and not self.lost_gps:
+            #if self.status and not self.lost_gps:
+            test1.publish(self.local_point)
+            if True:
+                print("start")
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.step_length, self.curren_point, self.target_point)
+                print("move")
                 # check point
                 if done:
                     #path_publisher.publish(self.target_point)
