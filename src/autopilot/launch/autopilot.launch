@@ -1,9 +1,12 @@
 <launch>
-  <node pkg="autopilot" type="autopilot_node.py" name="autopilot_node" output="screen">
-        <remap from="/gps" to="/deli_robot/UbloxF9P/fix"/>
-        <remap from="/destination" to="/deli_robot/destList_array"/>
-        <remap from="/obstacles" to="/deli_robot/line_segments"/>
-        <remap from="/objects" to="/deli_robot/zed_node/obj_det/objects"/>
-        <remap from="/path" to="/deli_robot/set_pose"/>
-  </node>
+    <arg name="robot_name" default="deli_robot" />
+    <group ns="$(arg robot_name)">
+        <node pkg="autopilot" type="autopilot_node.py" name="autopilot_node" output="screen">
+            <remap from="/gps" to="/deli_robot/UbloxF9P/odom"/>
+            <remap from="/destination" to="/deli_robot/destList_array"/>
+            <remap from="/obstacles" to="/deli_robot/line_segments"/>
+            <remap from="/objects" to="/deli_robot/zed_node/obj_det/objects"/>
+            <remap from="/path" to="/deli_robot/set_pose"/>
+        </node>
+    </group>
 </launch>

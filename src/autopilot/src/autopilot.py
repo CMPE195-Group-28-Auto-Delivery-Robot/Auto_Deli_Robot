@@ -7,25 +7,24 @@ import gradient_descent
 import tangen_bug
 
 resolution = 100
-zoom_rate = 10000000
 
-def coordinate_fix(coordinate):
-    coordinate[0] *= zoom_rate
-    coordinate[1] *= zoom_rate
+def coordinate_fix(fix, coordinate):
+    coordinate[0] -= fix[0]
+    coordinate[1] -= fix[1]
     coordinate[0] += resolution / 2
     coordinate[1] += resolution / 2
     return coordinate
 
 
-def coordinates_fix(coordinates):
+def coordinates_fix(fix, coordinates):
     for i in range(len(coordinates)):
-        coordinates[i] = coordinate_fix(coordinates[i])
+        coordinates[i] = coordinate_fix(fix, coordinates[i])
     return coordinates
 
 
-def undo_coordinate_fix(coordinate):
-    coordinate[0] /= zoom_rate
-    coordinate[1] /= zoom_rate
+def undo_coordinate_fix(fix, coordinate):
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
     coordinate[0] -= resolution / 2
     coordinate[1] -= resolution / 2
     return coordinate
@@ -46,10 +45,10 @@ class autopilot:
         self.slope = None
         self.repeat_time = 0
 
-    def get_next(self, obstacles, restricted_areas, step_length, target_point, merge=5):
-        target_point = coordinate_fix(target_point)
-        obstacles = coordinates_fix(obstacles)
-        restricted_areas = coordinates_fix(restricted_areas)
+    def get_next(self, obstacles, restricted_areas, step_length, curren_point, target_point, merge=5):
+        target_point = coordinate_fix(curren_point, target_point)
+        obstacles = coordinates_fix(curren_point, obstacles)
+        restricted_areas = coordinates_fix(curren_point, restricted_areas)
         self.save_path, next_coordinate, repeat_flag, self.slope = gradient_descent.gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope, step_length)
         if next_coordinate == target_point:
             return None, True

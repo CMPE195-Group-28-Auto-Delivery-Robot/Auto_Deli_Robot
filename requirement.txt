@@ -1,0 +1,4 @@
+adafruit-circuitpython-bno055
+adafruit-circuitpython-pca9685
+adafruit-circuitpython-motor
+adafruit-circuitpython-servokit

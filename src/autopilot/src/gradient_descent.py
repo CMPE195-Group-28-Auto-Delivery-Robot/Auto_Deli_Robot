@@ -6,6 +6,7 @@ import numpy as np
 from public_algorithm import distance_angle_point_to_line, distance_point_to_point, angle_point_to_point
 from loc_weighted_regression import loc_weighted_regression
 
+import matlab_test
 
 # initially attractive and repulsive forces 
 attractive_force = 5
@@ -142,4 +143,7 @@ def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstac
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
     save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path, step_length)
+    
+    matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, obstacles)
+    
     return save_path, next_coordinate, repeat_flag, slope

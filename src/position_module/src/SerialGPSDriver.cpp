@@ -77,7 +77,7 @@ int main(int argc, char **argv){
                 if(minmea_parse_gga(&frame, inLine.c_str())) {
                     gpsMsg.latitude = minmea_tocoord(&frame.latitude);
                     gpsMsg.longitude = minmea_tocoord(&frame.longitude);
-                    gpsMsg.altitude = minmea_tocoord(&frame.altitude);
+                    gpsMsg.altitude = minmea_tofloat(&frame.altitude);
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
                     gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_APPROXIMATED;
                     switch(frame.fix_quality){
@@ -97,9 +97,9 @@ int main(int argc, char **argv){
                             break;
                     }
                     gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
-                    gpsMsg.position_covariance[0] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
-                    gpsMsg.position_covariance[4] = minmea_tocoord(&frame.hdop) * minmea_tocoord(&frame.hdop);
-                    gpsMsg.position_covariance[8] = (minmea_tocoord(&frame.hdop)*2) * (minmea_tocoord(&frame.hdop)*2);
+                    gpsMsg.position_covariance[0] = minmea_tofloat(&frame.hdop) ;//* minmea_tocoord(&frame.hdop);
+                    gpsMsg.position_covariance[4] = minmea_tofloat(&frame.hdop) ;//* minmea_tocoord(&frame.hdop);
+                    gpsMsg.position_covariance[8] = (minmea_tofloat(&frame.hdop)*4) ;//* (minmea_tocoord(&frame.hdop)*2);
                     serialStream << "GGA Parsed";
                     gpsMsg.header.stamp = ros::Time::now();
                     gps_pub.publish(gpsMsg);

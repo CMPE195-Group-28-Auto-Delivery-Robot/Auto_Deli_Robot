@@ -11,9 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   laser_line_extraction
   nav_msgs
-  robot_msgs
   rospy
+  sensor_msgs
   std_msgs
+  tf2_geometry_msgs
+  tf2_ros
   zed_interfaces
 )
 
@@ -74,7 +76,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   geometry_msgs#   nav_msgs#   robot_msgs#   std_msgs
+#   geometry_msgs#   nav_msgs#   sensor_msgs#   std_msgs#   tf2_geometry_msgs
 # )
 
 ################################################
@@ -109,7 +111,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES autopilot
-   CATKIN_DEPENDS geometry_msgs laser_line_extraction nav_msgs robot_msgs rospy std_msgs zed_interfaces
+   CATKIN_DEPENDS geometry_msgs laser_line_extraction nav_msgs rospy sensor_msgs std_msgs tf2_geometry_msgs tf2_ros zed_interfaces
 #  DEPENDS system_lib
 )
 

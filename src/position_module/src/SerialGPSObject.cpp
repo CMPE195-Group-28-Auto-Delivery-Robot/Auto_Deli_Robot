@@ -131,7 +131,7 @@ void SerialGPSObject::RebootGPS(){
 
     case 2:
         ROS_INFO("Chip: UBlox");
-        //sendCommand("PUBX,41,1,0007,0003,38400,0");
+        sendCommand("PUBX,41,1,0007,0003,38400,0");
         ros::Duration(5).sleep();
         sendCommand("PUBX,40,RMC,0,0,0,0,0,0");
         sendCommand("PUBX,40,GLL,0,0,0,0,0,0");

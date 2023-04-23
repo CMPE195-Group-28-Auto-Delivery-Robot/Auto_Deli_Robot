@@ -4,14 +4,14 @@
 	<node pkg="robot_localization" type="ekf_localization_node"
             name="$(arg robot_name)_ekf_map_node"
             clear_params="true">
-        <param name="frequency" value="15" />
+        <param name="frequency" value="10" />
         <param name="sensor_timeout" value="0.5" />
         <param name="two_d_mode" value="true" />
         <param name="publish_tf" value="true" />
         <param name="map_frame" value="map" />
         <param name="odom_frame" value="odom" />
         <param name="base_link_frame" value="base_link" />
-        <param name="world_frame" value="map" />
+        <param name="world_frame" value="odom" />
         <param name="odom0" value="zed_node/odom" />
         <param name="odom0_differential" value="false"/>
         <rosparam param="odom0_config">
@@ -30,7 +30,7 @@
            false, false, true, 
            true,  false, false, ]
         </rosparam>
-        <remap from="odometry/filtered" to="odometry/map"/>
+        <remap from="odometry/filtered" to="odometry/odom"/>
     </node>
 
     <node pkg="robot_localization" type="ukf_localization_node"
@@ -39,7 +39,7 @@
         <param name="frequency" value="10" />
         <param name="sensor_timeout" value="0.5" />
         <param name="two_d_mode" value="true" />
-        <param name="publish_tf" value="false" />
+        <param name="publish_tf" value="true" />
         <param name="map_frame" value="map" />
         <param name="odom_frame" value="odom" />
         <param name="base_link_frame" value="base_link" />
@@ -71,17 +71,18 @@
            false, false, false,
            false, false, false]
         </rosparam>
-        <remap from="odometry/filtered" to="odometry/gps"/>
+        <remap from="odometry/filtered" to="odometry/map"/>
     </node>
-
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
         <param name="frequency" value="10" />
         <param name="magnetic_declination_radians" value="12.98"/>
         <param name="yaw_offset" value="2.2165682"/>
         <param name="publish_filtered_gps" value="true"/>
+        <param name="broadcast_cartesian_transform" value="true"/>
+        <param name="broadcast_cartesian_transform_as_parent_frame" value="true"/>
         <remap from="imu/data" to="sensors/imu" />
         <remap from="gps/fix" to="UbloxF9P/fix" />
-        <remap from="odometry/filtered" to="odometry/gps" />
+        <remap from="odometry/filtered" to="odometry/odom" />
         <remap from="odometry/gps" to="UbloxF9P/odom" />
         <remap from="gps/filtered" to="UbloxF9P/filtered_fix" />
     </node>
