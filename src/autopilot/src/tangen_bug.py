@@ -6,6 +6,8 @@ from public_algorithm import distance_angle_point_to_line
 
 two_pi, half_pi = 2 * math.pi, math.pi / 3
 
+tangen_depth = 20
+
 
 # check two sets of line segments intersect
 # finish
@@ -58,13 +60,13 @@ def add_dead_zone(dead_zones, angle):
 
 # Merge dead zone
 # finish
-def get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles, check_depth=20, check_angle=half_pi):
+def get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles, check_depth=tangen_depth, check_angle=half_pi):
     dead_zones = []
     for temp_obstacle in obstacles:
-        distance, angle = distance_angle_point_to_line(curren_coordinate[0], curren_coordinate[1], temp_obstacle[0][0], temp_obstacle[0][1])
+        distance, angle = distance_angle_point_to_line(curren_coordinate[0], curren_coordinate[1], temp_obstacle[0], temp_obstacle[1])
         if distance > check_depth:
             continue
-        if check_intersection_line([curren_coordinate, target_point], temp_obstacle[0]):
+        if check_intersection_line([curren_coordinate, target_point], [temp_obstacle[0], temp_obstacle[1]]):
             add_dead_zone(dead_zones, angle)
         else:
             check_near_start = to_goal_angel - check_angle
@@ -92,6 +94,7 @@ def get_safe_zone(dead_zones):
             safe_zone_start = max(safe_zone_start, temp_zone[1])
             safe_zone_end = min(safe_zone_end, temp_zone[0] + two_pi)
     if safe_zone_start == safe_zone_end == 0:
+        print("error: stop")
         return None
     return [safe_zone_start % two_pi, safe_zone_end % two_pi]
 
@@ -123,6 +126,8 @@ def bug_direction(safe_zone, to_goal_angel, prev_slope):
 def tangent_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope):
     to_goal_angel = math.atan2(target_point[1] - curren_coordinate[1], target_point[0] - curren_coordinate[0])
     dead_zones = get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles)
+    print("dead_zones")
+    print(dead_zones)
     if dead_zones:
         safe_zone = get_safe_zone(dead_zones)
         slope = bug_direction(safe_zone, to_goal_angel, slope)

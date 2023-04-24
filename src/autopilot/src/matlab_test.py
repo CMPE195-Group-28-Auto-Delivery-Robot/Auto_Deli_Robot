@@ -2,19 +2,31 @@
 
 import matplotlib.pyplot as plt
 
-def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, obstacles):
+resolution = 100
+size_x = 5
+size_y = 3
+
+def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles):
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.streamplot(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
-    ax.add_patch(plt.Circle(target_point, 1, color='b'))
-    ax.annotate("End", xy=target_point, fontsize=10, ha="center")
+    if(target_point[0] < 50 or target_point[1] < 50):
+        ax.add_patch(plt.Circle(target_point, 1, color='b'))
+        ax.annotate("Target", xy=target_point, fontsize=10, ha="center")
     ax.add_patch(plt.Circle(start_point, 1, color='r'))
-    ax.annotate("Start", xy=start_point, fontsize=10, ha="center")
+    ax.annotate("Robot", xy=start_point, fontsize=10, ha="center")
+    ax.add_patch(plt.Circle(next_point, 1, color='y'))
+    ax.annotate("Next", xy=next_point, fontsize=10, ha="center")
     for temp_obstacle in obstacles:
-        x1, y1 = temp_obstacle[0][0]
-        x2, y2 = temp_obstacle[0][1]
-        ax.annotate("Obstacle", xy=temp_obstacle[1], fontsize=10, ha="center")
+        x1, y1 = temp_obstacle[0]
+        x2, y2 = temp_obstacle[1]
+        ax.annotate("Obstacle", xy=temp_obstacle[2], fontsize=10, ha="center")
         plt.plot([x1, x2], [y1, y2], linewidth='5')
+    x1, y1 = resolution/2+size_x, resolution/2+size_y
+    x2, y2 = resolution/2+size_x, resolution/2-size_y
+    x3, y3 = resolution/2-size_x, resolution/2-size_y
+    x4, y4 = resolution/2-size_x, resolution/2+size_y
+    plt.plot([x1, x2, x3, x4, x1], [y1, y2, y3, y4, y1], linewidth='2.5')
     ax.set_title('Test')
     plt.show()

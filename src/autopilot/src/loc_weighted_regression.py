@@ -2,10 +2,11 @@
 
 import numpy as np
 
+tau_var = 2
 
 # Local weighted linear regression
 # finish
-def loc_weighted_regression(input_path, step_length, tau=2):
+def loc_weighted_regression(input_path, step_length, tau=tau_var):
     length = len(input_path)
     arr = np.mat(np.array([i for i in range(1, length + 1)]))
     x_matrix = np.mat(np.array([i[0] for i in input_path]))
@@ -18,4 +19,4 @@ def loc_weighted_regression(input_path, step_length, tau=2):
     gram_matrix = arr * (weights * arr.T)
     regression_coefficient_x = gram_matrix.I * (arr * (weights * x_matrix.T))
     regression_coefficient_y = gram_matrix.I * (arr * (weights * y_matrix.T))
-    return [int((length - step_length) * regression_coefficient_x), int((length - step_length) * regression_coefficient_y)]
+    return [float((length - step_length) * regression_coefficient_x), float((length - step_length) * regression_coefficient_y)]

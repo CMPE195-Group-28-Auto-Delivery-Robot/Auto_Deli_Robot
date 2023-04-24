@@ -12,10 +12,13 @@ import matlab_test
 attractive_force = 5
 repulsive_force = 2 * attractive_force
 
+size = 10
+step = 5
+
 
 # Add endpoint with strong attraction in range and weak attraction overall
 # finish
-def add_target_point(goal_coordinate, x, y, target_area=10):
+def add_target_point(goal_coordinate, x, y, target_area=size):
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
     to_goal_angle = angle_point_to_point(x, y, goal_coordinate)
     if to_goal_distance > target_area:
@@ -32,7 +35,7 @@ def add_target_point(goal_coordinate, x, y, target_area=10):
 
 # Add starting point with strong rejection in range
 # finish
-def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=5):
+def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=size/2):
     to_start_distance = distance_point_to_point(x, y, start_coordinate)
     if to_start_distance > start_area:
         return x_vector, y_vector
@@ -45,7 +48,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=5):
 
 # Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
-def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight, surround=10, curve=10):
+def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=2, surround=size, curve=size):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
     if to_obstacle_distance > 20:
         return x_vector, y_vector
@@ -56,8 +59,8 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
     elif total_distance > surround:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_goal_angle) - math.sin(to_center_angle)), (math.cos(to_goal_angle) - math.cos(to_center_angle)))
-        x_vector += 0 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
-        y_vector += 0 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
+        x_vector += 8 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
+        y_vector += 8 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
     elif total_distance > 1:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_obstacle_angle) + math.sin(to_center_angle)), (math.cos(to_obstacle_angle) + math.cos(to_center_angle)))
@@ -68,7 +71,7 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
 
 # Add a low weight zone with weak repulsion in the range and attraction toward the target in the periphery
 # finish
-def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, surround=10):
+def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, surround=size):
     intersections = 0
     for i in range(4):
         x1, y1 = restricted_areas_coordinate[i]
@@ -103,13 +106,13 @@ def add_slope(slope_angle, x_vector, y_vector, force=5):
 
 # Return to next move coordinates
 # finish
-def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length, step_depth=20):
+def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step , step_depth=step*2):
     path = prev_path
     path.append(curren_coordinate)
     temp_coordinate = curren_coordinate
     repeat_flag = 0
     for step in range(step_depth):
-        angle = math.atan2(x_vector_arr[path[-1][1], path[-1][0]], y_vector_arr[path[-1][1], path[-1][0]])
+        angle = math.atan2(x_vector_arr[int(path[-1][1]), int(path[-1][0])], y_vector_arr[int(path[-1][1]), int(path[-1][0])])
         temp_coordinate = [temp_coordinate[0] + 2 * math.sin(angle), temp_coordinate[1] + 2 * math.cos(angle)]
         path.append([round(temp_coordinate[0]), round(temp_coordinate[1])])
         if path[-1] in path[-4:-1]:
@@ -129,7 +132,7 @@ def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacle
             x_vector_arr[i][j], y_vector_arr[i][j], to_goal_angle = add_target_point(target_point, x_map[i][j], y_map[i][j])
             x_vector_arr[i][j], y_vector_arr[i][j] = add_start_point(start_point, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j])
             for temp_obstacle in obstacles:
-                x_vector_arr[i][j], y_vector_arr[i][j] = add_obstacle(temp_obstacle[0], temp_obstacle[1], to_goal_angle, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j], temp_obstacle[2])
+                x_vector_arr[i][j], y_vector_arr[i][j] = add_obstacle((temp_obstacle[0], temp_obstacle[1]), temp_obstacle[2], to_goal_angle, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j])
             for temp_area in restricted_areas:
                 x_vector_arr[i][j], y_vector_arr[i][j] = add_restricted_area(temp_area[0], temp_area[1], to_goal_angle, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j])
             if slope:
@@ -139,14 +142,9 @@ def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacle
 
 # Function interface
 # finish
-def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstacles, restricted_areas, prev_path, slope, step_length):
+def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstacles, restricted_areas, prev_path, slope):
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
-    
-    matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, obstacles)
-    
-    save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path, step_length)
-    
-    
-    
+    save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path)
+    #matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
     return save_path, next_coordinate, repeat_flag, slope

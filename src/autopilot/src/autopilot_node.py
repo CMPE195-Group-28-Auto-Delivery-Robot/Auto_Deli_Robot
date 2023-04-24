@@ -5,7 +5,7 @@ import tf2_ros
 from tf2_geometry_msgs import do_transform_point
 from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
-from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped
+from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped, PoseWithCovarianceStamped
 from sensor_msgs.msg import NavSatFix
 from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
@@ -75,14 +75,28 @@ def Odometry2Point(msg, souce, target):
         #print(e)
         pass
     return temp_point
-    
+
+
+def get_odom(target_coordinate):
+    target_point = PoseWithCovarianceStamped()
+    target_point.header.stamp = rospy.Time.now()
+    target_point.header.frame_id = "odom"
+    target_point.pose.pose.position.x = target_coordinate[0]
+    target_point.pose.pose.position.y = target_coordinate[1]
+    target_point.pose.pose.position.z = 0
+    target_point.pose.pose.orientation.x = quaternion[0]
+    target_point.pose.pose.orientation.y = quaternion[1]
+    target_point.pose.pose.orientation.z = quaternion[2]
+    target_point.pose.pose.orientation.w = quaternion[3]
+    return target_point
+
 
 class autopilot_node:
 
     def __init__(self):
         self.status = False
         self.target_list = []
-        self.target_point = [100, 100]
+        self.target_point = [1000, 1000]
         self.curren_point = [0.0, 0.0]
         self.objects = []
         self.obstacles = []
@@ -124,7 +138,8 @@ class autopilot_node:
     def obstacles_callback(self, msg):
         self.obstacles = []
         for line_segment in msg.line_segments:
-            self.obstacles.append((line_segment.start, line_segment.end))
+            center = [(line_segment.start[0] + line_segment.end[0])/2, (line_segment.start[1] + line_segment.end[1])/2]
+            self.obstacles.append((line_segment.start, line_segment.end, center))
 
 
     # Callback function to receive object recognition information
@@ -137,7 +152,7 @@ class autopilot_node:
         else:
             self.step_length = 2
 
-    
+
 
     def run(self):
         rospy.init_node('autopilot_node')
@@ -150,25 +165,23 @@ class autopilot_node:
         #rospy.Subscriber('/lawn', ObjectsStamped, self.object_callback)
 
         # Publish results
-        # /deli_robot/set_pose
-        #path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
-        # /deli_robot/emoji_message
+        path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
         #msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
 
         test1 = rospy.Publisher('/test1', Point, queue_size=10)
         test2 = rospy.Publisher('/test2', Point, queue_size=10)
        
         # 1hz
-        rate = rospy.Rate(1)
+        rate = rospy.Rate(0.2)
         # main function
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
             test1.publish(self.local_point)
             if True:
+                print("======")
                 print("start")
-                path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.step_length, self.curren_point, self.target_point)
-                print("move")
+                path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
                     #path_publisher.publish(self.target_point)
@@ -183,10 +196,8 @@ class autopilot_node:
                         print("log: done")
                 # next pose
                 elif path:
-                    path[0] += self.curren_point[0]
-                    path[1] += self.curren_point[1]
-                    #path_publisher.publish(path)
-                    print("======")
+                    path_publisher.publish(get_odom([-100, 0]))
+                    print("next_point: ")
                     print(path)
                 # error
                 else:
