@@ -17,6 +17,7 @@ def obs_coordinate_fix(fix, coordinate):
     coordinate[1] += resolution / 2
     return tuple(coordinate)
 
+
 def obs_coordinates_fix(fix, coordinates):
     for i in range(len(coordinates)):
         coordinate_list = list(coordinates[i])
@@ -26,12 +27,14 @@ def obs_coordinates_fix(fix, coordinates):
         coordinates[i] = tuple(coordinate_list)
     return coordinates
 
+
 def target_coordinate_fix(fix, coordinate):
     coordinate[0] -= fix[0]
     coordinate[1] -= fix[1]
     coordinate[0] += resolution / 2
     coordinate[1] += resolution / 2
     return coordinate
+
 
 def undo_coordinate_fix(fix, coordinate):
     coordinate[0] -= resolution / 2
