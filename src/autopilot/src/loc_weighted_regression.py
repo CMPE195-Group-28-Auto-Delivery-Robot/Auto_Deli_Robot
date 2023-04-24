@@ -1,22 +1,35 @@
-#!/usr/bin/env python
-
 import numpy as np
+from scipy import linalg
 
-tau_var = 2
+# 0.1 to 0.9
+tau_var = 0.8
+# 1 or 2
+degree_var = 1
 
 # Local weighted linear regression
 # finish
-def loc_weighted_regression(input_path, step_length, tau=tau_var):
+def regression_algorithm(x, y, index, tau=tau_var, degree=1):
+    size = len(x)
+    nearest_val = int(np.floor(tau * size))
+    distances = np.abs(x - x[index])
+    weights = np.zeros(size)
+    nearest_idx = distances <= np.sort(distances)[nearest_val]
+    weights[nearest_idx] = (1 - (distances[nearest_idx] / np.sort(distances)[nearest_val]) ** 2) ** 2
+    x_local = x[distances <= np.sort(distances)[nearest_val]]
+    y_local = y[distances <= np.sort(distances)[nearest_val]]
+    design_matrix = np.vander(x_local, degree + 1)
+    weight_matrix = np.diag(weights[distances <= np.sort(distances)[nearest_val]])
+    regression_coefficient = linalg.solve(np.dot(np.dot(design_matrix.T, weight_matrix), design_matrix), np.dot(np.dot(design_matrix.T, weight_matrix), y_local))
+    return np.dot(regression_coefficient, np.vander(np.array([x[index]]), degree + 1)[0])
+
+
+# Regression interface
+# finish
+def loc_weighted_regression(input_path, step_length):
     length = len(input_path)
-    arr = np.mat(np.array([i for i in range(1, length + 1)]))
-    x_matrix = np.mat(np.array([i[0] for i in input_path]))
-    y_matrix = np.mat(np.array([i[1] for i in input_path]))
-    slope = np.shape(arr)[1]
-    weights = np.mat(np.eye(slope))
-    for j in range(slope):
-        diff_matrix = (length - step_length) - arr[0, j]
-        weights[j, j] = np.exp(diff_matrix ** 2 / (-2.0 * tau ** 2))
-    gram_matrix = arr * (weights * arr.T)
-    regression_coefficient_x = gram_matrix.I * (arr * (weights * x_matrix.T))
-    regression_coefficient_y = gram_matrix.I * (arr * (weights * y_matrix.T))
-    return [float((length - step_length) * regression_coefficient_x), float((length - step_length) * regression_coefficient_y)]
+    arr = np.array([i for i in range(0, length)])
+    x = np.array([path[0] for path in input_path])
+    y = np.array([path[1] for path in input_path])
+    x_fix = regression_algorithm(arr, x, (length - step_length))
+    y_fix = regression_algorithm(arr, y, (length - step_length))
+    return [x_fix, y_fix]

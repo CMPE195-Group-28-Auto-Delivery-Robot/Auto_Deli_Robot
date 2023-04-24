@@ -194,6 +194,7 @@ class autopilot_node:
                         print("log: check")
                     # finish all point
                     else:
+                        #self.target_point = []
                         self.status = False
                         print("log: done")
                 # next pose
