@@ -11,7 +11,7 @@ def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point,
     ax.streamplot(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
-    if(target_point[0] < 50 or target_point[1] < 50):
+    if(abs(target_point[0] - start_point[0]) <= resolution/2 and abs(target_point[1] - start_point[1]) <= resolution/2):
         ax.add_patch(plt.Circle(target_point, 1, color='b'))
         ax.annotate("Target", xy=target_point, fontsize=10, ha="center")
     ax.add_patch(plt.Circle(start_point, 1, color='r'))

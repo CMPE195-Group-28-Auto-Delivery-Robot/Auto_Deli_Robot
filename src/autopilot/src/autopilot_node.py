@@ -200,8 +200,6 @@ class autopilot_node:
                 # next pose
                 elif path:
                     path_publisher.publish(get_odom(self.type_point, [-100, 0]))
-                    print("next_point: ")
-                    print(path)
                 # error
                 else:
                     self.status = False
