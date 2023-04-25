@@ -96,8 +96,8 @@ class autopilot_node:
     def __init__(self):
         self.status = False
         self.target_list = []
-        self.target_point = [-100.0, 0.0]
-        self.curren_point = [0.0, 0.0]
+        self.target_point = [3, 0]
+        self.curren_point = [0, 0]
         self.objects = []
         self.obstacles = []
         self.restricted_areas = []
@@ -174,7 +174,7 @@ class autopilot_node:
         test2 = rospy.Publisher('/test2', Point, queue_size=10)
        
         # 1hz
-        rate = rospy.Rate(0.5)
+        rate = rospy.Rate(1)
         # main function
         while not rospy.is_shutdown():
             # start work if gps working and get order
@@ -199,7 +199,11 @@ class autopilot_node:
                         print("log: done")
                 # next pose
                 elif path:
-                    path_publisher.publish(get_odom(self.type_point, [-100, 0]))
+                    print("speed: ")
+                    print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] - path[1])])
+                    print("next_point: ")
+                    print(path)
+                    path_publisher.publish(get_odom(self.type_point, path))
                 # error
                 else:
                     self.status = False

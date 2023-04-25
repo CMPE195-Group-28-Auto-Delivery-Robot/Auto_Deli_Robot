@@ -68,9 +68,9 @@ class autopilot:
     def get_next(self, obstacles, restricted_areas, curren_point, target_point):
         print("curren_point: ")
         print(curren_point)
-        target_point = target_coordinate_fix(curren_point, target_point)
         print("target_point: ")
         print(target_point)
+        target_point = target_coordinate_fix(curren_point, target_point)
         obstacles = obs_coordinates_fix(curren_point, obstacles)
         restricted_areas = obs_coordinates_fix(curren_point, restricted_areas)
         self.save_path, next_point, repeat_flag, self.slope = gradient_descent.gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope)
@@ -92,6 +92,4 @@ class autopilot:
             self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
             print("tangent_bug: slope")
             print(self.slope)
-        print("next_point: ")
-        print(next_point)
         return undo_coordinate_fix(curren_point, next_point), False
