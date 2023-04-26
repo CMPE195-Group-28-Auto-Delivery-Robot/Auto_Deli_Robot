@@ -181,8 +181,7 @@ class autopilot_node:
             #if self.status and not self.lost_gps:
             test1.publish(self.local_point)
             if self.curren_point[0] != 0.0:
-                print("======")
-                print("start")
+                print("==================================================")
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:

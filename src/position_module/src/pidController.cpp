@@ -118,7 +118,7 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
 	        angleDiff = AngleDiff(xDiff, yDiff,
                                   m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y);
             ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
-	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.6);
+	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.4);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }

@@ -13,7 +13,7 @@ attractive_force = 5
 repulsive_force = 2 * attractive_force
 
 size = 8
-step = 2
+step = 3
 
 
 # Add endpoint with strong attraction in range and weak attraction overall
@@ -106,7 +106,7 @@ def add_slope(slope_angle, x_vector, y_vector, force=5):
 
 # Return to next move coordinates
 # finish
-def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step, step_depth=step*8):
+def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step, step_depth=step*4):
     path = prev_path
     path.append(curren_coordinate)
     temp_coordinate = curren_coordinate

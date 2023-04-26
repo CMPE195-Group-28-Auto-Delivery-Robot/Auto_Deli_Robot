@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 resolution = 100
 size_x = 5
-size_y = 3
+size_y = 5
 
 def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles):
     fig, ax = plt.subplots(figsize=(10, 10))
