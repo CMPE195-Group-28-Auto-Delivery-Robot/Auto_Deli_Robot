@@ -8,7 +8,7 @@ import tangen_bug
 
 resolution = 100
 zoom = 20
-merge = 4
+merge = 5
 
 def obs_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
