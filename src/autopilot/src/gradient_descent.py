@@ -11,9 +11,13 @@ import matlab_test
 # initially attractive and repulsive forces 
 attractive_force = 5
 repulsive_force = 2 * attractive_force
+slope_force = 5
+
+obstacle_force = 2
 
 size = 8
 step = 3
+check = 4
 
 
 # Add endpoint with strong attraction in range and weak attraction overall
@@ -48,7 +52,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=size/
 
 # Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
-def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=2, surround=size, curve=2*size):
+def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=size, curve=2*size):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
     if to_obstacle_distance > 20:
         return x_vector, y_vector
@@ -98,7 +102,7 @@ def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coo
 
 # Add Slope, for tilt gradient
 # finish
-def add_slope(slope_angle, x_vector, y_vector, force=5):
+def add_slope(slope_angle, x_vector, y_vector, force=slope_force):
     x_vector += 100 * attractive_force * force * math.cos(slope_angle)
     y_vector += 100 * attractive_force * force * math.sin(slope_angle)
     return x_vector, y_vector
@@ -106,7 +110,7 @@ def add_slope(slope_angle, x_vector, y_vector, force=5):
 
 # Return to next move coordinates
 # finish
-def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step, step_depth=step*4):
+def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step, step_depth=step*check):
     path = prev_path
     path.append(curren_coordinate)
     temp_coordinate = curren_coordinate

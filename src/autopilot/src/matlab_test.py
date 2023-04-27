@@ -3,8 +3,7 @@
 import matplotlib.pyplot as plt
 
 resolution = 100
-size_x = 5
-size_y = 5
+size = 5
 
 def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles):
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -23,10 +22,10 @@ def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point,
         x2, y2 = temp_obstacle[1]
         ax.annotate("Obstacle", xy=temp_obstacle[2], fontsize=10, ha="center")
         plt.plot([x1, x2], [y1, y2], linewidth='5')
-    x1, y1 = resolution/2+size_x, resolution/2+size_y
-    x2, y2 = resolution/2+size_x, resolution/2-size_y
-    x3, y3 = resolution/2-size_x, resolution/2-size_y
-    x4, y4 = resolution/2-size_x, resolution/2+size_y
+    x1, y1 = resolution/2+size, resolution/2+size
+    x2, y2 = resolution/2+size, resolution/2-size
+    x3, y3 = resolution/2-size, resolution/2-size
+    x4, y4 = resolution/2-size, resolution/2+size
     plt.plot([x1, x2, x3, x4, x1], [y1, y2, y3, y4, y1], linewidth='2.5')
     ax.set_title('Test')
     plt.show()

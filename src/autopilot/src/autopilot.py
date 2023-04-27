@@ -24,15 +24,15 @@ def obs_coordinates_fix(fix, coordinates):
         coordinate_list = list(coordinates[i])
         coordinate_list[0] = obs_coordinate_fix(fix, coordinate_list[0])
         coordinate_list[1] = obs_coordinate_fix(fix, coordinate_list[1])
-        coordinate_list[2] = obs_coordinate_fix(fix, coordinate_list[2])
+        coordinate_list[2] = [(coordinate_list[0][0] + coordinate_list[1][0])/2, (coordinate_list[0][1] + coordinate_list[1][1])/2]
         coordinates[i] = tuple(coordinate_list)
     return coordinates
 
 
 def target_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
-    coordinate[0] -= fix[0]
-    coordinate[1] -= fix[1]
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
     coordinate[0] += resolution / 2
@@ -40,7 +40,7 @@ def target_coordinate_fix(fix, coordinate):
     return tuple(coordinate)
 
 
-def undo_coordinate_fix(fix, coordinate):
+def next_coordinate_fix(fix, coordinate):
     coordinate[0] -= resolution / 2
     coordinate[1] -= resolution / 2
     coordinate[0] = float(coordinate[0]/zoom)
@@ -92,4 +92,4 @@ class autopilot:
             self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
             print("tangent_bug: slope")
             print(self.slope)
-        return undo_coordinate_fix(curren_point, next_point), False
+        return next_coordinate_fix(curren_point, next_point), False

@@ -13,6 +13,7 @@ from std_msgs.msg import String, Header
 from tf.transformations import quaternion_from_euler
 
 import utm
+import math
 
 
 import autopilot
@@ -76,12 +77,39 @@ def Odometry2Point(msg, souce, target):
         pass
     return temp_point
 
+def Base2Odom(coordinate):
+    x, y = coordinate
+    temp_point = PointStamped()
+    temp_point.header.stamp = rospy.Time()
+    temp_point.header.frame_id = "base_link"
+    temp_point.point = Point(x, y, 0)
+    try:
+        tfBuffer = tf2_ros.Buffer()
+        tf2_ros.TransformListener(tfBuffer)
+        #temp_point = tfBuffer.transform(temp_point, "odom")
+        print(temp_point)
+        trans = tfBuffer.lookup_transform("odom", "base_link", rospy.Time(), rospy.Duration(1.0))
+        print(trans)
+        temp_point = do_transform_point(temp_point, trans)
+        print(temp_point)
+    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+        print(e)
+        pass
+    return [temp_point.point.x, temp_point.point.y]
+        
+def obstacles_convet(obstacles):
+    temp_obstacles = []
+    for obstacle in obstacles:
+        temp_obstacles.append([Base2Odom(obstacle[0]), Base2Odom(obstacle[1]), 0])
+    print("tf done")
+    return temp_obstacles
+    
 
 def get_odom(current_coordinate, target_coordinate):
     target_point = Odometry()
     target_point.header.stamp = rospy.Time.now()
     target_point.header.frame_id = "map"
-    target_point.child_frame_id= "base_link"
+    target_point.child_frame_id= "odom"
     target_point.pose.pose.position.x = target_coordinate[0]
     target_point.pose.pose.position.y = target_coordinate[1]
     target_point.pose.pose.position.z = 0.0
@@ -96,7 +124,7 @@ class autopilot_node:
     def __init__(self):
         self.status = False
         self.target_list = []
-        self.target_point = [3, 0]
+        self.target_point = [-3, 0]
         self.curren_point = [0, 0]
         self.objects = []
         self.obstacles = []
@@ -138,11 +166,10 @@ class autopilot_node:
 
     # Callback function to receive the coordinates of the obstacle
     def obstacles_callback(self, msg):
-        self.obstacles = []
+        temp_obstacles = []
         for line_segment in msg.line_segments:
-            center = [(line_segment.start[0] + line_segment.end[0])/2, (line_segment.start[1] + line_segment.end[1])/2]
-            self.obstacles.append((line_segment.start, line_segment.end, center))
-
+            temp_obstacles.append([line_segment.start, line_segment.end])
+        self.obstacles = temp_obstacles
 
     # Callback function to receive object recognition information
     def object_callback(self, msg):
@@ -182,6 +209,7 @@ class autopilot_node:
             test1.publish(self.local_point)
             if self.curren_point[0] != 0.0:
                 print("==================================================")
+                self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
@@ -194,6 +222,10 @@ class autopilot_node:
                     # finish all point
                     else:
                         #self.target_point = []
+                        print("speed: ")
+                        print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
+                        print("next_point: ")
+                        print(self.target_point)
                         self.status = False
                         print("log: done")
                 # next pose
