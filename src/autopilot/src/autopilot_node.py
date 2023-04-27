@@ -3,17 +3,12 @@
 import rospy
 import tf2_ros
 from tf2_geometry_msgs import do_transform_point
-from laser_line_extraction.msg import LineSegment, LineSegmentList
+from laser_line_extraction.msg import LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
-from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped
-from sensor_msgs.msg import NavSatFix
+from geometry_msgs.msg import Point, PointStamped, TransformStamped
 from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, Header
-from tf.transformations import quaternion_from_euler
-
-import utm
-import math
 
 import autopilot
 
@@ -21,30 +16,6 @@ obstacles = []
 goal_position = []
 current_position = []
 
-tf_broadcaster = tf2_ros.TransformBroadcaster()
-quaternion = quaternion_from_euler(0, 0, 0)
-
-
-'''
-def gps2utm(lat, lon, alt):
-    utm_data = utm.from_latlon(lat, lon)
-    utm_x = utm_data[0]
-    utm_y = utm_data[1]
-    utm_zone = utm_data[2]
-    itm_band = utm_data[3]
-    transform = TransformStamped()
-    transform.header.stamp = rospy.Time(1)
-    transform.header.frame_id = 'utm'
-    transform.child_frame_id = 'gps'
-    transform.transform.translation.x = utm_x
-    transform.transform.translation.y = utm_y
-    transform.transform.translation.z = alt
-    transform.transform.rotation.x = quaternion[0]
-    transform.transform.rotation.y = quaternion[1]
-    transform.transform.rotation.z = quaternion[2]
-    transform.transform.rotation.w = quaternion[3]
-    tf_broadcaster.sendTransform(transform)
-'''
 
 
 def gps_to_map(coordinate):
@@ -86,7 +57,7 @@ def obstacles_convet(obstacles):
     return temp_obstacles
     
 
-def get_next_coordinate(current_coordinate, target_coordinate):
+def get_next_coordinate(target_coordinate):
     target_point = Odometry()
     target_point.header.stamp = rospy.Time()
     target_point.header.frame_id = "map"
@@ -103,6 +74,7 @@ class autopilot_node:
 
     def __init__(self):
         self.status = False
+        self.lost_gps = False
         self.target_list = []
         self.target_point = [3, 0]
         self.curren_point = [0, 0]
@@ -110,18 +82,13 @@ class autopilot_node:
         self.obstacles = []
         self.restricted_areas = []
         self.speed = 2
-        self.lost_gps = False
+        self.local_point = []
         self.node = autopilot.autopilot()
-
-        self.type_point = Odometry()
-        self.local_point = Point()
-        self.dest_point = Point()
-
         self.run()
+
 
     # Callback function to receive the current map coordinates
     def map_callback(self, msg):
-        self.type_point = msg
         self.curren_point[0] = msg.pose.pose.position.x
         self.curren_point[1] = msg.pose.pose.position.y
 
@@ -173,13 +140,16 @@ class autopilot_node:
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
-            if self.curren_point[0] != 0:
+            #if self.curren_point[0] != 0:
+            print(self.target_list)
+            print(self.target_point)
+            if False:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
-                    #path_publisher.publish(get_next_coordinate(self.type_point, self.target_point))
+                    #path_publisher.publish(get_next_coordinate(self.target_point))
                     print("speed: ")
                     print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
                     print("next_point: ")
@@ -199,7 +169,7 @@ class autopilot_node:
                     print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] - path[1])])
                     print("next_point: ")
                     print(path)
-                    #path_publisher.publish(get_next_coordinate(self.type_point, path))
+                    #path_publisher.publish(get_next_coordinate(path))
                 # error
                 else:
                     self.status = False
