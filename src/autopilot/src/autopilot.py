@@ -3,8 +3,8 @@
 import random
 import numpy as np
 
-import gradient_descent
-import tangen_bug
+from gradient_descent import gradient_descent
+from tangen_bug import tangen_bug
 
 resolution = 100
 zoom = 20
@@ -79,7 +79,7 @@ class autopilot:
         target_point = target_coordinate_fix(curren_point, target_point)
         obstacles = obs_coordinates_fix(curren_point, obstacles)
         restricted_areas = obs_coordinates_fix(curren_point, restricted_areas)
-        self.save_path, next_point, repeat_flag, self.slope = gradient_descent.gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope)
+        self.save_path, next_point, repeat_flag, self.slope = gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope)
         if abs(next_point[0] - target_point[0]) <= merge and abs(next_point[1] - target_point[1]) <= merge:
             return None, True
         if self.slope is not None:
@@ -91,11 +91,11 @@ class autopilot:
                 print("error: random jump")
                 self.repeat_time += 1
             else:
-                self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-                print("tangent_bug Angle: ")
+                self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
+                print("tangen_bug Angle: ")
                 print(self.slope)
         elif repeat_flag > 1:
-            self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-            print("tangent_bug Angle: ")
+            self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
+            print("tangen_bug Angle: ")
             print(self.slope)
         return next_coordinate_fix(curren_point, next_point), False

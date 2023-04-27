@@ -3,19 +3,16 @@
 import rospy
 import tf2_ros
 from tf2_geometry_msgs import do_transform_point
-from laser_line_extraction.msg import LineSegmentList
+from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
-from geometry_msgs.msg import Point, PointStamped, TransformStamped
+from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped
+from sensor_msgs.msg import NavSatFix
 from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, Header
+from tf.transformations import quaternion_from_euler
 
 import autopilot
-
-obstacles = []
-goal_position = []
-current_position = []
-
 
 
 def gps_to_map(coordinate):
@@ -27,7 +24,9 @@ def gps_to_map(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "gps", rospy.Time(), rospy.Duration(1))
+        trans = tfBuffer.lookup_transform("utm", "gps", rospy.Time(), rospy.Duration(1))
+        temp_point = do_transform_point(temp_point, trans)
+        trans = tfBuffer.lookup_transform("map", "utm", rospy.Time(), rospy.Duration(1))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -141,8 +140,6 @@ class autopilot_node:
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
             #if self.curren_point[0] != 0:
-            print(self.target_list)
-            print(self.target_point)
             if False:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)

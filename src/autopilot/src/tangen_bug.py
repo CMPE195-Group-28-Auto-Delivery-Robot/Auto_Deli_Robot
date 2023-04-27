@@ -123,7 +123,7 @@ def bug_direction(safe_zone, to_goal_angel, prev_slope):
 
 # Function interfaces
 # finish
-def tangent_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope):
+def tangen_bug(curren_coordinate, target_point, obstacles, restricted_areas, slope):
     to_goal_angel = math.atan2(target_point[1] - curren_coordinate[1], target_point[0] - curren_coordinate[0])
     dead_zones = get_dead_zone(curren_coordinate, target_point, to_goal_angel, obstacles)
     if dead_zones:
