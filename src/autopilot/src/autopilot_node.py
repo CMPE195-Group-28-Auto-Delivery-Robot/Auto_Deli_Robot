@@ -15,7 +15,6 @@ from tf.transformations import quaternion_from_euler
 import utm
 import math
 
-
 import autopilot
 
 obstacles = []
@@ -25,8 +24,9 @@ current_position = []
 tf_broadcaster = tf2_ros.TransformBroadcaster()
 quaternion = quaternion_from_euler(0, 0, 0)
 
+
 '''
-def gps2etm(lat, lon, alt):
+def gps2utm(lat, lon, alt):
     utm_data = utm.from_latlon(lat, lon)
     utm_x = utm_data[0]
     utm_y = utm_data[1]
@@ -46,38 +46,24 @@ def gps2etm(lat, lon, alt):
     tf_broadcaster.sendTransform(transform)
 '''
 
-def NavSatFix2Point(msg, souce, target):
+
+def gps_to_map(coordinate):
+    x, y = coordinate
     temp_point = PointStamped()
-    temp_point.header.stamp = msg.header.stamp
-    temp_point.header.frame_id = souce
-    temp_point.point = Point(msg.latitude, msg.longitude, msg.altitude)
+    temp_point.header.stamp = rospy.Time()
+    temp_point.header.frame_id = "gps"
+    temp_point.point = Point(x, y, 0)
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        temp_point = tfBuffer.transform(temp_point, target, rospy.Duration(2))
-        #print(temp_point)
+        trans = tfBuffer.lookup_transform("map", "gps", rospy.Time(), rospy.Duration(1))
+        temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        #print(e)
-        pass
-    return temp_point
+        print(e)
+    return [temp_point.point.x, temp_point.point.y]
 
 
-def Odometry2Point(msg, souce, target):
-    temp_point = PointStamped()
-    temp_point.header.stamp = msg.header.stamp
-    temp_point.header.frame_id = souce
-    temp_point.point = Point(msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z)
-    try:
-        tfBuffer = tf2_ros.Buffer()
-        tf2_ros.TransformListener(tfBuffer)
-        temp_point = tfBuffer.transform(temp_point, target, rospy.Duration(0.05))
-        #print(temp_point)
-    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        #print(e)
-        pass
-    return temp_point
-
-def Base2Odom(coordinate):
+def base_to_map(coordinate):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time()
@@ -86,36 +72,30 @@ def Base2Odom(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        #temp_point = tfBuffer.transform(temp_point, "odom")
-        print(temp_point)
-        trans = tfBuffer.lookup_transform("odom", "base_link", rospy.Time(), rospy.Duration(1.0))
-        print(trans)
+        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.5))
         temp_point = do_transform_point(temp_point, trans)
-        print(temp_point)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
-        pass
     return [temp_point.point.x, temp_point.point.y]
         
+
 def obstacles_convet(obstacles):
     temp_obstacles = []
     for obstacle in obstacles:
-        temp_obstacles.append([Base2Odom(obstacle[0]), Base2Odom(obstacle[1]), 0])
-    print("tf done")
+        temp_obstacles.append([base_to_map(obstacle[0]), base_to_map(obstacle[1]), 0])
     return temp_obstacles
     
 
-def get_odom(current_coordinate, target_coordinate):
+def get_next_coordinate(current_coordinate, target_coordinate):
     target_point = Odometry()
-    target_point.header.stamp = rospy.Time.now()
+    target_point.header.stamp = rospy.Time()
     target_point.header.frame_id = "map"
-    target_point.child_frame_id= "odom"
     target_point.pose.pose.position.x = target_coordinate[0]
     target_point.pose.pose.position.y = target_coordinate[1]
     target_point.pose.pose.position.z = 0.0
-    target_point.pose.pose.orientation = current_coordinate.pose.pose.orientation
-    target_point.pose.covariance = current_coordinate.pose.covariance
-    target_point.twist = current_coordinate.twist
+    #target_point.pose.pose.orientation = current_coordinate.pose.pose.orientation
+    #target_point.pose.covariance = current_coordinate.pose.covariance
+    #target_point.twist = current_coordinate.twist
     return target_point
 
 
@@ -124,12 +104,12 @@ class autopilot_node:
     def __init__(self):
         self.status = False
         self.target_list = []
-        self.target_point = [-3, 0]
+        self.target_point = [3, 0]
         self.curren_point = [0, 0]
         self.objects = []
         self.obstacles = []
         self.restricted_areas = []
-        self.step_length = 2
+        self.speed = 2
         self.lost_gps = False
         self.node = autopilot.autopilot()
 
@@ -139,30 +119,19 @@ class autopilot_node:
 
         self.run()
 
-    # Callback function to receive the current gps coordinates
-    def gps_callback(self, msg):
-
-        #gps2etm(msg.latitude, msg.longitude, msg.altitude)
-        #self.local_point = Odometry2Point(msg, "odom" ,"base_link").point
+    # Callback function to receive the current map coordinates
+    def map_callback(self, msg):
         self.type_point = msg
         self.curren_point[0] = msg.pose.pose.position.x
         self.curren_point[1] = msg.pose.pose.position.y
-        '''
-        if msg.status.status == 0:
-            self.lost_gps = False
-        else:
-            self.lost_gps = True
-        '''
+
 
     # Callback function to receive target coordinates destination
     def destination_callback(self, msg):
-        #self.target_point = NavSatFix2Point(msg, "gps" ,"map").point
-        '''
-        target_list = []
+        self.target_list = []
         for dest_point in msg.dest_list:
-            target_list.append([dest_point.lat, dest_point.lng])
-        self.target_point = target_list.pop(0)
-        '''
+            self.target_list.append(gps_to_map([dest_point.lat, dest_point.lng]))
+        self.target_point = self.target_list.pop(0)
 
     # Callback function to receive the coordinates of the obstacle
     def obstacles_callback(self, msg):
@@ -177,19 +146,19 @@ class autopilot_node:
         for temp_object in msg.objects:
             self.objects.append(temp_object)
         if "Person" in self.objects or "Vehicle" in self.objects:
-            self.step_length = 1
+            self.speed = 1
         else:
-            self.step_length = 2
+            self.speed = 2
 
 
 
     def run(self):
         rospy.init_node('autopilot_node')
-        # Subscribe to topics
-        rospy.Subscriber('/gps', Odometry, self.gps_callback)
-        rospy.Subscriber('/obstacles', LineSegmentList, self.obstacles_callback)
 
-        #rospy.Subscriber('/destination', dest_list_msg, self.destination_callback)
+        # Subscribe to topics
+        rospy.Subscriber('/map', Odometry, self.map_callback)
+        rospy.Subscriber('/obstacles', LineSegmentList, self.obstacles_callback)
+        rospy.Subscriber('/destination', dest_list_msg, self.destination_callback)
         #rospy.Subscriber('/objects', ObjectsStamped, self.object_callback)
         #rospy.Subscriber('/lawn', ObjectsStamped, self.object_callback)
 
@@ -197,8 +166,6 @@ class autopilot_node:
         path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
         #msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
 
-        test1 = rospy.Publisher('/test1', Point, queue_size=10)
-        test2 = rospy.Publisher('/test2', Point, queue_size=10)
        
         # 1hz
         rate = rospy.Rate(1)
@@ -206,35 +173,33 @@ class autopilot_node:
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
-            test1.publish(self.local_point)
-            if self.curren_point[0] != 0.0:
+            if self.curren_point[0] != 0:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
-                    #path_publisher.publish(self.target_point)
+                    #path_publisher.publish(get_next_coordinate(self.type_point, self.target_point))
+                    print("speed: ")
+                    print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
+                    print("next_point: ")
+                    print(self.target_point)
                     # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
                         self.node.start()
-                        print("log: check")
+                        print("log: check point")
                     # finish all point
                     else:
-                        #self.target_point = []
-                        print("speed: ")
-                        print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
-                        print("next_point: ")
-                        print(self.target_point)
                         self.status = False
-                        print("log: done")
+                        print("log: finish all point")
                 # next pose
                 elif path:
                     print("speed: ")
                     print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] - path[1])])
                     print("next_point: ")
                     print(path)
-                    path_publisher.publish(get_odom(self.type_point, path))
+                    #path_publisher.publish(get_next_coordinate(self.type_point, path))
                 # error
                 else:
                     self.status = False

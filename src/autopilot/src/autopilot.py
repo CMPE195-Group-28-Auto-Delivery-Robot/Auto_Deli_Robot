@@ -10,6 +10,7 @@ resolution = 100
 zoom = 20
 merge = 5
 
+# Convert from map coordinates to algorithm coordinates
 def obs_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
     coordinate[0] *= zoom
@@ -19,6 +20,7 @@ def obs_coordinate_fix(fix, coordinate):
     return tuple(coordinate)
 
 
+# Convert from map coordinates to algorithm coordinates
 def obs_coordinates_fix(fix, coordinates):
     for i in range(len(coordinates)):
         coordinate_list = list(coordinates[i])
@@ -28,11 +30,11 @@ def obs_coordinates_fix(fix, coordinates):
         coordinates[i] = tuple(coordinate_list)
     return coordinates
 
-
+# Convert from map coordinates to algorithm coordinates
 def target_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
-    coordinate[0] += fix[0]
-    coordinate[1] += fix[1]
+    coordinate[0] = fix[0] - coordinate[0]
+    coordinate[1] = coordinate[1] - fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
     coordinate[0] += resolution / 2
@@ -40,18 +42,20 @@ def target_coordinate_fix(fix, coordinate):
     return tuple(coordinate)
 
 
+# Convert from algorithm coordinates to map coordinates
 def next_coordinate_fix(fix, coordinate):
     coordinate[0] -= resolution / 2
     coordinate[1] -= resolution / 2
     coordinate[0] = float(coordinate[0]/zoom)
     coordinate[1] = float(coordinate[1]/zoom)
-    coordinate[0] += fix[0]
-    coordinate[1] += fix[1]
+    coordinate[0] = -coordinate[0] + fix[0]
+    coordinate[1] = coordinate[0] + fix[1]
     return coordinate
 
 
 class autopilot:
 
+    # Initialized values
     def __init__(self):
         self.x_arr = np.arange(0, resolution, 1)
         self.y_arr = np.arange(0, resolution, 1)
@@ -61,10 +65,12 @@ class autopilot:
         self.start_point = [resolution / 2, resolution / 2]
         self.repeat_time = 0
 
+    # Refreshing record
     def start(self):
         self.slope = None
         self.repeat_time = 0
 
+    # Get next point after do autopilot
     def get_next(self, obstacles, restricted_areas, curren_point, target_point):
         print("curren_point: ")
         print(curren_point)
@@ -82,14 +88,14 @@ class autopilot:
                     return None, False
                 next_point[0] += random.randint(-1, 1)
                 next_point[1] += random.randint(-1, 1)
-                print("error: jump")
+                print("error: random jump")
                 self.repeat_time += 1
             else:
                 self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-                print("tangent_bug: slope")
+                print("tangent_bug Angle: ")
                 print(self.slope)
         elif repeat_flag > 1:
             self.slope = tangen_bug.tangent_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-            print("tangent_bug: slope")
+            print("tangent_bug Angle: ")
             print(self.slope)
         return next_coordinate_fix(curren_point, next_point), False
