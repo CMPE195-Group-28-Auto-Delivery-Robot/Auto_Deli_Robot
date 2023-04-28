@@ -1,14 +1,17 @@
+#!/usr/bin/env python
+
+import rospy
 import numpy as np
 from scipy import linalg
 
 # 0.1 to 0.9
-tau_var = 0.8
+tau = rospy.get_param('tau')
 # 1 or 2
-degree_var = 1
+degree = rospy.get_param('degree')
 
 # Local weighted linear regression
 # finish
-def regression_algorithm(x, y, index, tau=tau_var, degree=1):
+def regression_algorithm(x, y, index):
     size = len(x)
     nearest_val = int(np.floor(tau * size))
     distances = np.abs(x - x[index])

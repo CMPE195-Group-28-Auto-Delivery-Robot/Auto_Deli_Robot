@@ -8,7 +8,7 @@
             <remap from="/objects" to="/deli_robot/zed_node/obj_det/objects"/>
             <remap from="/path" to="/deli_robot/set_pose"/>
         </node>
-        <param name="test_status" value="False"/>
+        <param name="test_status" value="True"/>
         <param name="resolution" value="100"/>
         <param name="zoom" value="20"/>
         <param name="size" value="5"/>

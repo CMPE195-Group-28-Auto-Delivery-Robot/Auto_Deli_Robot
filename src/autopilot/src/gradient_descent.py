@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import math
+import rospy
 import numpy as np
 
 from public_algorithm import distance_angle_point_to_line, distance_point_to_point, angle_point_to_point
@@ -8,21 +9,19 @@ from loc_weighted_regression import loc_weighted_regression
 
 import matlab_test
 
-# initially attractive and repulsive forces 
-attractive_force = 5
-repulsive_force = 2 * attractive_force
-slope_force = 5
-
-obstacle_force = 2
-
-size = 8
-step = 3
-check = 4
-
+# initially all var from launch
+attractive_force = rospy.get_param('attractive_force')
+repulsive_force = rospy.get_param('repulsive_force')
+slope_force = rospy.get_param('slope_force')
+obstacle_force = rospy.get_param('obstacle_force')
+obstacle_range = rospy.get_param('obstacle_range')
+step = rospy.get_param('step')
+check = rospy.get_param('check')
+test_mode = rospy.get_param('test_status')
 
 # Add endpoint with strong attraction in range and weak attraction overall
 # finish
-def add_target_point(goal_coordinate, x, y, target_area=size):
+def add_target_point(goal_coordinate, x, y, target_area=obstacle_range):
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
     to_goal_angle = angle_point_to_point(x, y, goal_coordinate)
     if to_goal_distance > target_area:
@@ -39,7 +38,7 @@ def add_target_point(goal_coordinate, x, y, target_area=size):
 
 # Add starting point with strong rejection in range
 # finish
-def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=size/2):
+def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=obstacle_range/2):
     to_start_distance = distance_point_to_point(x, y, start_coordinate)
     if to_start_distance > start_area:
         return x_vector, y_vector
@@ -52,7 +51,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=size/
 
 # Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
-def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=size, curve=2*size):
+def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=obstacle_range, curve=2*obstacle_range):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
     if to_obstacle_distance > 20:
         return x_vector, y_vector
@@ -75,7 +74,7 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
 
 # Add a low weight zone with weak repulsion in the range and attraction toward the target in the periphery
 # finish
-def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, surround=size):
+def add_restricted_area(restricted_areas_coordinate, restricted_areas_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, surround=obstacle_range):
     intersections = 0
     for i in range(4):
         x1, y1 = restricted_areas_coordinate[i]
@@ -150,5 +149,6 @@ def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstac
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
     save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path)
-    #matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
+    if test_mode:
+        matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
     return save_path, next_coordinate, repeat_flag, slope

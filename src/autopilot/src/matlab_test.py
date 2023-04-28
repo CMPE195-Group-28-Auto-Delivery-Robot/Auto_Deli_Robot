@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+
+import rospy
 import matplotlib.pyplot as plt
 
-resolution = 100
-size = 5
+resolution = rospy.get_param('resolution')
+size = rospy.get_param('size')
 
 def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles):
     fig, ax = plt.subplots(figsize=(10, 10))

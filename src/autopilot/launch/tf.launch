@@ -1,0 +1,12 @@
+<launch>
+    <group ns="$(arg robot_name)">
+        <node pkg="autopilot" type="gps_tf2_utm.py" name="gps_tf2_utm" output="screen" >
+            <remap from="/gps" to="/deli_robot/UbloxF9P/filtered_fix"/>
+            <remap from="/utm" to="/deli_robot/utm"/>
+        </node>
+        <node pkg="autopilot" type="utm_tf2_map.py" name="utm_tf2_map" output="screen" >
+            <remap from="/gps" to="/deli_robot/UbloxF9P/fix"/>
+            <remap from="/utm" to="/deli_robot/utm"/>
+        </node>
+    </group>
+</launch>

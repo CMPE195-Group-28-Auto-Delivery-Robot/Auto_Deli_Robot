@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
+import rospy
 import random
 import numpy as np
 
 from gradient_descent import gradient_descent
 from tangen_bug import tangen_bug
 
-resolution = 100
-zoom = 20
-merge = 5
+resolution = rospy.get_param('resolution')
+zoom = rospy.get_param('zoom')
+merge = rospy.get_param('size')
 
 # Convert from map coordinates to algorithm coordinates
 def obs_coordinate_fix(fix, coordinate):

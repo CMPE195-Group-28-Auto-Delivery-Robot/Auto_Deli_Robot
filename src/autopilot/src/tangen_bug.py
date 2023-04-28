@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+
 import math
+import rospy
 
 from public_algorithm import distance_angle_point_to_line
 
 two_pi, half_pi = 2 * math.pi, math.pi / 3
 
-tangen_depth = 20
+tangen_depth = rospy.get_param('tangen_depth')
 
 
 # check two sets of line segments intersect

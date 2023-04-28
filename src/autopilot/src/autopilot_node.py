@@ -14,6 +14,7 @@ from tf.transformations import quaternion_from_euler
 
 import autopilot
 
+test_mode = rospy.get_param('test_status')
 
 def gps_to_map(coordinate):
     x, y = coordinate
@@ -24,9 +25,7 @@ def gps_to_map(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("utm", "gps", rospy.Time(), rospy.Duration(1))
-        temp_point = do_transform_point(temp_point, trans)
-        trans = tfBuffer.lookup_transform("map", "utm", rospy.Time(), rospy.Duration(1))
+        trans = tfBuffer.lookup_transform("map", "gps", rospy.Time(), rospy.Duration(1.5))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -37,12 +36,12 @@ def base_to_map(coordinate):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "base_link"
+    temp_point.header.frame_id = "laser"
     temp_point.point = Point(x, y, 0)
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.5))
+        trans = tfBuffer.lookup_transform("map", "laser", rospy.Time(), rospy.Duration(1))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -75,7 +74,7 @@ class autopilot_node:
         self.status = False
         self.lost_gps = False
         self.target_list = []
-        self.target_point = [3, 0]
+        self.target_point = [3, 1]
         self.curren_point = [0, 0]
         self.objects = []
         self.obstacles = []
@@ -97,6 +96,7 @@ class autopilot_node:
         self.target_list = []
         for dest_point in msg.dest_list:
             self.target_list.append(gps_to_map([dest_point.lat, dest_point.lng]))
+        print(self.target_list)
         self.target_point = self.target_list.pop(0)
 
     # Callback function to receive the coordinates of the obstacle
@@ -116,8 +116,6 @@ class autopilot_node:
         else:
             self.speed = 2
 
-
-
     def run(self):
         rospy.init_node('autopilot_node')
 
@@ -131,22 +129,20 @@ class autopilot_node:
         # Publish results
         path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
         #msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
-
-       
+            
         # 1hz
         rate = rospy.Rate(1)
         # main function
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
-            #if self.curren_point[0] != 0:
-            if False:
+            if self.curren_point[0] != 0:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
-                    #path_publisher.publish(get_next_coordinate(self.target_point))
+                    path_publisher.publish(get_next_coordinate(self.target_point))
                     print("speed: ")
                     print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
                     print("next_point: ")
@@ -166,7 +162,7 @@ class autopilot_node:
                     print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] - path[1])])
                     print("next_point: ")
                     print(path)
-                    #path_publisher.publish(get_next_coordinate(path))
+                    path_publisher.publish(get_next_coordinate(path))
                 # error
                 else:
                     self.status = False
