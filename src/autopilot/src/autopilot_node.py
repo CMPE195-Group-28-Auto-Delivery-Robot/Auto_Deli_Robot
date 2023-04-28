@@ -25,7 +25,7 @@ def gps_to_map(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "gps", rospy.Time(), rospy.Duration(1.5))
+        trans = tfBuffer.lookup_transform("map", "gps", rospy.Time(), rospy.Duration(1))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)

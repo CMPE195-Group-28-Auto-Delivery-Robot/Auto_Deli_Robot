@@ -1,4 +1,5 @@
 <launch>
+    <arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
         <node pkg="autopilot" type="gps_tf2_utm.py" name="gps_tf2_utm" output="screen" >
             <remap from="/gps" to="/deli_robot/UbloxF9P/filtered_fix"/>
