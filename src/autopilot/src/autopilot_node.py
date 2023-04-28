@@ -74,7 +74,6 @@ class autopilot_node:
         self.status = False
         self.lost_gps = False
         self.target_list = []
-        self.target_point = [3, 1]
         self.curren_point = [0, 0]
         self.objects = []
         self.obstacles = []
@@ -82,6 +81,11 @@ class autopilot_node:
         self.speed = 2
         self.local_point = []
         self.node = autopilot.autopilot()
+        if test_mode:
+            self.target_point = base_to_map([3, 0])
+        else:
+            self.target_point = []
+
         self.run()
 
 
@@ -137,6 +141,7 @@ class autopilot_node:
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
             if self.curren_point[0] != 0:
+            #if False:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)

@@ -14,6 +14,8 @@ merge = rospy.get_param('size')
 # Convert from map coordinates to algorithm coordinates
 def obs_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
+    coordinate[0] = coordinate[0] - fix[0]
+    coordinate[1] = coordinate[1] - fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
     coordinate[0] += resolution / 2
@@ -31,10 +33,11 @@ def obs_coordinates_fix(fix, coordinates):
         coordinates[i] = tuple(coordinate_list)
     return coordinates
 
+
 # Convert from map coordinates to algorithm coordinates
 def target_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
-    coordinate[0] = fix[0] - coordinate[0]
+    coordinate[0] = coordinate[0] - fix[0] 
     coordinate[1] = coordinate[1] - fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
@@ -49,8 +52,8 @@ def next_coordinate_fix(fix, coordinate):
     coordinate[1] -= resolution / 2
     coordinate[0] = float(coordinate[0]/zoom)
     coordinate[1] = float(coordinate[1]/zoom)
-    coordinate[0] = -coordinate[0] + fix[0]
-    coordinate[1] = coordinate[0] + fix[1]
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
     return coordinate
 
 
