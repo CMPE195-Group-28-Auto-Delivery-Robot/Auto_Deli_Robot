@@ -80,7 +80,4 @@ struct lidar_edge_error
     Eigen::Vector2d p1;
     Eigen::Vector2d p2;
 };
-
-
-
 #endif

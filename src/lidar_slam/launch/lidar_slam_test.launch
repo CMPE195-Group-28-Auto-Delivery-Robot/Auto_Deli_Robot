@@ -1,6 +1,11 @@
 <launch>
-  <node pkg="lidar_slam" name="lidar_slam" type="lidar_slam_node" output="screen">
-    <remap from="/lidar_slam/scan" to="/deli_robot/scan"/>
-  </node>
-   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lidar_slam)/rviz_cfg/lidar_slam.rviz"/>
+    <arg name="robot_name" default="deli_robot" />
+    <group ns="$(arg robot_name)">
+        <node pkg="lidar_slam" name="lidar_slam" type="lidar_slam_node" output="screen">
+            <remap from="pose" to="lidar_slam/odom"/>
+            <remap from="path" to="lidar_slam/path"/>
+            <remap from="map" to="lidar_slam/map"/>
+        </node>
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lidar_slam)/rviz_cfg/lidar_slam.rviz"/>
+    </group>
 </launch>

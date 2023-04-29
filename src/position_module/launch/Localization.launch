@@ -28,7 +28,7 @@
            false, false, false,
            false, false, false,
            false, false, true, 
-           true,  false, false, ]
+           true,  true, false, ]
         </rosparam>
         <remap from="odometry/filtered" to="odometry/odom"/>
     </node>
@@ -57,7 +57,16 @@
         <param name="odom1_differential" value="false"/>
         <rosparam param="odom1_config">
           [true,  true,  true, 
-           false, false, false, 
+           true,  true,  true, 
+           true,  true,  true, 
+           true,  true,  true, 
+           false, false, false]
+        </rosparam>
+        <param name="odom2" value="lidar_slam/odom" />
+        <param name="odom2_differential" value="false"/>
+        <rosparam param="odom2_config">
+          [true,  true,  true, 
+           true,  true,  true, 
            false, false, false, 
            false, false, false,
            false, false, false]

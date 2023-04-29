@@ -1,5 +1,5 @@
-#ifndef __LIDAR_SLAM_H
-#define LIDAR_SLAM
+#ifndef __lidar_slam_H
+#define __lidar_slam_H
 #include "lidar_slam_pose_graph.h"
 
 #include <iostream>
@@ -202,9 +202,9 @@ void lidar_slam::scan_match()
 
         ceres::Solver::Summary summary;
         ceres::Solve(options, &problem, &summary);
-        std::cout << summary.FullReport() << "\n";
+        //std::cout << summary.FullReport() << "\n";
 
-        printf("result: %lf, %lf, %lf\n", pose[0], pose[1], pose[2]);
+        //printf("result: %lf, %lf, %lf\n", pose[0], pose[1], pose[2]);
 
         delta.theta = pose[0];
         delta.t(0) = pose[1];
@@ -276,9 +276,9 @@ void lidar_slam::scan_map_match_random()
         }
         pose += d * min_len;
         Vector3d dx = d * min_len;
-        int score = scan_map_match_score(pose);
-        printf("score: %d, min_len: %lf\n", score, min_len);
-        cout << "dx: " << dx.transpose() << endl;
+        //int score = scan_map_match_score(pose);
+        //printf("score: %d, min_len: %lf\n", score, min_len);
+        //cout << "dx: " << dx.transpose() << endl;
     }
     //update to state
     state.theta = pose(0);

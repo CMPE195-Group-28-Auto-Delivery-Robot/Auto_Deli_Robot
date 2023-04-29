@@ -41,36 +41,12 @@ void multiecho2laserscan(const sensor_msgs::MultiEchoLaserScanConstPtr &msg)
     pub_laserscan.publish(laserscan);
 }
 
-void laserscan(const sensor_msgs::LaserScanConstPtr &msg)
-{
-    //publish laserscan
-    sensor_msgs::LaserScan laserscan;
-    laserscan.header.stamp = msg->header.stamp;
-    laserscan.header.frame_id = "base_link";
-    laserscan.angle_min = msg->angle_min;
-    laserscan.angle_max = msg->angle_max;
-    laserscan.angle_increment = msg->angle_increment;
-    laserscan.time_increment = msg->time_increment;
-    laserscan.scan_time = msg->scan_time;
-    laserscan.range_min = msg->range_min;
-    laserscan.range_max = msg->range_max;
-    laserscan.ranges.resize(msg->ranges.size());
-    laserscan.intensities.resize(msg->ranges.size());
-    for (auto i = 0; i < msg->ranges.size(); i++)
-    {
-        laserscan.ranges[i] = msg->ranges[i];
-        laserscan.intensities[i] = msg->intensities[i];
-    }
-    pub_laserscan.publish(laserscan);
-}
-
 void laserscan_callback(const sensor_msgs::LaserScanConstPtr &msg)
 {
     slam.readin_scan_data(msg);
     slam.update();
     publish_pose(slam);
     publish_map2d(slam);
-    laserscan(msg);
 }
 
 void multiecho_laserscan_callback(const sensor_msgs::MultiEchoLaserScanConstPtr &msg)
@@ -130,12 +106,12 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     //ros::Subscriber sub_multiecho_laserscan = nh.subscribe<sensor_msgs::MultiEchoLaserScan>("/multiecho_scan", 100, multiecho_laserscan_callback);
-    ros::Subscriber sub_laserscan = nh.subscribe<sensor_msgs::LaserScan>("/scan", 100, laserscan_callback);
+    ros::Subscriber sub_laserscan = nh.subscribe<sensor_msgs::LaserScan>("scan", 100, laserscan_callback);
 
-    //pub_laserscan = nh.advertise<sensor_msgs::LaserScan>("/laserscan", 100);
-    pub_pose = nh.advertise<geometry_msgs::PoseStamped>("/est_pose", 100);
-    pub_path = nh.advertise<nav_msgs::Path>("/path", 100);
-    //pub_map2d = nh.advertise<nav_msgs::OccupancyGrid>("/map", 100);
+    //pub_laserscan = nh.advertise<sensor_msgs::LaserScan>("laserscan", 100);
+    pub_map2d = nh.advertise<nav_msgs::OccupancyGrid>("map", 100);
+    pub_pose = nh.advertise<geometry_msgs::PoseStamped>("pose", 100);
+    pub_path = nh.advertise<nav_msgs::Path>("path", 100);
     ros::spin();
     return 0;
 }
