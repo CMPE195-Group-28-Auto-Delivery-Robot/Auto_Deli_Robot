@@ -146,7 +146,7 @@ Visualization Manager:
         Shaft Length: 1
         Shaft Radius: 0.05000000074505806
         Value: Arrow
-      Topic: /deli_robot/odometry/gps
+      Topic: /deli_robot/odometry/odom
       Unreliable: false
       Value: false
     - Angle Tolerance: 0.10000000149011612
@@ -180,7 +180,7 @@ Visualization Manager:
         Shaft Length: 1
         Shaft Radius: 0.05000000074505806
         Value: Arrow
-      Topic: /deli_robot/MT3339/odom
+      Topic: /deli_robot/UbloxF9P/odom
       Unreliable: false
       Value: false
     - Class: rviz/Marker
