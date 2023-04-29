@@ -1,0 +1,7 @@
+<launch>
+  <node pkg="lidar_slam" name="lidar_slam" type="lidar_slam_node" output="screen">
+    <remap from="/scan" to="/deli_robot/scan"/>
+    <remap from="/est_pose" to="/lidar_slam/est_pose"/>
+    <remap from="/path" to="/lidar_slam/path"/>
+  </node>
+</launch>
