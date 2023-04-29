@@ -6,7 +6,6 @@ from tf2_geometry_msgs import do_transform_point
 from sensor_msgs.msg import NavSatFix
 from geometry_msgs.msg import PointStamped, Point
 
-import utm
 
 def get_gps_to_utm(x, y):
     temp_point = PointStamped()
@@ -54,8 +53,8 @@ class utm_tf2_map:
 
     def run(self):
         rospy.init_node('utm_tf2_map')
-        rospy.Subscriber('/gps', NavSatFix, self.gps_callback)
-        rospy.Subscriber('/utm', PointStamped, self.utm_callback) 
+        rospy.Subscriber('gps', NavSatFix, self.gps_callback)
+        rospy.Subscriber('utm', PointStamped, self.utm_callback) 
         rospy.spin()
 
 

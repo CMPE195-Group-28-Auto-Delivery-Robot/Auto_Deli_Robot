@@ -2,12 +2,13 @@
     <arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
         <node pkg="autopilot" type="gps_tf2_utm.py" name="gps_tf2_utm" output="screen" >
-            <remap from="/gps" to="/deli_robot/UbloxF9P/filtered_fix"/>
-            <remap from="/utm" to="/deli_robot/utm"/>
+            <remap from="dest" to="destList_array"/>
+            <remap from="gps" to="UbloxF9P/fix"/>
+            <remap from="utm" to="UbloxF9P/utm"/>
         </node>
         <node pkg="autopilot" type="utm_tf2_map.py" name="utm_tf2_map" output="screen" >
-            <remap from="/gps" to="/deli_robot/UbloxF9P/fix"/>
-            <remap from="/utm" to="/deli_robot/utm"/>
+            <remap from="gps" to="UbloxF9P/fix"/>
+            <remap from="utm" to="UbloxF9P/utm"/>
         </node>
     </group>
 </launch>

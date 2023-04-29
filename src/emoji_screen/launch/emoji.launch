@@ -2,8 +2,8 @@
     <arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
         <node pkg="emoji_screen" type="emoji_node.py" name="emoji_node" output="screen">
-            <remap from="/gps" to="UbloxF9P/fix"/>
-            <remap from="/message" to="emoji_screen/message"/>
+            <remap from="gps" to="UbloxF9P/fix"/>
+            <remap from="message" to="emoji_screen/message"/>
         </node>
     </group>
 </launch>

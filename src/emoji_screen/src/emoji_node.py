@@ -11,8 +11,8 @@ class emoji_node:
 
     def __init__(self):
         rospy.init_node('emoji_node')
-        rospy.Subscriber('/gps', NavSatFix, self.gps_callback)
-        rospy.Subscriber('/message', String, self.msg_callback)
+        rospy.Subscriber('gps', NavSatFix, self.gps_callback)
+        rospy.Subscriber('message', String, self.msg_callback)
         self.screen = emoji.emoji()
         self.thread = threading.Thread(target=self.screen.run())
         self.thread.start()

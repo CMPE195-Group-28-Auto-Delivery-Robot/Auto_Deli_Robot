@@ -124,15 +124,15 @@ class autopilot_node:
         rospy.init_node('autopilot_node')
 
         # Subscribe to topics
-        rospy.Subscriber('/map', Odometry, self.map_callback)
-        rospy.Subscriber('/obstacles', LineSegmentList, self.obstacles_callback)
-        rospy.Subscriber('/destination', dest_list_msg, self.destination_callback)
-        #rospy.Subscriber('/objects', ObjectsStamped, self.object_callback)
-        #rospy.Subscriber('/lawn', ObjectsStamped, self.object_callback)
+        rospy.Subscriber('map', Odometry, self.map_callback)
+        rospy.Subscriber('obstacles', LineSegmentList, self.obstacles_callback)
+        rospy.Subscriber('destination', dest_list_msg, self.destination_callback)
+        #rospy.Subscriber('objects', ObjectsStamped, self.object_callback)
+        #rospy.Subscriber('lawn', ObjectsStamped, self.object_callback)
 
         # Publish results
-        path_publisher = rospy.Publisher('/path', Odometry, queue_size=10)
-        #msg_publisher = rospy.Publisher('/emoji_message', String, queue_size=10)
+        path_publisher = rospy.Publisher('path', Odometry, queue_size=10)
+        #msg_publisher = rospy.Publisher('emoji_message', String, queue_size=10)
             
         # 1hz
         rate = rospy.Rate(1)

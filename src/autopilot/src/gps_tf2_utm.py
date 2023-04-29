@@ -48,8 +48,8 @@ class gps_tf2_utm:
     
     def run(self):
         rospy.init_node('gps_tf2_utm')
-        rospy.Subscriber('/gps', NavSatFix, self.gps_callback)
-        rospy.Subscriber('/dest',  dest_list_msg, self.destination_callback)
+        rospy.Subscriber('gps', NavSatFix, self.gps_callback)
+        rospy.Subscriber('dest',  dest_list_msg, self.destination_callback)
         rospy.spin()
 
 if __name__ == '__main__':
