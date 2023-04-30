@@ -2,7 +2,7 @@
     <arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
         <node pkg="lidar_slam" name="lidar_slam" type="lidar_slam_node" output="screen">
-            <remap from="pose" to="lidar_slam/odom"/>
+            <remap from="odom" to="lidar_slam/odom"/>
             <remap from="path" to="lidar_slam/path"/>
             <remap from="map" to="lidar_slam/map"/>
         </node>
