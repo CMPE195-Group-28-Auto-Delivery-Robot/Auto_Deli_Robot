@@ -3,7 +3,7 @@
         <param name="PortPath" value="/dev/ttyACM0"/>
         <param name="ChipType" value="2" />
         <param name="frame_id" value="gps"/>
-        <param name="BaudRate" value="9600"/>
+        <param name="BaudRate" value="115200"/>
         <param name="DataBit" value="8" />
         <param name="Parity" value="False" />
         <param name="StopBit_Even" value="False" />
