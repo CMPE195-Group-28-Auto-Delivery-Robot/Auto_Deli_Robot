@@ -115,7 +115,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES lidar_slam
  CATKIN_DEPENDS nav_msgs roscpp rospy sensor_msgs std_msg tf
- DEPENDS EIGEN3 PCL
+ DEPENDS EIGEN3 PCL ceres
 )
 
 ###########
