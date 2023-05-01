@@ -81,14 +81,6 @@ bool pidController::SavePIDConfig(){
     return true;
 }
 
-float pidController::AngleDiff(float ax, float ay,
-                               float bx, float by){
-    float det, dot;
-    dot = ax*bx + ay*by;
-    det = ax*by - ay*bx;
-    return atan2(det, dot);
-}
-
 geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     float goaldist, angleDiff;
     geometry_msgs::Twist robotProcessMsg;
@@ -115,8 +107,10 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
             m_angularPid.Clear();
             m_goalSet = false;
         }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
-	        angleDiff = AngleDiff(xDiff, yDiff,
-                                  m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y);
+            int currAngle = QuaternionToEulerYaw(m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y,
+                                                 m_robotOdometryMsg.pose.pose.orientation.z, m_robotOdometryMsg.pose.pose.orientation.w);
+            int goalAngle = atan2(yDiff, xDiff);
+	        angleDiff = goalAngle - currAngle;
             ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
 	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.4);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
@@ -212,4 +206,9 @@ bool pidController::UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
     ROS_DEBUG("Change Speed Kd From %f to %f", m_speedPid.getKd(), req.value);
     m_speedPid.setKd(req.value);
     return SavePIDConfig();
+
+}
+
+int pidController::QuaternionToEulerYaw( int x, int y, int z, int w ){
+    return atan2(2*(w*z + x*y), 1-2*(y*y + z*z));
 }

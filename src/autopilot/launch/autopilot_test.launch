@@ -9,7 +9,7 @@
             <remap from="path" to="set_pose"/>
         </node>
         <param name="test_status" value="True"/>
-        <param name="map_status" value="True"/>
+        <param name="map_status" value="False"/>
         <param name="test_x" value="3"/>
         <param name="test_y" value="0"/>
 

@@ -36,8 +36,6 @@ private:
     pidRegulater m_angularPid;
     std::string m_pidConfigPath;
     ros::Time m_lastCmdRecevied;
-    float AngleDiff(float ax, float ay,
-                    float bx, float by);
 
 public:
     pidController(std::string pidConfigPath, float range);
@@ -70,4 +68,5 @@ public:
     bool UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
                         robot_msgs::UpdateSpeedKd::Response &res );
 
+    int QuaternionToEulerYaw( int x, int y, int z, int w );
 };

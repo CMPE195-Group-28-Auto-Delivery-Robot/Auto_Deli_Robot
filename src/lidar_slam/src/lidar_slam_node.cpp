@@ -71,10 +71,10 @@ void publish_pose(lidar_slam &slam)
     pose.header.stamp = ros::Time(slam.timestamp);
     pose.header.frame_id = "odom";
     double theta = slam.state.theta;
-    pose.pose.orientation.w = cos(0.5 * theta);
+    pose.pose.orientation.w = cos(-0.5 * theta);
     pose.pose.orientation.x = 0;
     pose.pose.orientation.y = 0;
-    pose.pose.orientation.z = sin(0.5 * theta);
+    pose.pose.orientation.z = sin(-0.5 * theta);
     pose.pose.position.x = slam.state.t(0);
     pose.pose.position.y = slam.state.t(1);
     pose.pose.position.z = 0;
