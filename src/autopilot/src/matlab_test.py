@@ -12,9 +12,9 @@ def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point,
     ax.streamplot(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
-    if(abs(target_point[0] - start_point[0]) <= resolution/2 and abs(target_point[1] - start_point[1]) <= resolution/2):
-        ax.add_patch(plt.Circle(target_point, 1, color='b'))
-        ax.annotate("Target", xy=target_point, fontsize=10, ha="center")
+    #if(abs(target_point[0] - start_point[0]) <= resolution and abs(target_point[1] - start_point[1]) <= resolution):
+    ax.add_patch(plt.Circle(target_point, 1, color='b'))
+    ax.annotate("Target", xy=target_point, fontsize=10, ha="center")
     ax.add_patch(plt.Circle(start_point, 1, color='r'))
     ax.annotate("Robot", xy=start_point, fontsize=10, ha="center")
     ax.add_patch(plt.Circle(next_point, 1, color='y'))
