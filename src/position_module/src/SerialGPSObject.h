@@ -24,6 +24,7 @@ public:
 
     int openSerial();
     void sendCommand(std::string content);
+    void sendCommand(std::vector<uint8_t> content);
     void RebootGPS();
     bool RebootGPS( robot_msgs::RebootGPS::Request &req,
                     robot_msgs::RebootGPS::Response &res );
