@@ -15,6 +15,9 @@ from tf.transformations import quaternion_from_euler
 import autopilot
 
 test_mode = rospy.get_param('test_status')
+if test_mode:
+    test_x = -(rospy.get_param('test_x'))
+    test_y = -(rospy.get_param('test_y'))
 
 def gps_to_map(coordinate):
     x, y = coordinate
@@ -36,12 +39,27 @@ def base_to_map(coordinate):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "laser"
+    temp_point.header.frame_id = "base_link"
     temp_point.point = Point(x, y, 0)
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "laser", rospy.Time(), rospy.Duration(1))
+        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.2  ))
+        temp_point = do_transform_point(temp_point, trans)
+    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+        print(e)
+    return [temp_point.point.x, temp_point.point.y]
+
+def map_to_map(coordinate):
+    x, y = coordinate
+    temp_point = PointStamped()
+    temp_point.header.stamp = rospy.Time()
+    temp_point.header.frame_id = "odom"
+    temp_point.point = Point(x, y, 0)
+    try:
+        tfBuffer = tf2_ros.Buffer()
+        tf2_ros.TransformListener(tfBuffer)
+        trans = tfBuffer.lookup_transform("map", "odom", rospy.Time(), rospy.Duration(1))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -81,10 +99,7 @@ class autopilot_node:
         self.speed = 2
         self.local_point = []
         self.node = autopilot.autopilot()
-        if test_mode:
-            self.target_point = base_to_map([3, 0])
-        else:
-            self.target_point = []
+        self.target_point = []
 
         self.run()
 
@@ -134,6 +149,10 @@ class autopilot_node:
         path_publisher = rospy.Publisher('path', Odometry, queue_size=10)
         #msg_publisher = rospy.Publisher('emoji_message', String, queue_size=10)
             
+
+        if test_mode:
+            self.target_point = [test_x, test_y]
+
         # 1hz
         rate = rospy.Rate(1)
         # main function
@@ -149,7 +168,7 @@ class autopilot_node:
                 if done:
                     path_publisher.publish(get_next_coordinate(self.target_point))
                     print("speed: ")
-                    print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] - self.target_point[1])])
+                    print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] + self.target_point[1])])
                     print("next_point: ")
                     print(self.target_point)
                     # not finish all point
@@ -164,7 +183,7 @@ class autopilot_node:
                 # next pose
                 elif path:
                     print("speed: ")
-                    print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] - path[1])])
+                    print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] + path[1])])
                     print("next_point: ")
                     print(path)
                     path_publisher.publish(get_next_coordinate(path))

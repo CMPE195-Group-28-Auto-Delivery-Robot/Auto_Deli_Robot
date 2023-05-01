@@ -17,7 +17,7 @@ obstacle_force = rospy.get_param('obstacle_force')
 obstacle_range = rospy.get_param('obstacle_range')
 step = rospy.get_param('step')
 check = rospy.get_param('check')
-test_mode = rospy.get_param('test_status')
+map_mode = rospy.get_param('map_status')
 
 # Add endpoint with strong attraction in range and weak attraction overall
 # finish
@@ -149,6 +149,6 @@ def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstac
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
     save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path)
-    if test_mode:
+    if map_mode:
         matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
     return save_path, next_coordinate, repeat_flag, slope

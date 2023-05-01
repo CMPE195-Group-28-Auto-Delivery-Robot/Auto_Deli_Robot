@@ -10,12 +10,16 @@ from tangen_bug import tangen_bug
 resolution = rospy.get_param('resolution')
 zoom = rospy.get_param('zoom')
 merge = rospy.get_param('size')
+test_mode = rospy.get_param('test_status')
+if test_mode:
+    test_x = rospy.get_param('test_x')
+    test_y = rospy.get_param('test_y')
 
 # Convert from map coordinates to algorithm coordinates
 def obs_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
-    coordinate[0] = coordinate[0] - fix[0]
-    coordinate[1] = coordinate[1] - fix[1]
+    coordinate[0] -= fix[0]
+    coordinate[1] -= fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
     coordinate[0] += resolution / 2
@@ -37,8 +41,8 @@ def obs_coordinates_fix(fix, coordinates):
 # Convert from map coordinates to algorithm coordinates
 def target_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
-    coordinate[0] = coordinate[0] - fix[0] 
-    coordinate[1] = coordinate[1] - fix[1]
+    coordinate[0] += fix[0]
+    coordinate[1] += fix[1]
     coordinate[0] *= zoom
     coordinate[1] *= zoom
     coordinate[0] += resolution / 2
@@ -52,8 +56,10 @@ def next_coordinate_fix(fix, coordinate):
     coordinate[1] -= resolution / 2
     coordinate[0] = float(coordinate[0]/zoom)
     coordinate[1] = float(coordinate[1]/zoom)
-    coordinate[0] += fix[0]
-    coordinate[1] += fix[1]
+    coordinate[0] -= fix[0]
+    coordinate[1] -= fix[1]
+    coordinate[0] = -coordinate[0] 
+    coordinate[1] = -coordinate[1] 
     return coordinate
 
 
@@ -79,7 +85,10 @@ class autopilot:
         print("curren_point: ")
         print(curren_point)
         print("target_point: ")
-        print(target_point)
+        if test_mode:
+            print([test_x, test_y])
+        else:
+            print(target_point)
         target_point = target_coordinate_fix(curren_point, target_point)
         obstacles = obs_coordinates_fix(curren_point, obstacles)
         restricted_areas = obs_coordinates_fix(curren_point, restricted_areas)
