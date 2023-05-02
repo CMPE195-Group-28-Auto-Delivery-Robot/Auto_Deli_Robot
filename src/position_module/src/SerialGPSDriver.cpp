@@ -5,14 +5,13 @@
 #include "sensor_msgs/NavSatFix.h"
 #include "std_msgs/String.h"
 #include "minmea/minmea.h"
-#include "SerialGPSObject.h"
-
+#include "NmeaGPSObject.h"
 
 int main(int argc, char **argv){
     ros::init(argc, argv, "NMEA_GPS_Node");
     ros::NodeHandle rosHandle;
     int serialFp;
-    SerialGPSObject gpsDevice;
+    NmeaGPSObject gpsDevice;
     std::string frameID;
     std_msgs::String serialMsg;
     std::stringstream serialStream;
@@ -43,7 +42,7 @@ int main(int argc, char **argv){
     memset(&readBuff, '\0', sizeof(readBuff));
     ros::Publisher gps_pub = rosHandle.advertise<sensor_msgs::NavSatFix>(ros::this_node::getName()+"/fix", 1000);
     ros::Publisher serial_pub = rosHandle.advertise<std_msgs::String>(ros::this_node::getName()+"/Serial", 1000);
-    ros::ServiceServer service = rosHandle.advertiseService(ros::this_node::getName()+"/RebootGPS", &SerialGPSObject::RebootGPS, &gpsDevice);
+    ros::ServiceServer service = rosHandle.advertiseService(ros::this_node::getName()+"/RebootGPS", &NmeaGPSObject::RebootGPS, &gpsDevice);
 
     gpsDevice.RebootGPS();
 
@@ -96,7 +95,6 @@ int main(int argc, char **argv){
                             gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
                             break;
                     }
-                    gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
                     gpsMsg.position_covariance[0] = minmea_tofloat(&frame.hdop) ;//* minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[4] = minmea_tofloat(&frame.hdop) ;//* minmea_tocoord(&frame.hdop);
                     gpsMsg.position_covariance[8] = (minmea_tofloat(&frame.hdop)*4) ;//* (minmea_tocoord(&frame.hdop)*2);

@@ -60,36 +60,47 @@ int SerialGPSObject::openSerial(){
     switch(baudrate){
         case 1200:
             cfsetispeed(&ttyCnf, B1200);
+            cfsetospeed(&ttyCnf, B1200);
             break;
         case 1800:
             cfsetispeed(&ttyCnf, B1800);
+            cfsetospeed(&ttyCnf, B1800);
             break;
         case 2400:
             cfsetispeed(&ttyCnf, B2400);
+            cfsetospeed(&ttyCnf, B2400);
             break;
         case 4800:
             cfsetispeed(&ttyCnf, B4800);
+            cfsetospeed(&ttyCnf, B4800);
             break;
         case 9600:
             cfsetispeed(&ttyCnf, B9600);
+            cfsetospeed(&ttyCnf, B9600);
             break;
         case 19200:
             cfsetispeed(&ttyCnf, B19200);
+            cfsetospeed(&ttyCnf, B19200);
             break;
         case 38400:
             cfsetispeed(&ttyCnf, B38400);
+            cfsetospeed(&ttyCnf, B38400);
             break;
         case 57600:
             cfsetispeed(&ttyCnf, B57600);
+            cfsetospeed(&ttyCnf, B57600);
             break;
         case 115200:
             cfsetispeed(&ttyCnf, B115200);
+            cfsetospeed(&ttyCnf, B115200);
             break;
         case 230400:
             cfsetispeed(&ttyCnf, B230400);
+            cfsetospeed(&ttyCnf, B230400);
             break;
         case 460800:
             cfsetispeed(&ttyCnf, B460800);
+            cfsetospeed(&ttyCnf, B460800);
             break;
         default:
             ROS_ERROR("Unsupported Baud Rate");
@@ -127,47 +138,9 @@ void SerialGPSObject::sendCommand(std::vector<uint8_t> content){
     write(serialFp, content.data(), content.size());
 }
 
-
-void SerialGPSObject::RebootGPS(){
-    switch (chipType)
-    {
-    case 1:
-        ROS_INFO("Chip: MT3339");
-        sendCommand("PMTK102");
-        ros::Duration(3).sleep();
-        ROS_INFO("Boot Complete");
-        sendCommand("PMTK314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0");
-        sendCommand("PMTK220,100");
-        break;
-
-    case 2:
-        ROS_INFO("Chip: UBlox");
-        sendCommand("PUBX,41,1,0007,0003,38400,0");
-        ros::Duration(5).sleep();
-        sendCommand("PUBX,40,RMC,0,0,0,0,0,0");
-        sendCommand("PUBX,40,GLL,0,0,0,0,0,0");
-        sendCommand("PUBX,40,GSV,0,0,0,0,0,0");
-        sendCommand("PUBX,40,VTG,0,0,0,0,0,0");
-        sendCommand("PUBX,40,GSA,0,0,0,0,0,0");
-        sendCommand("PUBX,40,ZDA,0,0,0,0,0,0");
-        sendCommand(std::vector<uint8_t>{0xB5, 0x62, 0x06, 0x8A, 0x32, 0x00, 0x01, 0x02, 0x00, 0x00, 0x24, 0x00, 0x31, 0x10, 0x00, 0x25, 0x00, 
-            0x31, 0x10, 0x01, 0x18, 0x00, 0x31, 0x10, 0x01, 0x21, 0x00, 0x11, 0x20, 0x04, 0x05, 0x00, 0x22, 0x20, 0x03, 0x01, 0x00, 0x21, 
-            0x30, 0x64, 0x00, 0x07, 0x00, 0x91, 0x20, 0x01, 0x16, 0x00, 0x91, 0x20, 0x01, 0x1B, 0x00, 0x91, 0x20, 0x01, 0x8F, 0x6F});
-        ros::Duration(1).sleep();
-        sendCommand(std::vector<uint8_t>{0xB5, 0x62, 0x06, 0x8A, 0x32, 0x00, 0x01, 0x01, 0x00, 0x00, 0x24, 0x00, 0x31, 0x10, 0x00, 0x25, 0x00, 
-            0x31, 0x10, 0x01, 0x18, 0x00, 0x31, 0x10, 0x01, 0x21, 0x00, 0x11, 0x20, 0x04, 0x05, 0x00, 0x22, 0x20, 0x03, 0x01, 0x00, 0x21, 
-            0x30, 0x64, 0x00, 0x07, 0x00, 0x91, 0x20, 0x01, 0x16, 0x00, 0x91, 0x20, 0x01, 0x1B, 0x00, 0x91, 0x20, 0x01, 0x8E, 0x3E});
-        ros::Duration(1).sleep();
-        ROS_INFO("Boot Complete");
-        break;
-    
-    default:
-        ROS_INFO("Chip: Unknown");
-        break;
-    }
-}
-
-bool SerialGPSObject::RebootGPS(robot_msgs::RebootGPS::Request &req,
-                                robot_msgs::RebootGPS::Response &res){
-    RebootGPS();
+std::vector<uint8_t> SerialGPSObject::GetU8VecFromStr(std::string content){
+    std::vector<uint8_t> t_vec;
+    t_vec.resize(content.size());
+    memcpy(t_vec.data(), content.c_str(), content.size());
+    return t_vec;
 }

@@ -1,6 +1,6 @@
 <launch>
-    <node pkg="position_module" name="UbloxF9P" type="SerialGPSDriver" output="screen">
-        <param name="PortPath" value="/dev/ttyACM0"/>
+    <node pkg="position_module" name="UbloxF9P" type="SerialRTKGPSDriver" output="screen">
+        <param name="PortPath" value="/dev/ttyUSB0"/>
         <param name="ChipType" value="2" />
         <param name="frame_id" value="gps"/>
         <param name="BaudRate" value="115200"/>

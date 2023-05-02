@@ -1,14 +1,14 @@
+#pragma once
+
 #include <string>
 #include <stdio.h>
 #include <sstream>
 #include "ros/ros.h"
-#include "robot_msgs/RebootGPS.h"
 
 #include <fcntl.h> // Contains file controls like O_RDWR
 #include <errno.h> // Error integer and strerror() function
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
-#pragma once
 
 class SerialGPSObject{
 public:
@@ -25,9 +25,7 @@ public:
     int openSerial();
     void sendCommand(std::string content);
     void sendCommand(std::vector<uint8_t> content);
-    void RebootGPS();
-    bool RebootGPS( robot_msgs::RebootGPS::Request &req,
-                    robot_msgs::RebootGPS::Response &res );
+    static std::vector<uint8_t> GetU8VecFromStr(std::string content);
 
 private:
     uint8_t stringCheckSum(std::string inStr);

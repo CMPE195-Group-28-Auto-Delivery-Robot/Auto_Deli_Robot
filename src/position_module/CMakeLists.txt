@@ -48,6 +48,8 @@ include_directories(
 # )
 add_library(minmea STATIC src/minmea/minmea.c)
 add_library(SerialGPSObject STATIC src/SerialGPSObject.cpp)
+add_library(NmeaGPSObject STATIC src/NmeaGPSObject.cpp)
+target_link_libraries(NmeaGPSObject SerialGPSObject)
 add_library(pidRegulater STATIC src/pidAlgorithm/pidRegulater.cpp)
 add_library(pidController STATIC src/pidController.cpp)
 target_link_libraries(pidController pidRegulater)
@@ -81,6 +83,11 @@ add_executable(SerialGPSDriver src/SerialGPSDriver.cpp)
 target_link_libraries(SerialGPSDriver ${catkin_LIBRARIES})
 target_link_libraries(SerialGPSDriver minmea)
 target_link_libraries(SerialGPSDriver SerialGPSObject)
+target_link_libraries(SerialGPSDriver NmeaGPSObject)
+
+add_executable(SerialRTKGPSDriver src/SerialRTKGPSDriver.cpp)
+target_link_libraries(SerialRTKGPSDriver ${catkin_LIBRARIES})
+target_link_libraries(SerialRTKGPSDriver SerialGPSObject)
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
