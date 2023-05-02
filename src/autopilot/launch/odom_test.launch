@@ -2,7 +2,7 @@
     <arg name="robot_name" default="deli_robot" />
     <group ns="$(arg robot_name)">
         <node pkg="autopilot" type="odom_to_csv.py" name="odom_to_csv" output="screen" >
-            <remap from="odom" to="odometry/odom"/>
+            <remap from="odom" to="/deli_robot/UbloxF9P/odom"/>
         </node>
     </group>
 </launch>

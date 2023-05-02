@@ -89,7 +89,7 @@ lidar_slam::lidar_slam()
     map2d.header.frame_id = "odom";
     map2d.info.width = 2000;
     map2d.info.height = 2000;
-    map2d.info.resolution = 0.15;
+    map2d.info.resolution = 0.01;
     map2d.info.origin.orientation.w = 1;
     map2d.info.origin.orientation.x = 0;
     map2d.info.origin.orientation.y = 0;

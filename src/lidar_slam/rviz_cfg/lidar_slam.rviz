@@ -93,7 +93,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05000000074505806
       Shape: Arrow
-      Topic: /deli_robot/lidar_slam/odom
+      Topic: /deli_robot/lidar_slam/pose
       Unreliable: false
       Value: true
     - Alpha: 0.699999988079071

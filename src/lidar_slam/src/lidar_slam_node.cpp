@@ -12,7 +12,7 @@
 #include <Eigen/Eigen>
 
 lidar_slam slam;
-ros::Publisher pub_pose, pub_path;
+ros::Publisher pub_pose, pub_odom, pub_path;
 ros::Publisher pub_laserscan;
 ros::Publisher pub_map2d;
 void publish_pose(lidar_slam &slam);
@@ -82,7 +82,8 @@ void publish_pose(lidar_slam &slam)
     nav_msgs::Odometry odom;
     odom.header = pose.header;
     odom.pose.pose = pose.pose;
-    pub_pose.publish(odom);
+    pub_odom.publish(odom);
+    pub_pose.publish(pose);
 
     path.header.frame_id = "odom";
     path.poses.push_back(pose);
@@ -114,7 +115,8 @@ int main(int argc, char **argv)
 
     //pub_laserscan = nh.advertise<sensor_msgs::LaserScan>("laserscan", 100);
     pub_map2d = nh.advertise<nav_msgs::OccupancyGrid>("map", 100);
-    pub_pose = nh.advertise<nav_msgs::Odometry>("odom", 100);
+    pub_odom = nh.advertise<nav_msgs::Odometry>("odom", 100);
+    pub_pose = nh.advertise<geometry_msgs::PoseStamped>("pose", 100);
     pub_path = nh.advertise<nav_msgs::Path>("path", 100);
     ros::spin();
     return 0;
