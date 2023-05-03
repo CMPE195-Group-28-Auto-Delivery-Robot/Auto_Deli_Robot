@@ -1,0 +1,7 @@
+<launch>
+    <arg name="robot_name" default="deli_robot" />
+    <group ns="$(arg robot_name)">
+        <node pkg="autopilot" type="setpose.py" name="setpose" output="screen" >
+        </node>
+    </group>
+</launch>

@@ -10,7 +10,7 @@
         </node>
         <param name="test_status" value="True"/>
         <param name="map_status" value="False"/>
-        <param name="test_x" value="3"/>
+        <param name="test_x" value="2"/>
         <param name="test_y" value="0"/>
 
         <param name="resolution" value="100"/>
