@@ -87,9 +87,9 @@ lidar_slam::lidar_slam()
     state.t = Vector2d::Zero();
     state.theta = 0;
     map2d.header.frame_id = "odom";
-    map2d.info.width = 2000;
-    map2d.info.height = 2000;
-    map2d.info.resolution = 0.01;
+    map2d.info.width = 4000;
+    map2d.info.height = 4000;
+    map2d.info.resolution = 0.05;
     map2d.info.origin.orientation.w = 1;
     map2d.info.origin.orientation.x = 0;
     map2d.info.origin.orientation.y = 0;
