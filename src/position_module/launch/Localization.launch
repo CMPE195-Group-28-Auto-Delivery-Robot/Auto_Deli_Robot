@@ -71,15 +71,6 @@
            false, false, false,
            false, false, false]
         </rosparam>
-        <!-- <param name="pose1" value="lidar_slam/odom" />
-        <param name="pose1_differential" value="false"/>
-        <rosparam param="pose1_config">
-          [true,  true,  true, 
-           true,  true,  true, 
-           false, false, false, 
-           false, false, false,
-           false, false, false]>
-        </rosparam -->
         <remap from="odometry/filtered" to="odometry/map"/>
     </node>
     <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" respawn="true">
