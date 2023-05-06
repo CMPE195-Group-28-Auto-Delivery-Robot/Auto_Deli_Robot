@@ -87,23 +87,34 @@ int main(int argc, char **argv){
             continue;
 
         // Extract the values for each parameter using regex
+        double latitude;
+        double longitude;
+        double height;
+        int fix;
+        int carrier_solution;
+        int accuracy;
+
+        try{
         std::smatch match;
         std::string sentence = serialStream.str();
         std::regex_search(sentence, match, lat_regex);
-        double latitude = std::stod(match[1]);
+        latitude = std::stod(match[1]);
         std::regex_search(sentence, match, long_regex);
-        double longitude = std::stod(match[1]);
+        longitude = std::stod(match[1]);
         std::regex_search(sentence, match, height_regex);
-        double height = std::stod(match[1]);
+        height = std::stod(match[1]);
         std::regex_search(sentence, match, fix_regex);
-        int fix = std::stoi(match[1]);
+        fix = std::stoi(match[1]);
         std::string fix_type = match[2];
         std::regex_search(sentence, match, carrier_regex);
-        int carrier_solution = std::stoi(match[1]);
+        carrier_solution = std::stoi(match[1]);
         std::string carrier_type = match[2];
         std::regex_search(sentence, match, accuracy_regex);
-        int accuracy = std::stoi(match[1]);
+        accuracy = std::stoi(match[1]);
         std::string accuracy_units = match[2];
+        }catch(...){
+            continue;
+        }
         
         gpsMsg.header.stamp = ros::Time::now();
         gpsMsg.latitude = latitude;
@@ -111,21 +122,7 @@ int main(int argc, char **argv){
         gpsMsg.altitude = height;
         gpsMsg.status.service = sensor_msgs::NavSatStatus::SERVICE_GPS;
         gpsMsg.position_covariance_type = sensor_msgs::NavSatFix::COVARIANCE_TYPE_UNKNOWN;
-        switch(fix){
-            case 1:
-                gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_FIX;
-                break;
-            case 2:
-                gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_SBAS_FIX;
-                break;
-            case 4:
-            case 5:
-                gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_GBAS_FIX;
-                break;
-            default:
-                gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_NO_FIX;
-                break;
-        }
+        gpsMsg.status.status = sensor_msgs::NavSatStatus::STATUS_GBAS_FIX;
         gps_pub.publish(gpsMsg);
     }
     ROS_INFO("GPS %s Node End", ros::this_node::getName().c_str());
