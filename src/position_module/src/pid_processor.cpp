@@ -29,6 +29,7 @@ int main(int argc, char **argv)
     ros::Subscriber pose_sub = rosHandle.subscribe<geometry_msgs::PoseStamped>("goalPosition", 1000, &pidController::TargetCallback, &pidNode);
     ros::ServiceServer serviceHome = rosHandle.advertiseService("GoHome", &pidController::GoHome, &pidNode);
     ros::ServiceServer serviceClear = rosHandle.advertiseService("ClearGoal", &pidController::ClearGoal, &pidNode);
+    ros::ServiceServer changeSpeed = rosHandle.advertiseService(ros::this_node::getName()+"/ChangeSpeed", &pidController::ChangeSpeed, &pidNode);
     ros::ServiceServer serviceMode = rosHandle.advertiseService(ros::this_node::getName()+"/ChangeOpMode", &pidController::ChangeOpMode, &pidNode);
     ros::ServiceServer serviceakp = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKp", &pidController::UpdateAngularKp, &pidNode);
     ros::ServiceServer serviceaki = rosHandle.advertiseService(ros::this_node::getName()+"/UpdateAngularKi", &pidController::UpdateAngularKi, &pidNode);

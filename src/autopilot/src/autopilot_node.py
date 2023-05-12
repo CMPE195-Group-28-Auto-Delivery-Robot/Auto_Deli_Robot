@@ -2,6 +2,8 @@
 
 import rospy
 import tf2_ros
+import numpy as np
+from std_msgs.msg import Float32
 from tf2_geometry_msgs import do_transform_point
 from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
@@ -11,6 +13,8 @@ from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String, Header
 from tf.transformations import quaternion_from_euler
+
+from robot_msgs.srv import ChangeSpeed
 
 import autopilot
 
@@ -23,7 +27,7 @@ def gps_to_map(coordinate):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "gps"
+    temp_point.header.frame_id = "map"
     temp_point.point = Point(x, y, 0)
     try:
         tfBuffer = tf2_ros.Buffer()
@@ -35,26 +39,26 @@ def gps_to_map(coordinate):
     return [temp_point.point.x, temp_point.point.y]
 
 
-def base_to_map(coordinate):
+def base_to_map(coordinate, trans):
     x, y = coordinate
     temp_point = PointStamped()
-    temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "laser"
+    temp_point.header.stamp = rospy.Time.now()
+    temp_point.header.frame_id = "odom"
     temp_point.point = Point(x, y, 0)
-    try:
-        tfBuffer = tf2_ros.Buffer()
-        tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(0.15))
-        temp_point = do_transform_point(temp_point, trans)
-    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        print(e)
+    temp_point = do_transform_point(temp_point, trans)
     return [temp_point.point.x, temp_point.point.y]
         
 
 def obstacles_convet(obstacles):
     temp_obstacles = []
-    for obstacle in obstacles:
-        temp_obstacles.append([base_to_map(obstacle[0]), base_to_map(obstacle[1]), 0])
+    try:
+        tfBuffer = tf2_ros.Buffer()
+        tf2_ros.TransformListener(tfBuffer)
+        trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(10))
+        for obstacle in obstacles:
+            temp_obstacles.append([base_to_map(obstacle[0], trans), base_to_map(obstacle[1], trans), 0])
+    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+        print(e)
     return temp_obstacles
     
 
@@ -85,6 +89,7 @@ class autopilot_node:
         self.local_point = []
         self.node = autopilot.autopilot()
         self.target_point = []
+        self.service_client = rospy.ServiceProxy('Robot_PID_Ctrl/ChangeSpeed', ChangeSpeed)
         self.run()
 
 
@@ -116,19 +121,31 @@ class autopilot_node:
             self.objects.append(temp_object.label)
         if "Person" in self.objects:
             if self.speed != 1:
-                rospy.loginfo("Log: People in Front")
-                rospy.loginfo("Log: Slow Done")
-                self.speed = 1
-        # elif "Vehicle" in self.objects:
-        #     if self.speed != 1:
-        #         rospy.loginfo("Log: Vehicle in Front")
-        #         rospy.loginfo("Log: Slow Done")
-        #         self.speed = 1
+                rospy.logwarn("Log: People in Front")
+                request = ChangeSpeed()
+                request = 0.2
+                response = self.service_client(request)
+                if response.result:
+                    rospy.logwarn("Log: Slow Done")
+                    self.speed = 1
+        elif "Vehicle" in self.objects:
+            if self.speed != 1:
+                rospy.loginfo("Log: Vehicle in Front")
+                request = ChangeSpeed()
+                request = 0.2
+                response = self.service_client(request)
+                if response.result:
+                    rospy.logwarn("Log: Slow Done")
+                    self.speed = 1
         else:
             if self.speed != 2:
-                rospy.loginfo("Log: Road Clear")
-                rospy.loginfo("Log: Speed Up")
-                self.speed = 2
+                rospy.logwarn("Log: Road Clear")
+                request = ChangeSpeed()
+                request = 0.3
+                response = self.service_client(request)
+                if response.result:
+                    rospy.logwarn("Log: Speed Up")
+                    self.speed = 2
 
     def run(self):
         rospy.init_node('autopilot_node')
@@ -138,7 +155,6 @@ class autopilot_node:
         rospy.Subscriber('obstacles', LineSegmentList, self.obstacles_callback)
         rospy.Subscriber('destination', dest_list_msg, self.destination_callback)
         rospy.Subscriber('objects', ObjectsStamped, self.object_callback)
-        #rospy.Subscriber('lawn', ObjectsStamped, self.object_callback)
 
         # Publish results
         path_publisher = rospy.Publisher('path', PoseStamped, queue_size=10)
@@ -187,7 +203,7 @@ class autopilot_node:
                 else:
                     self.status = False
                     #msg_publisher.publish("error")
-                    rospy.loginfo("error: cannot move")
+                    rospy.logwarn("error: cannot move")
             # get order
             elif self.target_point:
                 self.status = True

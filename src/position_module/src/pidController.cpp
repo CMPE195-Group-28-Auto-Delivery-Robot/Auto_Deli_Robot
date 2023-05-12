@@ -5,6 +5,7 @@ pidController::pidController(std::string pidConfigPath, float range):
     m_pidConfigPath(pidConfigPath), m_arrivalRange(range){
     m_goalSet = false;
     m_opMode = true;
+    m_speed = 0.3;
     ROS_INFO("%f", m_arrivalRange);
 }
 
@@ -114,7 +115,7 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
             float goalAngle = atan2(yDiff, xDiff);
 	        angleDiff = goalAngle - currAngle;
             ROS_INFO("P2P Debug: Remaining Distance %f, Curren Angle: %f, Goal Angle: %f, Diff Angle: %f", goaldist, currAngle, goalAngle, angleDiff);
-	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.3);
+	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_speed);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }
@@ -147,6 +148,14 @@ bool pidController::ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
         res.result = "Change to Direct Mode";
         ROS_INFO("Change to Direct Mode");
     }
+    return true;
+}
+
+bool pidController::ChangeSpeed( robot_msgs::ChangeSpeed::Request &req,
+                       robot_msgs::ChangeSpeed::Response &res ){
+    m_speed = req.value;
+    res.result = "Change Speed to " + std::to_string(m_speed);
+    ROS_INFO("Change Speed to %f", m_speed);
     return true;
 }
 

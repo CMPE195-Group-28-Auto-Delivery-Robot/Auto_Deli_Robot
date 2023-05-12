@@ -9,6 +9,7 @@
 
 // Custom msgs and srvs
 #include "robot_msgs/ChangeOpMode.h"
+#include "robot_msgs/ChangeSpeed.h"
 #include "robot_msgs/ClearGoal.h"
 #include "robot_msgs/GoHome.h"
 #include "robot_msgs/UpdateAngularKp.h"
@@ -27,6 +28,7 @@ class pidController{
 private:
     bool m_opMode; // If true PID Mode, else Direct Mode
     bool m_goalSet;
+    float m_speed;
     float m_currspeed;
     float m_arrivalRange;
     geometry_msgs::Twist m_robotControlMsg;
@@ -51,6 +53,8 @@ public:
     
     bool ChangeOpMode( robot_msgs::ChangeOpMode::Request &req,
                        robot_msgs::ChangeOpMode::Response &res );
+    bool ChangeSpeed( robot_msgs::ChangeSpeed::Request &req,
+                    robot_msgs::ChangeSpeed::Response &res );
     bool ClearGoal( robot_msgs::ClearGoal::Request &req,
                     robot_msgs::ClearGoal::Response &res );
     bool GoHome( robot_msgs::GoHome::Request &req,

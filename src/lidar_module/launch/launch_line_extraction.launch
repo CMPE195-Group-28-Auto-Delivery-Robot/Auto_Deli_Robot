@@ -1,6 +1,6 @@
 <launch>
     <node name="line_extractor" pkg="laser_line_extraction" type="line_extraction_node">
-        <param name="~frequency" value="12" />
+        <param name="~frequency" value="10" />
         <param name="~frame_id" value="laser" />
         <param name="~scan_topic" value="scan" />
         <param name="~publish_markers" value="true" />

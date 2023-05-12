@@ -80,13 +80,13 @@ class autopilot:
 
     # Get next point after do autopilot
     def get_next(self, obstacles, restricted_areas, curren_point, target_point):
-        print("curren_point: ")
-        print(curren_point)
-        print("target_point: ")
+        rospy.loginfo("curren_point: ")
+        rospy.loginfo(curren_point)
+        rospy.loginfo("target_point: ")
         if test_mode:
-            print([test_x, test_y])
+            rospy.loginfo([test_x, test_y])
         else:
-            print(target_point)
+            rospy.loginfo(target_point)
         target_point = target_coordinate_fix(curren_point, target_point)
         obstacles = obs_coordinates_fix(curren_point, obstacles)
         restricted_areas = obs_coordinates_fix(curren_point, restricted_areas)
@@ -99,14 +99,14 @@ class autopilot:
                     return None, False
                 next_point[0] += random.randint(-1, 1)
                 next_point[1] += random.randint(-1, 1)
-                print("error: random jump")
+                rospy.logwarn("error: random jump")
                 self.repeat_time += 1
             else:
                 self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-                print("tangen_bug Angle: ")
-                print(self.slope)
+                rospy.loginfo("tangen_bug Angle: ")
+                rospy.loginfo(self.slope)
         elif repeat_flag > 1:
             self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
-            print("tangen_bug Angle: ")
-            print(self.slope)
+            rospy.loginfo("tangen_bug Angle: ")
+            rospy.loginfo(self.slope)
         return next_coordinate_fix(curren_point, next_point), False
