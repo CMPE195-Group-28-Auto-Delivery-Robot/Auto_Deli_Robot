@@ -68,5 +68,5 @@ public:
     bool UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
                         robot_msgs::UpdateSpeedKd::Response &res );
 
-    int QuaternionToEulerYaw( int x, int y, int z, int w );
+    float QuaternionToEulerYaw( float x, float y, float z, float w );
 };

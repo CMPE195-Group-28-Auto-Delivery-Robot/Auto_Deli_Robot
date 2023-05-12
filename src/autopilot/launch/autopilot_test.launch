@@ -6,27 +6,27 @@
             <remap from="destination" to="destList_array"/>
             <remap from="obstacles" to="line_segments"/>
             <remap from="objects" to="zed_node/obj_det/objects"/>
-            <remap from="path" to="set_pose"/>
+            <remap from="path" to="goalPosition"/>
         </node>
         <param name="test_status" value="True"/>
         <param name="map_status" value="False"/>
-        <param name="test_x" value="2"/>
+        <param name="test_x" value="5"/>
         <param name="test_y" value="0"/>
 
-        <param name="resolution" value="100"/>
-        <param name="zoom" value="20"/>
-        <param name="size" value="5"/>
+        <param name="resolution" value="20"/>
+        <param name="zoom" value="8"/>
+        <param name="size" value="4"/>
 
         <param name="obstacle_force" value="2"/>
-        <param name="obstacle_range" value="8"/>
+        <param name="obstacle_range" value="4"/>
         <param name="attractive_force" value="5"/>
         <param name="repulsive_force" value="10"/>
         <param name="slope_force" value="5"/>
 
-        <param name="step" value="4"/>
-        <param name="check" value="4"/>
+        <param name="step" value="2"/>
+        <param name="check" value="3"/>
 
-        <param name="tangen_depth" value="20"/>
+        <param name="tangen_depth" value="15"/>
         <param name="tau" value="0.8"/>
         <param name="degree" value="1"/>
     </group>

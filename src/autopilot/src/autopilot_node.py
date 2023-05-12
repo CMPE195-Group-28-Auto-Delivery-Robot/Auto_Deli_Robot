@@ -5,7 +5,7 @@ import tf2_ros
 from tf2_geometry_msgs import do_transform_point
 from laser_line_extraction.msg import LineSegment, LineSegmentList
 from zed_interfaces.msg import ObjectsStamped, Object
-from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped
+from geometry_msgs.msg import Quaternion, Point, Pose, PointStamped, TransformStamped, PoseStamped
 from sensor_msgs.msg import NavSatFix
 from robot_msgs.msg import dest_list_msg
 from nav_msgs.msg import Odometry
@@ -44,7 +44,7 @@ def base_to_map(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.2  ))
+        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.2))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -74,22 +74,22 @@ def obstacles_convet(obstacles):
     
 
 def get_next_coordinate(target_coordinate):
-    target_point = Odometry()
-    target_point.header.stamp = rospy.Time()
+    target_point = PoseStamped()
+    target_point.header.stamp = rospy.Time.now()
     target_point.header.frame_id = "map"
-    target_point.pose.pose.position.x = target_coordinate[0]
-    target_point.pose.pose.position.y = target_coordinate[1]
-    target_point.pose.pose.position.z = 0.0
-    #target_point.pose.pose.orientation = current_coordinate.pose.pose.orientation
-    #target_point.pose.covariance = current_coordinate.pose.covariance
-    #target_point.twist = current_coordinate.twist
+    target_point.pose.position.x = target_coordinate[0]
+    target_point.pose.position.y = target_coordinate[1]
+    target_point.pose.position.z = 0.0
+    target_point.pose.orientation.x = 0
+    target_point.pose.orientation.y = 0
+    target_point.pose.orientation.z = 0
+    target_point.pose.orientation.w = 1
     return target_point
-
 
 class autopilot_node:
 
     def __init__(self):
-        self.status = False
+        self.status = True
         self.lost_gps = False
         self.target_list = []
         self.curren_point = [0, 0]
@@ -146,7 +146,7 @@ class autopilot_node:
         #rospy.Subscriber('lawn', ObjectsStamped, self.object_callback)
 
         # Publish results
-        path_publisher = rospy.Publisher('path', Odometry, queue_size=10)
+        path_publisher = rospy.Publisher('path', PoseStamped, queue_size=10)
         #msg_publisher = rospy.Publisher('emoji_message', String, queue_size=10)
             
 
@@ -159,18 +159,17 @@ class autopilot_node:
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
-            if self.curren_point[0] != 0:
-            #if False:
+            if self.status:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
-                    path_publisher.publish(get_next_coordinate(self.target_point))
+                    path_publisher.publish(get_next_coordinate([-(self.target_point[0]),-(self.target_point[1])]))
                     print("speed: ")
-                    print([abs(self.curren_point[0] - self.target_point[0]), abs(self.curren_point[1] + self.target_point[1])])
+                    print([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
                     print("next_point: ")
-                    print(self.target_point)
+                    print([-(self.target_point[0]),-(self.target_point[1])])
                     # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
@@ -179,6 +178,7 @@ class autopilot_node:
                     # finish all point
                     else:
                         self.status = False
+                        self.target_point = []
                         print("log: finish all point")
                 # next pose
                 elif path:

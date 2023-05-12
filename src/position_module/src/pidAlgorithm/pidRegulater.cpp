@@ -38,7 +38,11 @@ void pidRegulater::Clear(){
 float pidRegulater::getResult(float currErr){
     float result;
     result = m_Kp*currErr + m_Ki*m_cum_error + m_Kd*m_pre_error;
+    float temp_m_cum_error = m_cum_error;
     m_cum_error += currErr;
+    if (abs(m_cum_error) >= 100) {
+        m_cum_error = temp_m_cum_error;
+    }
     m_pre_error = currErr;
     return result;
 }

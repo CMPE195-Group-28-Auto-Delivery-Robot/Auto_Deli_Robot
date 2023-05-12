@@ -51,7 +51,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=obsta
 
 # Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
-def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=obstacle_range, curve=2*obstacle_range):
+def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=obstacle_range, curve=1.5*obstacle_range):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
     if to_obstacle_distance > 20:
         return x_vector, y_vector

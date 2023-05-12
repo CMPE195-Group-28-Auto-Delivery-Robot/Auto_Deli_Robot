@@ -5,6 +5,7 @@ pidController::pidController(std::string pidConfigPath, float range):
     m_pidConfigPath(pidConfigPath), m_arrivalRange(range){
     m_goalSet = false;
     m_opMode = true;
+    ROS_INFO("%f", m_arrivalRange);
 }
 
 void pidController::OdomCallback(const nav_msgs::Odometry::ConstPtr& odomMsg)
@@ -21,6 +22,7 @@ void pidController::ControlCallback(const geometry_msgs::Twist::ConstPtr& contro
 void pidController::TargetCallback(const geometry_msgs::PoseStamped::ConstPtr& tagMsg)
 {
     m_robotTargetPoseMsg = *(tagMsg.get());
+    m_goalSet = true;
 }
 
 bool pidController::IsGoalSet(){
@@ -103,14 +105,14 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
         yDiff = currRobotPose.position.y - m_robotTargetPoseMsg.pose.position.y;
         goaldist = sqrt(pow(xDiff,2) + pow(yDiff,2));
         if(goaldist < m_arrivalRange){
-            ROS_INFO("Goal Point Arrived");
+            ROS_INFO("Goal Point Arrived %f > %f", m_arrivalRange, goaldist);
             m_angularPid.Clear();
             m_goalSet = false;
         }else{ // If GUI didn't control in 5 sec and goal is set go to the goal
-            int currAngle = QuaternionToEulerYaw(m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y,
+            float currAngle = QuaternionToEulerYaw(m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y,
                                                  m_robotOdometryMsg.pose.pose.orientation.z, m_robotOdometryMsg.pose.pose.orientation.w);
-            int goalAngle = atan2(yDiff, xDiff);
-	        angleDiff = goalAngle - currAngle;
+            float goalAngle = atan2(yDiff, xDiff);
+	        angleDiff = goalAngle + currAngle;
             ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
 	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.4);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
@@ -209,6 +211,6 @@ bool pidController::UpdateSpeedKd( robot_msgs::UpdateSpeedKd::Request &req,
 
 }
 
-int pidController::QuaternionToEulerYaw( int x, int y, int z, int w ){
+float pidController::QuaternionToEulerYaw( float x, float y, float z, float w ){
     return atan2(2*(w*z + x*y), 1-2*(y*y + z*z));
 }

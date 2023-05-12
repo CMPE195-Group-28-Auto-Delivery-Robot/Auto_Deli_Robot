@@ -13,7 +13,7 @@
                 output="screen">
             <remap from="imu" to="/$(arg robot_name)/sensors/imu" />
             <remap from="scan" to="/$(arg robot_name)/scan" />
-            <remap from="odom" to="/$(arg robot_name)/odometry/odom" />
+            <remap from="odom" to="/$(arg robot_name)/odometry/map" />
             <remap from="fix" to="/$(arg robot_name)/UbloxF9P/fix" />
         </node>
 

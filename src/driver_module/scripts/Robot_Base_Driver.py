@@ -11,22 +11,22 @@ import adafruit_motor.servo
 from adafruit_servokit import ServoKit
 
 def MAX_Speed_RANGE():
-    return 20;
+    return 20
 
 def MAX_ANG_RANGE():
-    return 20;
+    return 20
 
 def MAX_SERVO_DEGREE():
-    return 130;
+    return 130
 
 def MIN_SERVO_DEGREE():
-    return 40;
+    return 40
 
 def RANGE_SERVO_DEGREE():
-    return (MAX_SERVO_DEGREE()-MIN_SERVO_DEGREE());
+    return (MAX_SERVO_DEGREE()-MIN_SERVO_DEGREE())
 
 def CENTER_SERVO_DEGREE():
-    return (RANGE_SERVO_DEGREE())/2+MIN_SERVO_DEGREE();
+    return (RANGE_SERVO_DEGREE())/2+MIN_SERVO_DEGREE()
 
 
 class i2CPWMDriver:
@@ -62,6 +62,14 @@ def callback(data: Twist, device: i2CPWMDriver):
         rospy.loginfo("Speed Too Low")
         data.linear.x = -MAX_Speed_RANGE()/2
     robotThrottle = (data.linear.x + MAX_Speed_RANGE()/2) / MAX_Speed_RANGE()
+
+    if robotThrottle >= 0.57:
+        robotThrottle = 0.57
+    elif robotThrottle <= 0.3:
+        robotThrottle = 0.3
+
+    rospy.loginfo(robotThrottle)
+        
     device.SetThrottle(robotThrottle)
     
 def RobotDriverMain():
@@ -84,6 +92,8 @@ def RobotDriverMain():
     rospy.Subscriber(subPath, Twist, callback, driverBoard)
 
     rospy.spin()
+
+    driverBoard.SetThrottle(0)
 
 if __name__ == '__main__':
     RobotDriverMain()
