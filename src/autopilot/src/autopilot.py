@@ -58,8 +58,6 @@ def next_coordinate_fix(fix, coordinate):
     coordinate[1] = float(coordinate[1]/zoom)
     coordinate[0] -= fix[0]
     coordinate[1] -= fix[1]
-    coordinate[0] = -coordinate[0] 
-    coordinate[1] = -coordinate[1] 
     return coordinate
 
 

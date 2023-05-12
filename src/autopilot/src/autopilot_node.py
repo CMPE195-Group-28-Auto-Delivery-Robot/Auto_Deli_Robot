@@ -16,8 +16,8 @@ import autopilot
 
 test_mode = rospy.get_param('test_status')
 if test_mode:
-    test_x = -(rospy.get_param('test_x'))
-    test_y = -(rospy.get_param('test_y'))
+    test_x = rospy.get_param('test_x')
+    test_y = rospy.get_param('test_y')
 
 def gps_to_map(coordinate):
     x, y = coordinate
@@ -39,27 +39,12 @@ def base_to_map(coordinate):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "base_link"
+    temp_point.header.frame_id = "laser"
     temp_point.point = Point(x, y, 0)
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "base_link", rospy.Time(), rospy.Duration(0.2))
-        temp_point = do_transform_point(temp_point, trans)
-    except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
-        print(e)
-    return [temp_point.point.x, temp_point.point.y]
-
-def map_to_map(coordinate):
-    x, y = coordinate
-    temp_point = PointStamped()
-    temp_point.header.stamp = rospy.Time()
-    temp_point.header.frame_id = "odom"
-    temp_point.point = Point(x, y, 0)
-    try:
-        tfBuffer = tf2_ros.Buffer()
-        tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "odom", rospy.Time(), rospy.Duration(1))
+        trans = tfBuffer.lookup_transform("map", "laser", rospy.Time(), rospy.Duration(0.2))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -159,17 +144,17 @@ class autopilot_node:
         while not rospy.is_shutdown():
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
-            if self.status:
+            if self.status and self.curren_point[0] != 0:
                 print("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
-                    path_publisher.publish(get_next_coordinate([-(self.target_point[0]),-(self.target_point[1])]))
+                    path_publisher.publish(get_next_coordinate(self.target_point))
                     print("speed: ")
                     print([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
                     print("next_point: ")
-                    print([-(self.target_point[0]),-(self.target_point[1])])
+                    print(self.target_point)
                     # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
