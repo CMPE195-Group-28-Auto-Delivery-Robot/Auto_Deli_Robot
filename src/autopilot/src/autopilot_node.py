@@ -44,7 +44,7 @@ def base_to_map(coordinate):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("map", "laser", rospy.Time(), rospy.Duration(0.2))
+        trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(0.15))
         temp_point = do_transform_point(temp_point, trans)
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
@@ -74,7 +74,7 @@ def get_next_coordinate(target_coordinate):
 class autopilot_node:
 
     def __init__(self):
-        self.status = True
+        self.status = False
         self.lost_gps = False
         self.target_list = []
         self.curren_point = [0, 0]
@@ -85,7 +85,6 @@ class autopilot_node:
         self.local_point = []
         self.node = autopilot.autopilot()
         self.target_point = []
-
         self.run()
 
 
@@ -100,7 +99,7 @@ class autopilot_node:
         self.target_list = []
         for dest_point in msg.dest_list:
             self.target_list.append(gps_to_map([dest_point.lat, dest_point.lng]))
-        print(self.target_list)
+        rospy.loginfo(self.target_list)
         self.target_point = self.target_list.pop(0)
 
     # Callback function to receive the coordinates of the obstacle
@@ -114,11 +113,22 @@ class autopilot_node:
     def object_callback(self, msg):
         self.objects = []
         for temp_object in msg.objects:
-            self.objects.append(temp_object)
-        if "Person" in self.objects or "Vehicle" in self.objects:
-            self.speed = 1
+            self.objects.append(temp_object.label)
+        if "Person" in self.objects:
+            if self.speed != 1:
+                rospy.loginfo("Log: People in Front")
+                rospy.loginfo("Log: Slow Done")
+                self.speed = 1
+        # elif "Vehicle" in self.objects:
+        #     if self.speed != 1:
+        #         rospy.loginfo("Log: Vehicle in Front")
+        #         rospy.loginfo("Log: Slow Done")
+        #         self.speed = 1
         else:
-            self.speed = 2
+            if self.speed != 2:
+                rospy.loginfo("Log: Road Clear")
+                rospy.loginfo("Log: Speed Up")
+                self.speed = 2
 
     def run(self):
         rospy.init_node('autopilot_node')
@@ -127,7 +137,7 @@ class autopilot_node:
         rospy.Subscriber('map', Odometry, self.map_callback)
         rospy.Subscriber('obstacles', LineSegmentList, self.obstacles_callback)
         rospy.Subscriber('destination', dest_list_msg, self.destination_callback)
-        #rospy.Subscriber('objects', ObjectsStamped, self.object_callback)
+        rospy.Subscriber('objects', ObjectsStamped, self.object_callback)
         #rospy.Subscriber('lawn', ObjectsStamped, self.object_callback)
 
         # Publish results
@@ -137,6 +147,7 @@ class autopilot_node:
 
         if test_mode:
             self.target_point = [test_x, test_y]
+            self.status = True
 
         # 1hz
         rate = rospy.Rate(1)
@@ -145,38 +156,38 @@ class autopilot_node:
             # start work if gps working and get order
             #if self.status and not self.lost_gps:
             if self.status and self.curren_point[0] != 0:
-                print("==================================================")
+                rospy.loginfo("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
                 # check point
                 if done:
                     path_publisher.publish(get_next_coordinate(self.target_point))
-                    print("speed: ")
-                    print([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
-                    print("next_point: ")
-                    print(self.target_point)
+                    rospy.loginfo("speed: ")
+                    rospy.loginfo([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
+                    rospy.loginfo("next_point: ")
+                    rospy.loginfo(self.target_point)
                     # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
                         self.node.start()
-                        print("log: check point")
+                        rospy.loginfo("log: check point")
                     # finish all point
                     else:
                         self.status = False
                         self.target_point = []
-                        print("log: finish all point")
+                        rospy.loginfo("log: finish all point")
                 # next pose
                 elif path:
-                    print("speed: ")
-                    print([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] + path[1])])
-                    print("next_point: ")
-                    print(path)
+                    rospy.loginfo("speed: ")
+                    rospy.loginfo([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] + path[1])])
+                    rospy.loginfo("next_point: ")
+                    rospy.loginfo(path)
                     path_publisher.publish(get_next_coordinate(path))
                 # error
                 else:
                     self.status = False
                     #msg_publisher.publish("error")
-                    print("error: cannot move")
+                    rospy.loginfo("error: cannot move")
             # get order
             elif self.target_point:
                 self.status = True

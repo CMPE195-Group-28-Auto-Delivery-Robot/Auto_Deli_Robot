@@ -101,8 +101,8 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
     if(IsGoalSet() && (currTime-m_lastCmdRecevied).toSec()>5){
         // ROS_INFO("Node In Control");
         float xDiff, yDiff;
-        xDiff = currRobotPose.position.x - m_robotTargetPoseMsg.pose.position.x;
-        yDiff = currRobotPose.position.y - m_robotTargetPoseMsg.pose.position.y;
+        xDiff = m_robotTargetPoseMsg.pose.position.x - currRobotPose.position.x;
+        yDiff = m_robotTargetPoseMsg.pose.position.y - currRobotPose.position.y;
         goaldist = sqrt(pow(xDiff,2) + pow(yDiff,2));
         if(goaldist < m_arrivalRange){
             ROS_INFO("Goal Point Arrived %f > %f", m_arrivalRange, goaldist);
@@ -112,9 +112,9 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
             float currAngle = QuaternionToEulerYaw(m_robotOdometryMsg.pose.pose.orientation.x, m_robotOdometryMsg.pose.pose.orientation.y,
                                                  m_robotOdometryMsg.pose.pose.orientation.z, m_robotOdometryMsg.pose.pose.orientation.w);
             float goalAngle = atan2(yDiff, xDiff);
-	        angleDiff = goalAngle + currAngle;
-            ROS_INFO("P2P Debug: Remaining Distance %f, Angle Difference: %f", goaldist, angleDiff);
-	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.4);
+	        angleDiff = goalAngle - currAngle;
+            ROS_INFO("P2P Debug: Remaining Distance %f, Curren Angle: %f, Goal Angle: %f, Diff Angle: %f", goaldist, currAngle, goalAngle, angleDiff);
+	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, 0.3);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);
             return robotProcessMsg;
         }

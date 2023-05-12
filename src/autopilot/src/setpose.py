@@ -22,7 +22,7 @@ class setpose:
 
     def __init__(self):
         rospy.init_node('setpose')
-        target_point = [2, 0]
+        target_point = [4, 0]
         path_publisher = rospy.Publisher('/deli_robot/goalPosition', PoseStamped, queue_size=10)
         rate = rospy.Rate(5)
         # main function
