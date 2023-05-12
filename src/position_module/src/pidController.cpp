@@ -114,6 +114,22 @@ geometry_msgs::Twist pidController::GetSpeedCtrlMsg(){
                                                  m_robotOdometryMsg.pose.pose.orientation.z, m_robotOdometryMsg.pose.pose.orientation.w);
             float goalAngle = atan2(yDiff, xDiff);
 	        angleDiff = goalAngle - currAngle;
+            if(abs(angleDiff) >= 2.0944) {
+                if(angleDiff < 0) {
+                    angleDiff = (3.1416 + angleDiff);
+                }
+                else {
+                    angleDiff = -(3.1416 - angleDiff);
+                }
+            }
+            else if(abs(angleDiff) >= 1.0472) {
+                if(angleDiff < 0) {
+                    angleDiff = -(1.5708 + angleDiff);
+                }
+                else {
+                    angleDiff = (1.5708 - angleDiff);
+                }
+            }
             ROS_INFO("P2P Debug: Remaining Distance %f, Curren Angle: %f, Goal Angle: %f, Diff Angle: %f", goaldist, currAngle, goalAngle, angleDiff);
 	        robotProcessMsg.linear.x = m_speedPid.getResult(m_currspeed, m_speed);
             robotProcessMsg.angular.z = m_angularPid.getResult(angleDiff);

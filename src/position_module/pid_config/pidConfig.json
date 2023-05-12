@@ -1,9 +1,9 @@
 {
 	"angularPid" : 
 	{
-		"Kd" : 0.3,
-		"Ki" : 0.0,
-		"Kp" : 2
+		"Kd" : 2,
+		"Ki" : 0.1,
+		"Kp" : 4
 	},
 	"speedPid" : 
 	{
