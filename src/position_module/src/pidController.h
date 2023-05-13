@@ -28,6 +28,7 @@ class pidController{
 private:
     bool m_opMode; // If true PID Mode, else Direct Mode
     bool m_goalSet;
+    bool m_backward;
     float m_speed;
     float m_currspeed;
     float m_arrivalRange;

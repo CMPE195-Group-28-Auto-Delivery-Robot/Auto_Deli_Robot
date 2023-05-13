@@ -94,6 +94,7 @@ def RobotDriverMain():
     rospy.spin()
 
     driverBoard.SetThrottle(0)
+    driverBoard.SetTurningAngle(CENTER_SERVO_DEGREE())
 
 if __name__ == '__main__':
     RobotDriverMain()

@@ -123,7 +123,7 @@ class autopilot_node:
             if self.speed != 1:
                 rospy.logwarn("Log: People in Front")
                 request = ChangeSpeed()
-                request = 0.2
+                request = 0.3
                 response = self.service_client(request)
                 if response.result:
                     rospy.logwarn("Log: Slow Done")
@@ -132,7 +132,7 @@ class autopilot_node:
             if self.speed != 1:
                 rospy.loginfo("Log: Vehicle in Front")
                 request = ChangeSpeed()
-                request = 0.2
+                request = 0.4
                 response = self.service_client(request)
                 if response.result:
                     rospy.logwarn("Log: Slow Done")
@@ -141,7 +141,7 @@ class autopilot_node:
             if self.speed != 2:
                 rospy.logwarn("Log: Road Clear")
                 request = ChangeSpeed()
-                request = 0.3
+                request = 0.5
                 response = self.service_client(request)
                 if response.result:
                     rospy.logwarn("Log: Speed Up")
