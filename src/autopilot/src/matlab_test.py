@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 resolution = rospy.get_param('resolution')
 size = rospy.get_param('size')
 
-def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles):
+def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_point, obstacles, path):
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.streamplot(x_map, y_map, x_vector_arr, y_vector_arr)
     ax.quiver(x_map, y_map, x_vector_arr, y_vector_arr)
@@ -24,6 +24,11 @@ def all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point,
         x2, y2 = temp_obstacle[1]
         ax.annotate("Obstacle", xy=temp_obstacle[2], fontsize=10, ha="center")
         plt.plot([x1, x2], [y1, y2], linewidth='5')
+    x, y = [], []
+    for temp_path in path:
+        x.append(temp_path[0])
+        y.append(temp_path[1])
+    plt.plot(x, y, color='y')
     x1, y1 = resolution/2+size, resolution/2+size
     x2, y2 = resolution/2+size, resolution/2-size
     x3, y3 = resolution/2-size, resolution/2-size

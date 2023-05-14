@@ -18,6 +18,7 @@ obstacle_range = rospy.get_param('obstacle_range')
 step = rospy.get_param('step')
 check = rospy.get_param('check')
 map_mode = rospy.get_param('map_status')
+test = []
 
 # Add endpoint with strong attraction in range and weak attraction overall
 # finish
@@ -25,11 +26,11 @@ def add_target_point(goal_coordinate, middle_point, x, y, target_area=obstacle_r
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
     to_goal_angle = angle_point_to_point(x, y, goal_coordinate)
     if to_goal_distance > target_area:
-        x_vector = 6 * attractive_force * target_area * math.cos(to_goal_angle)
-        y_vector = 6 * attractive_force * target_area * math.sin(to_goal_angle)
+        x_vector = 4 * attractive_force * target_area * math.cos(to_goal_angle)
+        y_vector = 4 * attractive_force * target_area * math.sin(to_goal_angle)
         to_middle_distance, to_middle_angle = distance_angle_point_to_line(x, y, middle_point, goal_coordinate)
-        x_vector += 2 * attractive_force * target_area * math.cos(to_middle_angle)
-        y_vector += 2 * attractive_force * target_area * math.sin(to_middle_angle)
+        x_vector += 6 * attractive_force * target_area * math.cos(to_middle_angle)
+        y_vector += 6 * attractive_force * target_area * math.sin(to_middle_angle)
     elif to_goal_distance > 1:
         x_vector = 12 * attractive_force * target_area * math.cos(to_goal_angle)
         y_vector = 12 * attractive_force * target_area * math.sin(to_goal_angle)
@@ -65,13 +66,17 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
     elif total_distance > surround:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_goal_angle) - math.sin(to_center_angle)), (math.cos(to_goal_angle) - math.cos(to_center_angle)))
-        x_vector += 10 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
-        y_vector += 10 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
+        if (to_obstacle_angle < (to_goal_angle + 1.57)) and (to_obstacle_angle > (to_goal_angle - 1.57)):
+            x_vector += 8 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
+            y_vector += 8 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
+        else:
+            x_vector += 4 * weight * attractive_force * (surround + curve - total_distance) * math.cos(-total_angle)
+            y_vector += 4 * weight * attractive_force * (surround + curve - total_distance) * math.sin(-total_angle)
     elif total_distance > 1:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_obstacle_angle) + math.sin(to_center_angle)), (math.cos(to_obstacle_angle) + math.cos(to_center_angle)))
-        x_vector -= 8 * weight * repulsive_force * (surround + curve - total_distance) * math.cos(total_angle)
-        y_vector -= 8 * weight * repulsive_force * (surround + curve - total_distance) * math.sin(total_angle)
+        x_vector -= 6 * weight * repulsive_force * (surround + curve - total_distance) * math.cos(total_angle)
+        y_vector -= 6 * weight * repulsive_force * (surround + curve - total_distance) * math.sin(total_angle)
     return x_vector, y_vector
 
 
@@ -113,6 +118,7 @@ def add_slope(slope_angle, x_vector, y_vector, force=slope_force):
 # Return to next move coordinates
 # finish
 def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_path, step_length=step, step_depth=step*check):
+    global test
     path = prev_path
     path.append(curren_coordinate)
     temp_coordinate = curren_coordinate
@@ -125,6 +131,7 @@ def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_
             repeat_flag += 1
     if path[-1] == target_point or path[-2] == target_point or path[-3] == target_point:
         repeat_flag = 0
+    test = path
     return path[(-step_depth - step_length):-step_depth], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
 
 
@@ -149,9 +156,10 @@ def get_vector_map(x_map, y_map, resolution, start_point, middle_point, target_p
 # Function interface
 # finish
 def gradient_descent(x_arr, y_arr, resolution, start_point, middle_point, target_point, obstacles, restricted_areas, prev_path, slope):
+    global test
     x_map, y_map = np.meshgrid(x_arr, y_arr)
     x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, middle_point, target_point, obstacles, restricted_areas, slope)
     save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path)
     if map_mode:
-        matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
+        matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles, test)
     return save_path, next_coordinate, repeat_flag, slope
