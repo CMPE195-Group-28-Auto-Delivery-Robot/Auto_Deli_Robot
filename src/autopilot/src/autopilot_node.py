@@ -39,7 +39,7 @@ def gps_to_map(coordinate):
     return [temp_point.point.x, temp_point.point.y]
 
 
-def base_to_map(coordinate, trans):
+def laser_to_map(coordinate, trans):
     x, y = coordinate
     temp_point = PointStamped()
     temp_point.header.stamp = rospy.Time.now()
@@ -56,13 +56,13 @@ def obstacles_convet(obstacles):
         tf2_ros.TransformListener(tfBuffer)
         trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(50))
         for obstacle in obstacles:
-            temp_obstacles.append([base_to_map(obstacle[0], trans), base_to_map(obstacle[1], trans), 0])
+            temp_obstacles.append([laser_to_map(obstacle[0], trans), laser_to_map(obstacle[1], trans), 0])
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
         print(e)
     return temp_obstacles
     
 
-def get_next_coordinate(target_coordinate):
+def to_map_coordinate(target_coordinate):
     target_point = PoseStamped()
     target_point.header.stamp = rospy.Time.now()
     target_point.header.frame_id = "map"
@@ -89,6 +89,7 @@ class autopilot_node:
         self.local_point = []
         self.node = autopilot.autopilot()
         self.target_point = []
+        self.start_point = []
         self.service_client = rospy.ServiceProxy('Robot_PID_Ctrl/ChangeSpeed', ChangeSpeed)
         self.run()
 
@@ -106,6 +107,7 @@ class autopilot_node:
             self.target_list.append(gps_to_map([dest_point.lat, dest_point.lng]))
         rospy.loginfo(self.target_list)
         self.target_point = self.target_list.pop(0)
+        self.start_point = self.curren_point
 
     # Callback function to receive the coordinates of the obstacle
     def obstacles_callback(self, msg):
@@ -163,6 +165,7 @@ class autopilot_node:
 
         if test_mode:
             self.target_point = [test_x, test_y]
+            self.start_point = self.curren_point
             self.status = True
 
         # 1hz
@@ -174,10 +177,10 @@ class autopilot_node:
             if self.status and self.curren_point[0] != 0:
                 rospy.loginfo("==================================================")
                 self.obstacles = obstacles_convet(self.obstacles)
-                path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.target_point)
+                path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.start_point, self.target_point)
                 # check point
                 if done:
-                    path_publisher.publish(get_next_coordinate(self.target_point))
+                    path_publisher.publish(to_map_coordinate(self.target_point))
                     rospy.loginfo("speed: ")
                     rospy.loginfo([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
                     rospy.loginfo("next_point: ")
@@ -185,6 +188,7 @@ class autopilot_node:
                     # not finish all point
                     if self.target_list:
                         self.target_point = self.target_list.pop(0)
+                        self.start_point = self.curren_point
                         self.node.start()
                         rospy.loginfo("log: check point")
                     # finish all point
@@ -198,7 +202,7 @@ class autopilot_node:
                     rospy.loginfo([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] + path[1])])
                     rospy.loginfo("next_point: ")
                     rospy.loginfo(path)
-                    path_publisher.publish(get_next_coordinate(path))
+                    path_publisher.publish(to_map_coordinate(path))
                 # error
                 else:
                     self.status = False

@@ -39,7 +39,7 @@ def obs_coordinates_fix(fix, coordinates):
 
 
 # Convert from map coordinates to algorithm coordinates
-def target_coordinate_fix(fix, coordinate):
+def map_coordinate_fix(fix, coordinate):
     coordinate = list(coordinate)
     coordinate[0] -= fix[0]
     coordinate[1] -= fix[1]
@@ -70,7 +70,7 @@ class autopilot:
         self.slope = None
         self.path = []
         self.save_path = []
-        self.start_point = [resolution / 2, resolution / 2]
+        self.center_point = [resolution / 2, resolution / 2]
         self.repeat_time = 0
 
     # Refreshing record
@@ -79,7 +79,7 @@ class autopilot:
         self.repeat_time = 0
 
     # Get next point after do autopilot
-    def get_next(self, obstacles, restricted_areas, curren_point, target_point):
+    def get_next(self, obstacles, restricted_areas, curren_point, start_point, target_point):
         rospy.loginfo("curren_point: ")
         rospy.loginfo(curren_point)
         rospy.loginfo("target_point: ")
@@ -87,10 +87,11 @@ class autopilot:
             rospy.loginfo([test_x, test_y])
         else:
             rospy.loginfo(target_point)
-        target_point = target_coordinate_fix(curren_point, target_point)
+        target_point = map_coordinate_fix(curren_point, target_point)
+        start_point = map_coordinate_fix(curren_point, start_point)
         obstacles = obs_coordinates_fix(curren_point, obstacles)
         restricted_areas = obs_coordinates_fix(curren_point, restricted_areas)
-        self.save_path, next_point, repeat_flag, self.slope = gradient_descent(self.x_arr, self.y_arr, resolution, self.start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope)
+        self.save_path, next_point, repeat_flag, self.slope = gradient_descent(self.x_arr, self.y_arr, resolution, self.center_point, start_point, target_point, obstacles, restricted_areas, self.save_path, self.slope)
         if abs(next_point[0] - target_point[0]) <= merge and abs(next_point[1] - target_point[1]) <= merge:
             return None, True
         if self.slope is not None:
@@ -102,11 +103,11 @@ class autopilot:
                 rospy.logwarn("error: random jump")
                 self.repeat_time += 1
             else:
-                self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
+                self.slope = tangen_bug(self.center_point, target_point, obstacles, restricted_areas, self.slope)
                 rospy.loginfo("tangen_bug Angle: ")
                 rospy.loginfo(self.slope)
         elif repeat_flag > 1:
-            self.slope = tangen_bug(self.start_point, target_point, obstacles, restricted_areas, self.slope)
+            self.slope = tangen_bug(self.center_point, target_point, obstacles, restricted_areas, self.slope)
             rospy.loginfo("tangen_bug Angle: ")
             rospy.loginfo(self.slope)
         return next_coordinate_fix(curren_point, next_point), False

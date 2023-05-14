@@ -21,12 +21,15 @@ map_mode = rospy.get_param('map_status')
 
 # Add endpoint with strong attraction in range and weak attraction overall
 # finish
-def add_target_point(goal_coordinate, x, y, target_area=obstacle_range):
+def add_target_point(goal_coordinate, middle_point, x, y, target_area=obstacle_range):
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
     to_goal_angle = angle_point_to_point(x, y, goal_coordinate)
     if to_goal_distance > target_area:
         x_vector = 6 * attractive_force * target_area * math.cos(to_goal_angle)
         y_vector = 6 * attractive_force * target_area * math.sin(to_goal_angle)
+        to_middle_distance, to_middle_angle = distance_angle_point_to_line(x, y, middle_point, goal_coordinate)
+        x_vector += 2 * attractive_force * target_area * math.cos(to_middle_angle)
+        y_vector += 2 * attractive_force * target_area * math.sin(to_middle_angle)
     elif to_goal_distance > 1:
         x_vector = 12 * attractive_force * target_area * math.cos(to_goal_angle)
         y_vector = 12 * attractive_force * target_area * math.sin(to_goal_angle)
@@ -127,12 +130,12 @@ def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_
 
 # Extrapolate the overall vector map
 # finish
-def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope):
+def get_vector_map(x_map, y_map, resolution, start_point, middle_point, target_point, obstacles, restricted_areas, slope):
     x_vector_arr = np.zeros_like(x_map)
     y_vector_arr = np.zeros_like(y_map)
     for i in range(resolution):
         for j in range(resolution):
-            x_vector_arr[i][j], y_vector_arr[i][j], to_goal_angle = add_target_point(target_point, x_map[i][j], y_map[i][j])
+            x_vector_arr[i][j], y_vector_arr[i][j], to_goal_angle = add_target_point(target_point, middle_point, x_map[i][j], y_map[i][j])
             x_vector_arr[i][j], y_vector_arr[i][j] = add_start_point(start_point, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j])
             for temp_obstacle in obstacles:
                 x_vector_arr[i][j], y_vector_arr[i][j] = add_obstacle((temp_obstacle[0], temp_obstacle[1]), temp_obstacle[2], to_goal_angle, x_map[i][j], y_map[i][j], x_vector_arr[i][j], y_vector_arr[i][j])
@@ -145,9 +148,9 @@ def get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacle
 
 # Function interface
 # finish
-def gradient_descent(x_arr, y_arr, resolution, start_point, target_point, obstacles, restricted_areas, prev_path, slope):
+def gradient_descent(x_arr, y_arr, resolution, start_point, middle_point, target_point, obstacles, restricted_areas, prev_path, slope):
     x_map, y_map = np.meshgrid(x_arr, y_arr)
-    x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, target_point, obstacles, restricted_areas, slope)
+    x_vector_arr, y_vector_arr = get_vector_map(x_map, y_map, resolution, start_point, middle_point, target_point, obstacles, restricted_areas, slope)
     save_path, next_coordinate, repeat_flag = next_step(start_point, target_point, x_vector_arr, y_vector_arr, prev_path)
     if map_mode:
         matlab_test.all_map(x_map, y_map, x_vector_arr, y_vector_arr, start_point, target_point, next_coordinate, obstacles)
