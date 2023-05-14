@@ -19,9 +19,13 @@ from robot_msgs.srv import ChangeSpeed
 import autopilot
 
 test_mode = rospy.get_param('test_status')
+point_2 = rospy.get_param('point_2')
 if test_mode:
     test_x = rospy.get_param('test_x')
     test_y = rospy.get_param('test_y')
+    if point_2:
+        test_x_2 = rospy.get_param('test_x_2')
+        test_y_2 = rospy.get_param('test_x_2')
 
 def gps_to_map(coordinate):
     x, y = coordinate
@@ -164,7 +168,10 @@ class autopilot_node:
             
 
         if test_mode:
-            self.target_point = [test_x, test_y]
+            self.target_list.append([test_x, test_y])
+            if point_2:
+                self.target_list.append([test_x_2, test_y_2])
+            self.target_point = self.target_list.pop(0)
             self.start_point = self.curren_point
             self.status = True
 
@@ -173,16 +180,13 @@ class autopilot_node:
         # main function
         while not rospy.is_shutdown():
             # start work if gps working and get order
-            #if self.status and not self.lost_gps:
             if self.status and self.curren_point[0] != 0:
-                rospy.loginfo("==================================================")
+                rospy.loginfo("=============================================")
                 self.obstacles = obstacles_convet(self.obstacles)
                 path, done = self.node.get_next(self.obstacles, self.restricted_areas, self.curren_point, self.start_point, self.target_point)
                 # check point
                 if done:
                     path_publisher.publish(to_map_coordinate(self.target_point))
-                    rospy.loginfo("speed: ")
-                    rospy.loginfo([abs(abs(self.curren_point[0]) - abs(self.target_point[0])), abs(abs(self.curren_point[1]) - abs(self.target_point[1]))])
                     rospy.loginfo("next_point: ")
                     rospy.loginfo(self.target_point)
                     # not finish all point
@@ -198,8 +202,6 @@ class autopilot_node:
                         rospy.loginfo("log: finish all point")
                 # next pose
                 elif path:
-                    rospy.loginfo("speed: ")
-                    rospy.loginfo([abs(self.curren_point[0] - path[0]), abs(self.curren_point[1] + path[1])])
                     rospy.loginfo("next_point: ")
                     rospy.loginfo(path)
                     path_publisher.publish(to_map_coordinate(path))
