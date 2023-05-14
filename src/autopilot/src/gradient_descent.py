@@ -25,11 +25,11 @@ def add_target_point(goal_coordinate, x, y, target_area=obstacle_range):
     to_goal_distance = distance_point_to_point(x, y, goal_coordinate)
     to_goal_angle = angle_point_to_point(x, y, goal_coordinate)
     if to_goal_distance > target_area:
-        x_vector = 4 * attractive_force * target_area * math.cos(to_goal_angle)
-        y_vector = 4 * attractive_force * target_area * math.sin(to_goal_angle)
+        x_vector = 6 * attractive_force * target_area * math.cos(to_goal_angle)
+        y_vector = 6 * attractive_force * target_area * math.sin(to_goal_angle)
     elif to_goal_distance > 1:
-        x_vector = 8 * attractive_force * target_area * math.cos(to_goal_angle)
-        y_vector = 8 * attractive_force * target_area * math.sin(to_goal_angle)
+        x_vector = 12 * attractive_force * target_area * math.cos(to_goal_angle)
+        y_vector = 12 * attractive_force * target_area * math.sin(to_goal_angle)
     else:
         x_vector = 0
         y_vector = 0
@@ -51,7 +51,7 @@ def add_start_point(start_coordinate, x, y, x_vector, y_vector, start_area=obsta
 
 # Add obstacle line segment with strong repulsion in the range and attraction to the target at the periphery
 # finish
-def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=obstacle_range, curve=2*obstacle_range):
+def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle, x, y, x_vector, y_vector, weight=obstacle_force, surround=obstacle_range, curve=4*obstacle_range):
     to_obstacle_distance, to_obstacle_angle = distance_angle_point_to_line(x, y, obstacle_coordinate[0], obstacle_coordinate[1])
     if to_obstacle_distance > 20:
         return x_vector, y_vector
@@ -62,8 +62,8 @@ def add_obstacle(obstacle_coordinate, obstacle_center_coordinate, to_goal_angle,
     elif total_distance > surround:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_goal_angle) - math.sin(to_center_angle)), (math.cos(to_goal_angle) - math.cos(to_center_angle)))
-        x_vector += 12 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
-        y_vector += 12 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
+        x_vector += 10 * weight * attractive_force * (surround + curve - total_distance) * math.cos(total_angle)
+        y_vector += 10 * weight * attractive_force * (surround + curve - total_distance) * math.sin(total_angle)
     elif total_distance > 1:
         to_center_angle = angle_point_to_point(x, y, obstacle_center_coordinate)
         total_angle = math.atan2((math.sin(to_obstacle_angle) + math.sin(to_center_angle)), (math.cos(to_obstacle_angle) + math.cos(to_center_angle)))
@@ -122,7 +122,7 @@ def next_step(curren_coordinate, target_point, x_vector_arr, y_vector_arr, prev_
             repeat_flag += 1
     if path[-1] == target_point or path[-2] == target_point or path[-3] == target_point:
         repeat_flag = 0
-    return path[-step_depth:], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
+    return path[(-step_depth - step_length):-step_depth], loc_weighted_regression(path, (step_depth - step_length)), repeat_flag
 
 
 # Extrapolate the overall vector map

@@ -54,7 +54,7 @@ def obstacles_convet(obstacles):
     try:
         tfBuffer = tf2_ros.Buffer()
         tf2_ros.TransformListener(tfBuffer)
-        trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(10))
+        trans = tfBuffer.lookup_transform("odom", "laser", rospy.Time(), rospy.Duration(50))
         for obstacle in obstacles:
             temp_obstacles.append([base_to_map(obstacle[0], trans), base_to_map(obstacle[1], trans), 0])
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:

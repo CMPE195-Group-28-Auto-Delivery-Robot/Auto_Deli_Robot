@@ -10,24 +10,24 @@
         </node>
         <param name="test_status" value="True"/>
         <param name="map_status" value="False"/>
-        <param name="test_x" value="10"/>
+        <param name="test_x" value="20"/>
         <param name="test_y" value="0"/>
 
-        <param name="resolution" value="80"/>
-        <param name="zoom" value="10"/>
-        <param name="size" value="2"/>
+        <param name="resolution" value="20"/>
+        <param name="zoom" value="6"/>
+        <param name="size" value="1"/>
 
         <param name="obstacle_force" value="2"/>
-        <param name="obstacle_range" value="4"/>
+        <param name="obstacle_range" value="3"/>
         <param name="attractive_force" value="5"/>
         <param name="repulsive_force" value="10"/>
         <param name="slope_force" value="5"/>
 
         <param name="step" value="1"/>
-        <param name="check" value="12"/>
+        <param name="check" value="5"/>
 
         <param name="tangen_depth" value="10"/>
-        <param name="tau" value="0.5"/>
+        <param name="tau" value="0.8"/>
         <param name="degree" value="1"/>
     </group>
 </launch>
